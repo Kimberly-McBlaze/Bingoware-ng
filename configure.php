@@ -1,5 +1,39 @@
 	   <body>
-	   <?php if (isset($_POST["submit"])) {
+	   <?php 
+	   // Handle pattern CRUD operations
+	   if (isset($_GET['pattern_action'])) {
+	   		$action = $_GET['pattern_action'];
+	   		
+	   		if ($action === 'delete' && isset($_GET['pattern_id'])) {
+	   			$patternId = (int)$_GET['pattern_id'];
+	   			if (delete_pattern_json($patternId)) {
+	   				echo '<div class="alert alert-success"><strong>✅ Pattern Deleted!</strong><br>The pattern has been removed successfully.</div>';
+	   			} else {
+	   				echo '<div class="alert alert-error"><strong>❌ Delete Failed!</strong><br>Unable to delete the pattern.</div>';
+	   			}
+	   		}
+	   		
+	   		if ($action === 'reset') {
+	   			if (reset_patterns_to_defaults()) {
+	   				echo '<div class="alert alert-success"><strong>✅ Patterns Reset!</strong><br>All patterns have been restored to factory defaults.</div>';
+	   			} else {
+	   				echo '<div class="alert alert-error"><strong>❌ Reset Failed!</strong><br>Unable to reset patterns to defaults.</div>';
+	   			}
+	   		}
+	   }
+	   
+	   // Handle pattern enable/disable from form submission
+	   if (isset($_POST["submit"]) && isset($_POST["pattern_enabled"])) {
+	   		// Update pattern enabled states
+	   		$patterns = load_patterns_json();
+	   		foreach ($patterns as &$pattern) {
+	   			$patternId = $pattern['id'];
+	   			$pattern['enabled'] = isset($_POST["pattern_enabled"][$patternId]);
+	   		}
+	   		save_patterns_json($patterns);
+	   }
+	   
+	   if (isset($_POST["submit"])) {
 	   			
 	   			//pull in data from the form post
 	   			
@@ -130,70 +164,38 @@
 	     </div>
 	     <div class="card-body">
 	       <div class="checkbox-group">
+	         <!-- Pattern 0: Normal (special case) -->
 	         <label class="checkbox-option">
 	   	   <input type="checkbox" name="winningpatternform0" <?= ($winningpattern0=="on")?"checked":""; ?>>
 	   	   <span><?= $patternkeywords[0];?> (any row, column or diagonal)</span>
+	   	   <span style="margin-left: auto; color: #888; font-size: 0.875rem;">Cannot be edited via grid editor</span>
 	         </label>
 	         
+	         <?php
+	         // Load patterns from JSON store
+	         $jsonPatterns = load_patterns_json();
+	         foreach ($jsonPatterns as $pattern):
+	         	$patternId = $pattern['id'];
+	         	$patternName = htmlspecialchars($pattern['name']);
+	         	$isPreinstalled = $pattern['isPreinstalled'];
+	         	$isEnabled = $pattern['enabled'];
+	         ?>
 	         <label class="checkbox-option">
-	   	   <input type="checkbox" name="winningpatternform1" <?= ($winningpattern1=="on")?"checked":""; ?>>
-	   	   <span><?= $patternkeywords[1];?></span>
-	   	   <a href="interactive.php?cardnumber=1" target="_blank" class="btn btn-sm btn-secondary" style="margin-left: auto;">customize!</a>
+	   	   <input type="checkbox" name="pattern_enabled[<?= $patternId; ?>]" <?= $isEnabled ? "checked" : ""; ?>>
+	   	   <span><?= $patternName; ?></span>
+	   	   <div style="margin-left: auto; display: flex; gap: 0.5rem;">
+	   	     <a href="interactive.php?id=<?= $patternId; ?>" target="_blank" class="btn btn-sm btn-secondary">✏️ Edit</a>
+	   	     <?php if (!$isPreinstalled || true): // Allow deleting even preinstalled patterns ?>
+	   	     <a href="javascript:if(confirm('Are you sure you want to delete this pattern?')) { window.location.href='index.php?action=config&pattern_action=delete&pattern_id=<?= $patternId; ?>'; }" class="btn btn-sm btn-danger">🗑️ Delete</a>
+	   	     <?php endif; ?>
+	   	   </div>
 	         </label>
-	         
-	         <label class="checkbox-option">
-	   	   <input type="checkbox" name="winningpatternform2" <?= ($winningpattern2=="on")?"checked":""; ?>>
-	   	   <span><?= $patternkeywords[2];?></span>
-	   	   <a href="interactive.php?cardnumber=2" target="_blank" class="btn btn-sm btn-secondary" style="margin-left: auto;">customize!</a>
-	         </label>
-	         
-	         <label class="checkbox-option">
-	   	   <input type="checkbox" name="winningpatternform3" <?= ($winningpattern3=="on")?"checked":""; ?>>
-	   	   <span><?= $patternkeywords[3];?></span>
-	   	   <a href="interactive.php?cardnumber=3" target="_blank" class="btn btn-sm btn-secondary" style="margin-left: auto;">customize!</a>
-	         </label>
-	         
-	         <label class="checkbox-option">
-	   	   <input type="checkbox" name="winningpatternform4" <?= ($winningpattern4=="on")?"checked":""; ?>>
-	   	   <span><?= $patternkeywords[4];?></span>
-	   	   <a href="interactive.php?cardnumber=4" target="_blank" class="btn btn-sm btn-secondary" style="margin-left: auto;">customize!</a>
-	         </label>
-	         
-	         <label class="checkbox-option">
-	   	   <input type="checkbox" name="winningpatternform5" <?= ($winningpattern5=="on")?"checked":""; ?>>
-	   	   <span><?= $patternkeywords[5];?></span>
-	   	   <a href="interactive.php?cardnumber=5" target="_blank" class="btn btn-sm btn-secondary" style="margin-left: auto;">customize!</a>
-	         </label>
-	         
-	         <label class="checkbox-option">
-	   	   <input type="checkbox" name="winningpatternform6" <?= ($winningpattern6=="on")?"checked":""; ?>>
-	   	   <span><?= $patternkeywords[6];?></span>
-	   	   <a href="interactive.php?cardnumber=6" target="_blank" class="btn btn-sm btn-secondary" style="margin-left: auto;">customize!</a>
-	         </label>
-	         
-	         <label class="checkbox-option">
-	   	   <input type="checkbox" name="winningpatternform7" <?= ($winningpattern7=="on")?"checked":""; ?>>
-	   	   <span><?= $patternkeywords[7];?></span>
-	   	   <a href="interactive.php?cardnumber=7" target="_blank" class="btn btn-sm btn-secondary" style="margin-left: auto;">customize!</a>
-	         </label>
-	         
-	         <label class="checkbox-option">
-	   	   <input type="checkbox" name="winningpatternform8" <?= ($winningpattern8=="on")?"checked":""; ?>>
-	   	   <span><?= $patternkeywords[8];?></span>
-	   	   <a href="interactive.php?cardnumber=8" target="_blank" class="btn btn-sm btn-secondary" style="margin-left: auto;">customize!</a>
-	         </label>
-	         
-	         <label class="checkbox-option">
-	   	   <input type="checkbox" name="winningpatternform9" <?= ($winningpattern9=="on")?"checked":""; ?>>
-	   	   <span><?= $patternkeywords[9];?></span>
-	   	   <a href="interactive.php?cardnumber=9" target="_blank" class="btn btn-sm btn-secondary" style="margin-left: auto;">customize!</a>
-	         </label>
-	         
-	         <label class="checkbox-option">
-	   	   <input type="checkbox" name="winningpatternform10" <?= ($winningpattern10=="on")?"checked":""; ?>>
-	   	   <span><?= $patternkeywords[10];?></span>
-	   	   <a href="interactive.php?cardnumber=10" target="_blank" class="btn btn-sm btn-secondary" style="margin-left: auto;">customize!</a>
-	         </label>
+	         <?php endforeach; ?>
+	       </div>
+	       
+	       <div style="margin-top: 1.5rem; display: flex; gap: 1rem; flex-wrap: wrap;">
+	         <a href="javascript:window.open('interactive.php?id=0&new=1', '_blank', 'width=800,height=600')" class="btn btn-primary">➕ Add New Pattern</a>
+	         <a href="javascript:if(confirm('This will reset all patterns to factory defaults. Any custom patterns will be lost. Are you sure?')) { window.location.href='index.php?action=config&pattern_action=reset'; }" class="btn btn-warning">🔄 Reset to Factory Defaults</a>
 	       </div>
 	     </div>
 	   </div>

@@ -14,7 +14,7 @@
   <div class="header-container">
     <div class="header-logo">
       <div>
-        <h1>🎱 Bingoware</h1>
+        <h1>🎱 Bingoware-ng</h1>
         <span class="logo-subtitle">Modern Bingo Card Management</span>
       </div>
     </div>

@@ -1,4 +1,4 @@
-	   <body onLoad="document.configForm.setidform.focus()">
+	   <body>
 	   <?php if (isset($_POST["submit"])) {
 	   			
 	   			//pull in data from the form post
@@ -98,141 +98,170 @@
 					@fclose($fp); //@ to avoid warnings in Demo on sourceforge
 					if (isset($_POST["pagetitleform"])) $pagetitle=$_POST["pagetitleform"];
 					restart();
-					echo '<p><font size="4"><b>Configuration Accepted!</b></font></p>';
+					echo '<div class="alert alert-success"><strong>✅ Configuration Accepted!</strong><br>Your settings have been saved successfully.</div>';
 				} else {
-					echo '<p><font size="4"><b>Configuration not Accepted!</b></font></p>';
+					echo '<div class="alert alert-error"><strong>❌ Configuration not Accepted!</strong><br>Unable to save settings. Please check file permissions.</div>';
 				}
 	   	
 		 //not submitted for change yet  	
 	   	} else {
 	   ?>
-	   <p><img src="images/cf.gif"></p>
-	   <form name="configForm" action="index.php?action=config<?= ((isset($_GET['numberinplay']))?('&numberinplay='.$_GET['numberinplay']):''); ?>" method="post" onSubmit="return ConfigConfirmation()">
-	   Enter the Set ID: 
-	   &nbsp;&nbsp;&nbsp;<input type="text" name="setidform" value="<?= $setid; ?>" maxlength="10" size="4" align="right">&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:explain('Set ID')">help?</a><br>
-	   <br><table border="1"><tr><td>
-		   <table border="0"><tr><td colspan="2">
-		   Choose the Winning Patterns: &nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:explain('Winning Pattern')">help?</a><br><br></td></tr>
-		   <tr><td width="400" colspan="2">
-		   	<input type="checkbox" name="winningpatternform0" <?= ($winningpattern0=="on")?"checked":""; ?>>
-		   	&nbsp;&nbsp;&nbsp;<?= $patternkeywords[0];?> (any row, column or diagonal)
-		   	
-		   </td></tr>
-		   <tr><td>
-		   	<input type="checkbox" name="winningpatternform1" <?= ($winningpattern1=="on")?"checked":""; ?>>
-		   	&nbsp;&nbsp;&nbsp;<?= $patternkeywords[1];?>
-		   </td><td>
-			   <a href="interactive.php?cardnumber=1" target=_blank>customize!</a>
-	   	</td></tr>
-	   	<tr><td>
-	   		<input type="checkbox" name="winningpatternform2" <?= ($winningpattern2=="on")?"checked":""; ?>>
-	   		&nbsp;&nbsp;&nbsp;<?= $patternkeywords[2];?>
-	   	</td><td>
-	   		<a href="interactive.php?cardnumber=2" target=_blank>customize!</a>
-	   	</td></tr>
-	   	<tr><td>
-	   		<input type="checkbox" name="winningpatternform3" <?= ($winningpattern3=="on")?"checked":""; ?>>
-	   		&nbsp;&nbsp;&nbsp;<?= $patternkeywords[3];?>
-		   </td><td>
-			   <a href="interactive.php?cardnumber=3" target=_blank>customize!</a>
-	   	</td></tr>
-	   	<tr><td>
-			   <input type="checkbox" name="winningpatternform4" <?= ($winningpattern4=="on")?"checked":""; ?>>
-			   &nbsp;&nbsp;&nbsp;<?= $patternkeywords[4];?>
-	      </td><td>
-			   <a href="interactive.php?cardnumber=4" target=_blank>customize!</a>
-	   	</td></tr>
-	   	<tr><td>
-			   <input type="checkbox" name="winningpatternform5" <?= ($winningpattern5=="on")?"checked":""; ?>>
-			   &nbsp;&nbsp;&nbsp;<?= $patternkeywords[5];?>
-		   </td><td>
-				<a href="interactive.php?cardnumber=5" target=_blank>customize!</a>
-	   	</td></tr>
-	   	<tr><td>
-	   		<input type="checkbox" name="winningpatternform6" <?= ($winningpattern6=="on")?"checked":""; ?>>
-	   		&nbsp;&nbsp;&nbsp;<?= $patternkeywords[6];?>
-		   </td><td>
-			   <a href="interactive.php?cardnumber=6" target=_blank>customize!</a>
-	   	</td></tr>
-	   	<tr><td>
-			   <input type="checkbox" name="winningpatternform7" <?= ($winningpattern7=="on")?"checked":""; ?>>
-			   &nbsp;&nbsp;&nbsp;<?= $patternkeywords[7];?>
-		   </td><td>
-			   <a href="interactive.php?cardnumber=7" target=_blank>customize!</a>
-	   	</td></tr>
-	   	<tr><td>
-	   		<input type="checkbox" name="winningpatternform8" <?= ($winningpattern8=="on")?"checked":""; ?>>
-	   		&nbsp;&nbsp;&nbsp;<?= $patternkeywords[8];?>
-		   </td><td>
-			   <a href="interactive.php?cardnumber=8" target=_blank>customize!</a>
-	   	</td></tr>
-		   <tr><td >
-		   	<input type="checkbox" name="winningpatternform9" <?= ($winningpattern9=="on")?"checked":""; ?>>
-		   	&nbsp;&nbsp;&nbsp;<?= $patternkeywords[9];?>
-		   </td><td>
-			   <a href="interactive.php?cardnumber=9" target=_blank>customize!</a>
-	   	</td></tr>
-		   <tr><td >
-		   	<input type="checkbox" name="winningpatternform10" <?= ($winningpattern10=="on")?"checked":""; ?>>
-		   	&nbsp;&nbsp;&nbsp;<?= $patternkeywords[10];?>
-		   </td><td>
-			   <a href="interactive.php?cardnumber=10" target=_blank>customize!</a>
-	   	</td></tr>
-	   	
+	   <div class="content-header">
+	     <h2 class="content-title">⚙️ Configure</h2>
+	     <p class="content-subtitle">Customize your Bingoware settings</p>
+	   </div>
 	   
-	   </table>
-	   </td></tr></table>
-		<br>		
-		<br>
-		<table border="1" width="30%"><tr><td><table border="0"> 
-			<tr>
-				<td>Draw Mode: &nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:explain('Draw Mode')">help?</a>
-				</td>
-			</tr><tr>
-				<td>Automatic
-				</td><td>
-					<input type="radio" name="drawmodeform" value="automatic" <?= ($drawmode=="automatic")?"checked":""; ?>>
-				</td>
-			</tr><tr>
-				<td>Manual
-				</td><td>
-					<input type="radio" name="drawmodeform" value="manual" <?= ($drawmode=="manual")?"checked":""; ?>>
-				</td>
-			</tr></table>
-			</tr></table>
-		<br>
-		<table border="1" width="30%"><tr><td><table border="0"> 
-			<tr>
-				<td>Miscellaneous Options: 
-				</td>
-			</tr><tr><td >
-		   	Name File</td><td><input type="checkbox" name="namefileform" <?= ($namefile=="on")?"checked":""; ?>>
-		   	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:explain('Name File')">help?</a>
-		   </td></tr>
-	   		<tr><td >
-		   	Print Rules</td><td><input type="checkbox" name="printrulesform" <?= ($printrules=="on")?"checked":""; ?>>
-		   	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:explain('Print Rules')">help?</a>
-		   </td></tr>
-		   
-		   <tr><td >
-		   	Print 4 cards per page</td><td><input type="checkbox" name="fourperpageform" <?= ($fourperpage=="on")?"checked":""; ?>>
-		   	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:explain('Four per page')">help?</a>
-		   </td></tr></table>
-			</tr></table>
-		<br>
-	   	<table border="1" width="30%">
-	   		<tr>
-	   			<td>
-	   				<table border="0"> 
-						<tr>
-							<th width=40% align="center"><b>Colours</b>: &nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:explain('Colours')">help?</a> 
-							</th>
-							<th width=30% align="center">Background
-							</th>
-							<th width=30%>Font
-							</th>
-						</tr>
-						<tr>
+	   <form name="configForm" action="index.php?action=config<?= ((isset($_GET['numberinplay']))?('&numberinplay='.$_GET['numberinplay']):''); ?>" method="post" class="modern-form" onSubmit="return ConfigConfirmation()">
+	   
+	   <div class="form-group">
+	     <label class="form-label">
+	       Set ID:
+	       <a href="javascript:explain('Set ID')" class="help-icon">help?</a>
+	     </label>
+	     <input type="text" name="setidform" value="<?= $setid; ?>" maxlength="10" class="form-input" style="max-width: 200px;">
+	   </div>
+	   
+	   <div class="card mb-3">
+	     <div class="card-header">
+	       <h3 class="card-title">
+	         Winning Patterns
+	         <a href="javascript:explain('Winning Pattern')" class="help-icon">help?</a>
+	       </h3>
+	     </div>
+	     <div class="card-body">
+	       <div class="checkbox-group">
+	         <label class="checkbox-option">
+	   	   <input type="checkbox" name="winningpatternform0" <?= ($winningpattern0=="on")?"checked":""; ?>>
+	   	   <span><?= $patternkeywords[0];?> (any row, column or diagonal)</span>
+	         </label>
+	         
+	         <label class="checkbox-option">
+	   	   <input type="checkbox" name="winningpatternform1" <?= ($winningpattern1=="on")?"checked":""; ?>>
+	   	   <span><?= $patternkeywords[1];?></span>
+	   	   <a href="interactive.php?cardnumber=1" target="_blank" class="btn btn-sm btn-secondary" style="margin-left: auto;">customize!</a>
+	         </label>
+	         
+	         <label class="checkbox-option">
+	   	   <input type="checkbox" name="winningpatternform2" <?= ($winningpattern2=="on")?"checked":""; ?>>
+	   	   <span><?= $patternkeywords[2];?></span>
+	   	   <a href="interactive.php?cardnumber=2" target="_blank" class="btn btn-sm btn-secondary" style="margin-left: auto;">customize!</a>
+	         </label>
+	         
+	         <label class="checkbox-option">
+	   	   <input type="checkbox" name="winningpatternform3" <?= ($winningpattern3=="on")?"checked":""; ?>>
+	   	   <span><?= $patternkeywords[3];?></span>
+	   	   <a href="interactive.php?cardnumber=3" target="_blank" class="btn btn-sm btn-secondary" style="margin-left: auto;">customize!</a>
+	         </label>
+	         
+	         <label class="checkbox-option">
+	   	   <input type="checkbox" name="winningpatternform4" <?= ($winningpattern4=="on")?"checked":""; ?>>
+	   	   <span><?= $patternkeywords[4];?></span>
+	   	   <a href="interactive.php?cardnumber=4" target="_blank" class="btn btn-sm btn-secondary" style="margin-left: auto;">customize!</a>
+	         </label>
+	         
+	         <label class="checkbox-option">
+	   	   <input type="checkbox" name="winningpatternform5" <?= ($winningpattern5=="on")?"checked":""; ?>>
+	   	   <span><?= $patternkeywords[5];?></span>
+	   	   <a href="interactive.php?cardnumber=5" target="_blank" class="btn btn-sm btn-secondary" style="margin-left: auto;">customize!</a>
+	         </label>
+	         
+	         <label class="checkbox-option">
+	   	   <input type="checkbox" name="winningpatternform6" <?= ($winningpattern6=="on")?"checked":""; ?>>
+	   	   <span><?= $patternkeywords[6];?></span>
+	   	   <a href="interactive.php?cardnumber=6" target="_blank" class="btn btn-sm btn-secondary" style="margin-left: auto;">customize!</a>
+	         </label>
+	         
+	         <label class="checkbox-option">
+	   	   <input type="checkbox" name="winningpatternform7" <?= ($winningpattern7=="on")?"checked":""; ?>>
+	   	   <span><?= $patternkeywords[7];?></span>
+	   	   <a href="interactive.php?cardnumber=7" target="_blank" class="btn btn-sm btn-secondary" style="margin-left: auto;">customize!</a>
+	         </label>
+	         
+	         <label class="checkbox-option">
+	   	   <input type="checkbox" name="winningpatternform8" <?= ($winningpattern8=="on")?"checked":""; ?>>
+	   	   <span><?= $patternkeywords[8];?></span>
+	   	   <a href="interactive.php?cardnumber=8" target="_blank" class="btn btn-sm btn-secondary" style="margin-left: auto;">customize!</a>
+	         </label>
+	         
+	         <label class="checkbox-option">
+	   	   <input type="checkbox" name="winningpatternform9" <?= ($winningpattern9=="on")?"checked":""; ?>>
+	   	   <span><?= $patternkeywords[9];?></span>
+	   	   <a href="interactive.php?cardnumber=9" target="_blank" class="btn btn-sm btn-secondary" style="margin-left: auto;">customize!</a>
+	         </label>
+	         
+	         <label class="checkbox-option">
+	   	   <input type="checkbox" name="winningpatternform10" <?= ($winningpattern10=="on")?"checked":""; ?>>
+	   	   <span><?= $patternkeywords[10];?></span>
+	   	   <a href="interactive.php?cardnumber=10" target="_blank" class="btn btn-sm btn-secondary" style="margin-left: auto;">customize!</a>
+	         </label>
+	       </div>
+	     </div>
+	   </div>
+		
+		<div class="card mb-3">
+		  <div class="card-header">
+		    <h3 class="card-title">
+		      Draw Mode
+		      <a href="javascript:explain('Draw Mode')" class="help-icon">help?</a>
+		    </h3>
+		  </div>
+		  <div class="card-body">
+		    <div class="radio-group">
+		      <label class="radio-option">
+		        <input type="radio" name="drawmodeform" value="automatic" <?= ($drawmode=="automatic")?"checked":""; ?>>
+		        <span>Automatic</span>
+		      </label>
+		      <label class="radio-option">
+		        <input type="radio" name="drawmodeform" value="manual" <?= ($drawmode=="manual")?"checked":""; ?>>
+		        <span>Manual</span>
+		      </label>
+		    </div>
+		  </div>
+		</div>
+		
+		<div class="card mb-3">
+		  <div class="card-header">
+		    <h3 class="card-title">Miscellaneous Options</h3>
+		  </div>
+		  <div class="card-body">
+		    <div class="checkbox-group">
+		      <label class="checkbox-option">
+		        <input type="checkbox" name="namefileform" <?= ($namefile=="on")?"checked":""; ?>>
+		        <span>Name File</span>
+		        <a href="javascript:explain('Name File')" class="help-icon" style="margin-left: auto;">help?</a>
+		      </label>
+		      <label class="checkbox-option">
+		        <input type="checkbox" name="printrulesform" <?= ($printrules=="on")?"checked":""; ?>>
+		        <span>Print Rules</span>
+		        <a href="javascript:explain('Print Rules')" class="help-icon" style="margin-left: auto;">help?</a>
+		      </label>
+		      <label class="checkbox-option">
+		        <input type="checkbox" name="fourperpageform" <?= ($fourperpage=="on")?"checked":""; ?>>
+		        <span>Print 4 cards per page</span>
+		        <a href="javascript:explain('Four per page')" class="help-icon" style="margin-left: auto;">help?</a>
+		      </label>
+		    </div>
+		  </div>
+		</div>
+		
+	   	<div class="card mb-3">
+	   	  <div class="card-header">
+	   	    <h3 class="card-title">
+	   	      Card Colours
+	   	      <a href="javascript:explain('Colours')" class="help-icon">help?</a>
+	   	    </h3>
+	   	  </div>
+	   	  <div class="card-body">
+	   	    <div class="modern-table">
+	   	      <table style="width: 100%;">
+	   	        <thead>
+	   	          <tr>
+	   	            <th>Element</th>
+	   	            <th>Background</th>
+	   	            <th>Font</th>
+	   	          </tr>
+	   	        </thead>
+	   	        <tbody>
 							<td>Header
 							</td>
 							<td align="center">
@@ -303,23 +332,52 @@
 
 							</td>
 						</tr>
-					</table>
-				</td>
-			</tr>
-		</table>												
-		<br>
-	   <br>Page Title: <input type="text" name="pagetitleform" value="<?= $pagetitleconfig; ?>" size="55"><br>
+	   	        </tbody>
+	   	      </table>
+	   	    </div>
+	   	    <p style="margin-top: 1rem; font-size: 0.875rem; color: var(--text-muted);">
+	   	      <a href="javascript:explain('Border colour')" class="help-icon">Note about border colors</a>
+	   	    </p>
+	   	  </div>
+	   	</div>
+		
+	   <div class="form-group">
+	     <label class="form-label">Page Title:</label>
+	     <input type="text" name="pagetitleform" value="<?= $pagetitleconfig; ?>" class="form-input">
+	   </div>
 	   
-	   <br>When viewing one card (HTML codes allowed):&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:explain('Hint')">hint?</a><br><br>
-	   Header: <input type="text" name="viewheaderform" value='<?= $viewheader; ?>' size="55"><br>
-	   Footer: <input type="text" name="viewfooterform" value='<?= $viewfooter; ?>' size="55"><br><br>
-	   When printing four card per page (HTML codes allowed):<br><br>
-	   Header: <input type="text" name="printheaderform" value='<?= $printheader; ?>' size="55"><br>
-	   Footer: <input type="text" name="printfooterform" value='<?= $printfooter; ?>' size="55"><br>
-		<br>
+	   <div class="card mb-3">
+	     <div class="card-header">
+	       <h3 class="card-title">
+	         Custom Headers & Footers
+	         <a href="javascript:explain('Hint')" class="help-icon">hint?</a>
+	       </h3>
+	       <p style="font-size: 0.875rem; color: var(--text-muted); margin-top: 0.5rem;">(HTML codes allowed)</p>
+	     </div>
+	     <div class="card-body">
+	       <div class="form-group">
+	         <label class="form-label">View Header (single card):</label>
+	         <input type="text" name="viewheaderform" value='<?= $viewheader; ?>' class="form-input">
+	       </div>
+	       <div class="form-group">
+	         <label class="form-label">View Footer (single card):</label>
+	         <input type="text" name="viewfooterform" value='<?= $viewfooter; ?>' class="form-input">
+	       </div>
+	       <div class="form-group">
+	         <label class="form-label">Print Header (four cards per page):</label>
+	         <input type="text" name="printheaderform" value='<?= $printheader; ?>' class="form-input">
+	       </div>
+	       <div class="form-group">
+	         <label class="form-label">Print Footer (four cards per page):</label>
+	         <input type="text" name="printfooterform" value='<?= $printfooter; ?>' class="form-input">
+	       </div>
+	     </div>
+	   </div>
 
 		
-	   &nbsp;&nbsp;&nbsp;<br><input type="submit" value="Change!" name="submit">
+	   <button type="submit" value="Change!" name="submit" class="btn btn-primary btn-lg">
+	     💾 Save Configuration
+	   </button>
 	   
 	   </form>
 	   

@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  web:
+    image: php:8.3-apache
+    container_name: bingoware
+    ports:
+      - "8080:80"
+    volumes:
+      - .:/var/www/html
+    environment:
+      - APACHE_DOCUMENT_ROOT=/var/www/html
+    working_dir: /var/www/html
+    command: >
+      bash -c "chmod -R 777 /var/www/html/data /var/www/html/sets /var/www/html/config &&
+               apache2-foreground"

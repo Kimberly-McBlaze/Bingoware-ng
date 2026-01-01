@@ -35,28 +35,12 @@
 				if (isset($_POST["winningpatternform7"])) $winningpatternform7 = $_POST["winningpatternform7"]; else  $winningpatternform7 ="";
 				if (isset($_POST["winningpatternform8"])) $winningpatternform8 = $_POST["winningpatternform8"]; else  $winningpatternform8 ="";
 				if (isset($_POST["winningpatternform9"])) $winningpatternform9 = $_POST["winningpatternform9"]; else  $winningpatternform9 ="";
-				if (isset($_POST["winningpatternform10"])) $winningpatternform10 = $_POST["winningpatternform10"]; else  $winningpatternform10 ="";
-	   		
-				function stripit(&$a) {
-				        $a=stripslashes($a);
-				}
-				
-				if (get_magic_quotes_gpc()){
-					stripit($setidform);
-					stripit($pagetitleform);
-					stripit($viewheaderform);
-					stripit($viewfooterform);
-					stripit($printheaderform);
-					stripit($printfooterform);
-		     
-				}    
-	   		          
-	   		          
-	   		if (@file_exists("config/settings.php")){
+				if (isset($_POST["winningpatternform10"])) $winningpatternform10 = $_POST["winningpatternform10"]; else  $winningpatternform10 ="";				// Magic quotes were removed in PHP 5.4, no longer needed
+if (@file_exists("config/settings.php")){
 					$filearray=file("config/settings.php");
 					@$fp=fopen("config/settings.php","w");
 	
-					while (list ($line_num,$line) = each ($filearray)) {
+					foreach ($filearray as $line_num => $line) {
 						//sequence all replacements.
 						//There will be only one replacements completed, but
 						//ereg_replace will return the original line in any other cases.
@@ -66,45 +50,45 @@
 							$winningpattern6.$winningpattern7.$winningpattern8.$winningpattern9.$winningpattern10)=="" ) $winningpattern0 = 'on';
 						
 						
-						$line = ereg_replace("(setid=').*'","\\1".$setidform."'",$line);
-						$line = ereg_replace("(pagetitleconfig=').*'","\\1".$pagetitleform."'",$line);
+						$line = preg_replace("/(setid=').*'/","$1".$setidform."'",$line);
+						$line = preg_replace("/(pagetitleconfig=').*'/","$1".$pagetitleform."'",$line);
 						
 						//winning patters
 						
-						$line = ereg_replace("(winningpattern0=').*;","\\1".$winningpatternform0."';",$line);
-						$line = ereg_replace("(winningpattern1=').*;","\\1".$winningpatternform1."';",$line);
-						$line = ereg_replace("(winningpattern2=').*;","\\1".$winningpatternform2."';",$line);
-						$line = ereg_replace("(winningpattern3=').*;","\\1".$winningpatternform3."';",$line);
-						$line = ereg_replace("(winningpattern4=').*;","\\1".$winningpatternform4."';",$line);
-						$line = ereg_replace("(winningpattern5=').*;","\\1".$winningpatternform5."';",$line);
-						$line = ereg_replace("(winningpattern6=').*;","\\1".$winningpatternform6."';",$line);
-						$line = ereg_replace("(winningpattern7=').*;","\\1".$winningpatternform7."';",$line);
-						$line = ereg_replace("(winningpattern8=').*;","\\1".$winningpatternform8."';",$line);
-						$line = ereg_replace("(winningpattern9=').*;","\\1".$winningpatternform9."';",$line);
-						$line = ereg_replace("(winningpattern10=').*;","\\1".$winningpatternform10."';",$line);
+						$line = preg_replace("/(winningpattern0=').*;/","$1".$winningpatternform0."';",$line);
+						$line = preg_replace("/(winningpattern1=').*;/","$1".$winningpatternform1."';",$line);
+						$line = preg_replace("/(winningpattern2=').*;/","$1".$winningpatternform2."';",$line);
+						$line = preg_replace("/(winningpattern3=').*;/","$1".$winningpatternform3."';",$line);
+						$line = preg_replace("/(winningpattern4=').*;/","$1".$winningpatternform4."';",$line);
+						$line = preg_replace("/(winningpattern5=').*;/","$1".$winningpatternform5."';",$line);
+						$line = preg_replace("/(winningpattern6=').*;/","$1".$winningpatternform6."';",$line);
+						$line = preg_replace("/(winningpattern7=').*;/","$1".$winningpatternform7."';",$line);
+						$line = preg_replace("/(winningpattern8=').*;/","$1".$winningpatternform8."';",$line);
+						$line = preg_replace("/(winningpattern9=').*;/","$1".$winningpatternform9."';",$line);
+						$line = preg_replace("/(winningpattern10=').*;/","$1".$winningpatternform10."';",$line);
 						
 						//misc settings
 						
-						$line = ereg_replace("(namefile=').*;","\\1".$namefileform."';",$line);
-						$line = ereg_replace("(printrules=').*;","\\1".$printrulesform."';",$line);
-						$line = ereg_replace("(fourperpage=').*;","\\1".$fourperpageform."';",$line);
+						$line = preg_replace("/(namefile=').*;/","$1".$namefileform."';",$line);
+						$line = preg_replace("/(printrules=').*;/","$1".$printrulesform."';",$line);
+						$line = preg_replace("/(fourperpage=').*;/","$1".$fourperpageform."';",$line);
 						
 						//headers and footers
 						
-						$line = ereg_replace("(viewheader=').*;","\\1".$viewheaderform."';",$line);
-						$line = ereg_replace("(viewfooter=').*;","\\1".$viewfooterform."';",$line);
-						$line = ereg_replace("(printheader=').*;","\\1".$printheaderform."';",$line);
-						$line = ereg_replace("(printfooter=').*;","\\1".$printfooterform."';",$line);
-						$line = ereg_replace("(drawmode=').*'","\\1".$drawmodeform."'",$line);
+						$line = preg_replace("/(viewheader=').*;/","$1".$viewheaderform."';",$line);
+						$line = preg_replace("/(viewfooter=').*;/","$1".$viewfooterform."';",$line);
+						$line = preg_replace("/(printheader=').*;/","$1".$printheaderform."';",$line);
+						$line = preg_replace("/(printfooter=').*;/","$1".$printfooterform."';",$line);
+						$line = preg_replace("/(drawmode=').*'/","$1".$drawmodeform."'",$line);
 						
 						//colours
-						$line = ereg_replace("(headerfontcolor=').*;","\\1".$headerfontcolorform."';",$line);
-						$line = ereg_replace("(headerbgcolor=').*;","\\1".$headerbgcolorform."';",$line);
-						$line = ereg_replace("(mainfontcolor=').*;","\\1".$mainfontcolorform."';",$line);
-						$line = ereg_replace("(mainbgcolor=').*;","\\1".$mainbgcolorform."';",$line);
-						$line = ereg_replace("(selectedfontcolor=').*'","\\1".$selectedfontcolorform."'",$line);
-						$line = ereg_replace("(selectedbgcolor=').*'","\\1".$selectedbgcolorform."'",$line);
-						$line = ereg_replace("(bordercolor=').*'","\\1".$bordercolorform."'",$line);
+						$line = preg_replace("/(headerfontcolor=').*;/","$1".$headerfontcolorform."';",$line);
+						$line = preg_replace("/(headerbgcolor=').*;/","$1".$headerbgcolorform."';",$line);
+						$line = preg_replace("/(mainfontcolor=').*;/","$1".$mainfontcolorform."';",$line);
+						$line = preg_replace("/(mainbgcolor=').*;/","$1".$mainbgcolorform."';",$line);
+						$line = preg_replace("/(selectedfontcolor=').*'/","$1".$selectedfontcolorform."'",$line);
+						$line = preg_replace("/(selectedbgcolor=').*'/","$1".$selectedbgcolorform."'",$line);
+						$line = preg_replace("/(bordercolor=').*'/","$1".$bordercolorform."'",$line);
 																	
 						@fwrite($fp, trim($line)."\n"); //@ to avoid warnings in Demo on sourceforge
 					}

@@ -697,7 +697,7 @@ function update_winning_patterns($hiddenstring, $cardnumber) {
 
 				//eg. if B0 is in the string, then we must ensure that square becomes checked in
 				//the first card of the previewpattern set
-				if (ereg(($bingoletters[$column].$row),$hiddenstring)) {
+				if (str_contains($hiddenstring, $bingoletters[$column].$row)) {
 					$winningset[$cardnumber][$column][$row]["checked"]=true;
 				} else $winningset[$cardnumber][$column][$row]["checked"]=false;
 			}

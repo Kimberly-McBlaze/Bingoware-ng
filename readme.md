@@ -106,8 +106,11 @@ generating a random number, and will still be able to announce the winners.
 
 4. Version History (Changelog):
 ---------------------------------
+**Version 2.0.1 (January 1, 2026)**
+- Fixed an issue where card generation wasn't working after 2.0 update.
 
-**Version 1.5.1 (January 1, 2026)**
+**Version 2.0 (January 1, 2026)**
+- Project revived by KimberlyMcBlaze with the help of Copilot AI
 - Modernized for PHP 8.2+ compatibility
 - Replaced short open tags `<?` with `<?php` throughout
 - Replaced deprecated `ereg()` with `str_contains()`
@@ -179,7 +182,7 @@ have multiple sets of Bingo cards that do not overwrite one another
 - initial release
 
 
-5. ToDo (most important first):
+5. Original author's ToDo (most important first):
 ----------------------------------
 
 - ~~Supports PHP 5.4 and HTML5 / CSS3~~ (✅ Done in v1.5.1 - PHP 8.2+ compatible)
@@ -189,6 +192,7 @@ have multiple sets of Bingo cards that do not overwrite one another
 - Look at sessions to be able to save data without using files to improve speed
 - Ability to change the names of the winning patterns from config file
 - Use of external ini file script instead of current settings.php file
+
 
 
 

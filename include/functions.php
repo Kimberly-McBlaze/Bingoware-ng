@@ -533,6 +533,11 @@ function save_set(&$set) {
 	global $setid;
 	$numcards = count($set);
 
+	// Ensure the sets directory exists
+	if (!file_exists("sets")) {
+		@mkdir("sets", 0755, true);
+	}
+
 	if (@$fp = fopen("sets/set.".$setid.".dat","w")) {
 
 		fwrite($fp,$numcards."\n");

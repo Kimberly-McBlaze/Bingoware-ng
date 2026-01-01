@@ -191,13 +191,8 @@ function ConfigConfirmation() {
   if (setID === "") setID = "A";
   document.configForm.setidform.value = setID;
   
-  return new Promise((resolve) => {
-    ConfirmDialog.show(
-      'Changing the configuration will restart the game. Do you want to proceed?',
-      () => resolve(true),
-      () => resolve(false)
-    );
-  });
+  // Use synchronous confirm for backward compatibility
+  return confirm('Changing the configuration will restart the game. Do you want to proceed?');
 }
 
 // Utility function for input validation (from original scripts.js)
@@ -344,12 +339,17 @@ document.addEventListener('DOMContentLoaded', () => {
   NavigationHighlighter.init();
   
   // Show a welcome toast on first load
-  const hasVisited = sessionStorage.getItem('bingoware-visited');
+  const hasVisited = localStorage.getItem('bingoware-visited');
   if (!hasVisited) {
     setTimeout(() => {
       Toast.show('Welcome to Bingoware-ng! Try the new dark mode toggle.', 'info', 4000);
-      sessionStorage.setItem('bingoware-visited', 'true');
+      localStorage.setItem('bingoware-visited', 'true');
     }, 500);
+  }
+  
+  // Auto-focus first input on configure page
+  if (document.configForm && document.configForm.setidform) {
+    document.configForm.setidform.focus();
   }
 });
 

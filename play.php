@@ -59,7 +59,7 @@
 	   		?>
 	       </div>
 	       
-	       <button name="restart" type="button" class="btn btn-warning" style="width: 100%;" onClick="RestartConfirmation(<?= $numberinplay;?>); return false;">
+	       <button name="restart" type="button" class="btn btn-warning" style="width: 100%;" onClick="RestartConfirmation(<?= $numberinplay;?>);">
 	         🔄 Restart Game
 	       </button>
 	     </div>

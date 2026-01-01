@@ -111,7 +111,7 @@
 	     <p class="content-subtitle">Customize your Bingoware settings</p>
 	   </div>
 	   
-	   <form name="configForm" action="index.php?action=config<?= ((isset($_GET['numberinplay']))?('&numberinplay='.$_GET['numberinplay']):''); ?>" method="post" class="modern-form">
+	   <form name="configForm" action="index.php?action=config<?= ((isset($_GET['numberinplay']))?('&numberinplay='.$_GET['numberinplay']):''); ?>" method="post" class="modern-form" onSubmit="return ConfigConfirmation()">
 	   
 	   <div class="form-group">
 	     <label class="form-label">

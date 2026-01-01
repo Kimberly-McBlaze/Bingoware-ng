@@ -1,4 +1,4 @@
-<?
+<?php
 
 include ("config/settings.php");
 
@@ -511,7 +511,7 @@ function load_set() {
 	if (set_exists()) {
 		$filearray = file("sets/set.".$setid.".dat");
 		for ($i=0; $i< $filearray[0]; $i++) { //first row is number of rows
-			$set[$i] = unserialize($filearray[$i+1]);
+			$set[$i] = unserialize(trim($filearray[$i+1]), ['allowed_classes' => false]);
 		}
 		return $set;
 	} else {
@@ -552,7 +552,7 @@ function load_draws() {
 	global $setid;
 	if (@file_exists("data/draws.".$setid.".dat")){
 		$filearray=file("data/draws.".$setid.".dat");
-		$draws = unserialize($filearray[0]);
+		$draws = unserialize(trim($filearray[0]), ['allowed_classes' => false]);
 		return $draws;
 	} else return null;
 }
@@ -583,7 +583,7 @@ function load_old_winners() {
 	global $setid;
 	if (@file_exists("data/old_winners.".$setid.".dat")){
 		$filearray=file("data/old_winners.".$setid.".dat");
-		$winners = unserialize($filearray[0]);
+		$winners = unserialize(trim($filearray[0]), ['allowed_classes' => false]);
 		return $winners;
 	} else return null;
 }
@@ -613,7 +613,7 @@ function load_new_winners() {
 	global $setid;
 	if (@file_exists("data/new_winners.".$setid.".dat")){
 		$filearray=file("data/new_winners.".$setid.".dat");
-		$new_winners = unserialize($filearray[0]);
+		$new_winners = unserialize(trim($filearray[0]), ['allowed_classes' => false]);
 		return $new_winners;
 	} else return null;
 }
@@ -667,7 +667,7 @@ function load_winning_patterns() {
 	if (file_exists("data/winningpatterns.dat")) {
 		$filearray = file("data/winningpatterns.dat");
 		for ($i=0; $i< $filearray[0]; $i++) { //first row is number of rows
-			$set[$i] = unserialize($filearray[$i+1]);
+			$set[$i] = unserialize(trim($filearray[$i+1]), ['allowed_classes' => false]);
 		}
 		return $set;
 	} else {
@@ -697,7 +697,7 @@ function update_winning_patterns($hiddenstring, $cardnumber) {
 
 				//eg. if B0 is in the string, then we must ensure that square becomes checked in
 				//the first card of the previewpattern set
-				if (ereg(($bingoletters[$column].$row),$hiddenstring)) {
+				if (str_contains($hiddenstring, $bingoletters[$column].$row)) {
 					$winningset[$cardnumber][$column][$row]["checked"]=true;
 				} else $winningset[$cardnumber][$column][$row]["checked"]=false;
 			}

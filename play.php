@@ -1,5 +1,5 @@
 	   <p><img src="images/pb.gif"></p>
-	   <? 
+	   <?php 
 		if (!set_exists()) exit;
 		else $numbercards = card_number();
 		
@@ -9,28 +9,32 @@
 		//in play.
 		$numberinplay=$numbercards; 
 		
-		if (isset($_POST["numberinplay"]) && $_POST["numberinplay"]<=$numbercards) $numberinplay = $_POST["numberinplay"];
+		$numberinplay_input = filter_input(INPUT_POST, 'numberinplay', FILTER_VALIDATE_INT);
+		if ($numberinplay_input !== false && $numberinplay_input !== null && $numberinplay_input > 0 && $numberinplay_input <= $numbercards) {
+			$numberinplay = $numberinplay_input;
+		}
 		
 		//debug
 		//echo $numbercards."<br>";
 		//echo $numberinplay."<br>";
 		
 	   ?>
-	   <form name="random" method="post" action="index.php?action=play&numberinplay=<?echo $numberinplay;?>" onSubmit="return validate_number(<? echo $maxColumnNumber; ?>)">
+	   <form name="random" method="post" action="index.php?action=play&numberinplay=<?= $numberinplay;?>" onSubmit="return validate_number(<?= $maxColumnNumber; ?>)">
 	   
 	   <table width="75%" border="0"><tr><td width="180">
 	   	
-	   	<table border=1 width="60%" cellpadding="4"><tr><td width="90%" align="center" <? echo ($drawmode=="automatic")?'background="images/drawball.gif"':''; ?>>
-	   	<? 
-	   		echo '<input type="hidden" name="letters" value="'.$bingoletters[0].$bingoletters[1].$bingoletters[2].$bingoletters[3].$bingoletters[4].'">';	
+	   	<table border=1 width="60%" cellpadding="4"><tr><td width="90%" align="center" <?= ($drawmode=="automatic")?'background="images/drawball.gif"':''; ?>>
+	   	<?php 
+	   		echo '<input type="hidden" name="letters" value="'.$bingoletters[0].$bingoletters[1].$bingoletters[2].$bingoletters[3].$bingoletters[4].'">';
 	   		if (isset($_POST["gimme"]) && $drawmode=="automatic") echo '<br><font size=6 color="#000000"><b>'.random_number($numberinplay).'</b></font><br>';
 	   		else if ($drawmode=="automatic") echo '<br><font size=6 color="#000000"><b>???</b></font><br>';
 	   		if (isset($_POST["gimme"]) && $drawmode=="manual") submit_number($_POST["enterednumber"],$numberinplay);
 	   		
 	   		if (isset($_GET["restart"])) restart();
 	   		$draws=load_draws();
+	   		$drawsCount = ($draws !== null) ? count($draws) : 0;
 	   		
-	   		if ($drawmode=="manual" && (count($draws)<$maxNumber)) {
+	   		if ($drawmode=="manual" && ($drawsCount<$maxNumber)) {
 	   			echo '<body onLoad="document.random.enterednumber.focus()">Enter a number:<br><br><input tabindex="0" type="text" name="enterednumber" size="5" maxlength="3">&nbsp;&nbsp;&nbsp;&nbsp;(eg. '.$bingoletters[0].'4)<br></body>';
 	   		} else {
 	   			echo '<input type=hidden name=enterednumber value="'.$bingoletters[0].'1">'; //in automatic mode, use a hidden field with same name to avoid error msgs
@@ -38,8 +42,8 @@
 	   		 ?>
 	   	<br>
 	   		
-	   	<? 
-	   	if (count($draws)<$maxNumber)  //all numbers have been drawn, clicking the button would
+	   	<?php 
+	   	if ($drawsCount<$maxNumber)  //all numbers have been drawn, clicking the button would
 	   	//make the program go into an infinite loop.
 	   		if ($drawmode=="automatic") {
 	   			echo '<input name="gimme" type="submit" value="Give Me a Number!">';
@@ -51,18 +55,18 @@
 	   	</td></tr></table>
 	   	
 	   	<br>
-	   	<input name="restart" type="button" value="Restart Game" onClick="RestartConfirmation(<? echo $numberinplay;?>)">
+	   	<input name="restart" type="button" value="Restart Game" onClick="RestartConfirmation(<?= $numberinplay;?>)">
 	   	
 	   	
 	   	</td><td rowspan=2 width="70%" valign=top>
-	   	<b>Number of cards in play:</b> <input name="numberinplay" type="text" size="4" value="<? echo $numberinplay; ?>">&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:explain('Cards in play')">help?</a>
-	   	<br><br><font size="-1">(This set has a maximum of <? echo $numbercards; ?> cards)</font><br>
-	   	<? echo '<font color="#FF5555"><b>Numbers drawn so far ('.count($draws).' of 75):</b></font><br><br>';
+	   	<b>Number of cards in play:</b> <input name="numberinplay" type="text" size="4" value="<?= $numberinplay; ?>">&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:explain('Cards in play')">help?</a>
+	   	<br><br><font size="-1">(This set has a maximum of <?= $numbercards; ?> cards)</font><br>
+	   	<?php echo '<font color="#FF5555"><b>Numbers drawn so far ('.$drawsCount.' of 75):</b></font><br><br>';
 	   		draws_table();
 	   	?>
 	   	</td></tr>
 	   	<tr><td width="50%" valign="top">
-	   	<? echo '<br><font color="#FF5555"><b>Winning Card Numbers:</b><br> (New Numbers in Red)</font><br><br>';
+	   	<?php echo '<br><font color="#FF5555"><b>Winning Card Numbers:</b><br> (New Numbers in Red)</font><br><br>';
 	   		winners_table(); ?>
 	   	</td></tr></table></form>
 	   	

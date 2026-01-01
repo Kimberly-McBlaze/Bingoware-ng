@@ -1,14 +1,14 @@
-<? include_once ("include/functions.php");
+<?php include_once ("include/functions.php");
    include_once ("header.php");
 
 ?>
 <table width="100%" border="0" cellpadding="5">
   <tr>
     <td width="18%" valign="top">
-	<? include_once ("menu.php"); ?>
+	<?php include_once ("menu.php"); ?>
       </td>
     <td width="82%" valign="top">
-    <?
+    <?php
  	if (isset($_GET["action"])) {
 	    	if (($_GET["action"]=="generate") || ($_GET["action"]=="regenerate")) {
 	    		if (set_exists() && $_GET["action"]=="generate" && !isset($_POST["submit"])) 
@@ -32,4 +32,4 @@
     </td>
   </tr>
 </table>
-<? include_once ("footer.php"); ?>
+<?php include_once ("footer.php"); ?>

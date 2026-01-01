@@ -5,6 +5,7 @@
 * Software testing and new contributed graphics: Mike Suetkamp
 
 * Last Version: 1.5 - 10 December 2003
+* Modernized: 2026 - Updated for PHP 8.2+ compatibility
 
 Bingoware is a simple open-source PHP script which facilitates the creation,
 viewing and printing of randomly generated Bingo cards and provides a game 
@@ -30,28 +31,44 @@ Index:
 1. Requirements:
 -----------------
 
-- A Javascript and CSS enabled web browser (Opera 7 and MSIE 6 have been tested and are
-supported by Bingoware; Netscape 4 does not support the interactive web-based 
-customization of winning patterns; Netscape 6 and 7 were not tested)
+- A modern web browser (Chrome, Firefox, Safari, Edge)
+  - Note: Java applets are no longer required (replaced with CSS/HTML)
 
-- A PHP-enabled web server with permissions to write files to the local directory.
-- Note:  Apache (httpd.apache.org) and Sambar (www.sambar.com) are both free web 
-servers that I have tested and work with PHP (www.php.net)
-Consults their documentation to install and configure either server with PHP
-For Windows users, easyphp.manucorp.com has a pre-made package (easyphp) which 
-installs and configures the most recent Apache web server, PHP and MySQL.
+- **PHP 8.2 or higher** with default settings (no custom php.ini required)
+  - Short open tags are NOT required
+  
+- A web server (Apache, Nginx, or PHP built-in server for development)
+- Write permissions in the application directory for data storage
 
 - approx 125 kB for the script files.  Creating sets of bingo cards
  will use up approx 1.5 kB per card (1000 cards ~= 1.5 MB)
 
 
-2. Installation Instructions (tested on Windows 98/ME/2000/Ubuntu12.04):
+2. Installation Instructions:
 -------------------------------------------------------------------------
 
+### Traditional Setup (Apache/Nginx)
+
 1. Extract the files into the documents directory of your web server
-2. Point your browser to localhost/index.php
-3. The script requires write access in the directory it is installed
+2. Ensure the web server has write permissions for the application directory
+3. Point your browser to http://localhost/bingoware/index.php
 4. Change the configuration parameters from the 'configure' menu item as you wish
+
+### Docker Setup (Recommended for Development)
+
+1. Ensure Docker and Docker Compose are installed
+2. Run `docker-compose up -d` from the project directory
+3. Access the application at http://localhost:8080
+4. To stop: `docker-compose down`
+
+### PHP Built-in Server (Quick Testing)
+
+```bash
+cd /path/to/bingoware
+php -S localhost:8000
+```
+
+Then open http://localhost:8000 in your browser.
 
 
 3. Key Definitions:
@@ -87,6 +104,21 @@ generating a random number, and will still be able to announce the winners.
 
 4. Version History (Changelog):
 ---------------------------------
+
+**Version 1.5.1 (2026)**
+- Modernized for PHP 8.2+ compatibility
+- Replaced short open tags `<?` with `<?php` throughout
+- Replaced deprecated `ereg()` with `str_contains()`
+- Replaced deprecated `ereg_replace()` with `preg_replace()`
+- Replaced deprecated `each()` with `foreach`
+- Removed `get_magic_quotes_gpc()` logic (magic quotes removed in PHP 5.4)
+- Added safe unserialize with `['allowed_classes' => false]`
+- Added null checks to prevent count() warnings on null values
+- Added input sanitization using `filter_input()` for security
+- Replaced Java applet menu with modern CSS/HTML hover menu
+- Updated DOCTYPE to HTML5 with UTF-8 charset
+- Fixed trimming before unserialize to avoid newline issues
+- Improved browser compatibility (works in all modern browsers)
 
 **Version 1.5 (10 December 2003)**
 - great new look -> graphics contributed by Mike Suetkamp --> Thank you!
@@ -148,8 +180,8 @@ have multiple sets of Bingo cards that do not overwrite one another
 5. ToDo (most important first):
 ----------------------------------
 
+- ~~Supports PHP 5.4 and HTML5 / CSS3~~ (✅ Done in v1.5.1 - PHP 8.2+ compatible)
 - Refactoring all the code
-- Supports PHP 5.4 and HTML5 / CSS3
 - PHP GD library to create column headers as graphics
 - A MySQL version which will be much faster than flat file (I hope)
 - Look at sessions to be able to save data without using files to improve speed

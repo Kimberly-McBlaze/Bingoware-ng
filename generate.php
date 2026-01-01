@@ -1,14 +1,18 @@
 	   
-	   <? if (isset($_POST["submit"]) && isset($_POST["numcard"]) && ($_POST["numcard"]>1) && ($_POST["numcard"]<$MAX_LIMIT)) {
+	   <?php 
+	   $numcard = filter_input(INPUT_POST, 'numcard', FILTER_VALIDATE_INT);
+	   if (isset($_POST["submit"]) && $numcard !== false && $numcard !== null && ($numcard>1) && ($numcard<$MAX_LIMIT)) {
 	   		restart(); //clears winners and draws
 			@unlink("sets/set.".$setid.".dat");
-	   		generate_cards($_POST["numcard"], isset($_POST["freesquare"])?$_POST["freesquare"]:2);	   	
-		   	echo '<p><img src="images/gc.gif"><br><br><font size="4"><b>'.$_POST["numcard"]. ' cards generated!</b></font></p>';
+			$freesquare = filter_input(INPUT_POST, 'freesquare', FILTER_VALIDATE_INT);
+			if ($freesquare === null || $freesquare === false) $freesquare = 2;
+	   		generate_cards($numcard, $freesquare);	   	
+		   	echo '<p><img src="images/gc.gif"><br><br><font size="4"><b>'.$numcard. ' cards generated!</b></font></p>';
 	   	} else {
 	   ?>
-	   <p><img src="images/gc.gif"><br><br>(Set ID: <? echo $setid; ?>)&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:explain('Set ID')">help?</a></p>
+	   <p><img src="images/gc.gif"><br><br>(Set ID: <?= $setid; ?>)&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:explain('Set ID')">help?</a></p>
 	   <form action="index.php?action=generate" method="post">
-	   Enter the number of Bingo cards desired (between 1 and <? echo $MAX_LIMIT; ?>): 
+	   Enter the number of Bingo cards desired (between 1 and <?= $MAX_LIMIT; ?>):
 	   &nbsp;&nbsp;&nbsp;<input type="text" name="numcard" maxlength="5" size="4" onkeypress="return entsub(this.form)"><br>
 	   <br>
 	   Free Squares Mode: &nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:explain('Free Squares')">help?</a><br>
@@ -24,6 +28,6 @@
 	   
 	   </form>
 	   
-	   <?
+	   <?php
 	}
 	?>

@@ -1,11 +1,11 @@
-<? include_once("include/functions.php"); ?>
+<?php include_once("include/functions.php"); ?>
 <html>
 <head>
 <title>View all cards</title>
 </head>
 <body>
 <p>
-<?	   
+<?php	   
 	   $numcards = card_number();
 	   
 	   for ($i=0; $i<$numcards; $i++) {

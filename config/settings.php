@@ -1,4 +1,4 @@
-<?
+<?php
 include_once ("include/constants.php");
 
 /* -------------- User configuration ------------- */

@@ -35,15 +35,18 @@
 				if (isset($_POST["winningpatternform7"])) $winningpatternform7 = $_POST["winningpatternform7"]; else  $winningpatternform7 ="";
 				if (isset($_POST["winningpatternform8"])) $winningpatternform8 = $_POST["winningpatternform8"]; else  $winningpatternform8 ="";
 				if (isset($_POST["winningpatternform9"])) $winningpatternform9 = $_POST["winningpatternform9"]; else  $winningpatternform9 ="";
-				if (isset($_POST["winningpatternform10"])) $winningpatternform10 = $_POST["winningpatternform10"]; else  $winningpatternform10 ="";				// Magic quotes were removed in PHP 5.4, no longer needed
-if (@file_exists("config/settings.php")){
+				if (isset($_POST["winningpatternform10"])) $winningpatternform10 = $_POST["winningpatternform10"]; else  $winningpatternform10 ="";
+	   		          
+				// Magic quotes were removed in PHP 5.4, no longer needed
+	   		          
+	   		if (@file_exists("config/settings.php")){
 					$filearray=file("config/settings.php");
 					@$fp=fopen("config/settings.php","w");
 	
 					foreach ($filearray as $line_num => $line) {
 						//sequence all replacements.
-						//There will be only one replacements completed, but
-						//ereg_replace will return the original line in any other cases.
+						//There will be only one replacement completed, but
+						//preg_replace will return the original line in any other cases.
 						
 						//if user forgets to choose 1 winning pattern, then the default, pattern 0, is chosen anyways
 						if (($winningpattern0.$winningpattern1.$winningpattern2.$winningpattern3.$winningpattern4.$winningpattern5.
@@ -53,7 +56,7 @@ if (@file_exists("config/settings.php")){
 						$line = preg_replace("/(setid=').*'/","$1".$setidform."'",$line);
 						$line = preg_replace("/(pagetitleconfig=').*'/","$1".$pagetitleform."'",$line);
 						
-						//winning patters
+						//winning patterns
 						
 						$line = preg_replace("/(winningpattern0=').*;/","$1".$winningpatternform0."';",$line);
 						$line = preg_replace("/(winningpattern1=').*;/","$1".$winningpatternform1."';",$line);

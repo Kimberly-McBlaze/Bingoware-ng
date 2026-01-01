@@ -9,7 +9,10 @@
 		//in play.
 		$numberinplay=$numbercards; 
 		
-		if (isset($_POST["numberinplay"]) && $_POST["numberinplay"]<=$numbercards) $numberinplay = $_POST["numberinplay"];
+		$numberinplay_input = filter_input(INPUT_POST, 'numberinplay', FILTER_VALIDATE_INT);
+		if ($numberinplay_input !== false && $numberinplay_input !== null && $numberinplay_input > 0 && $numberinplay_input <= $numbercards) {
+			$numberinplay = $numberinplay_input;
+		}
 		
 		//debug
 		//echo $numbercards."<br>";
@@ -29,8 +32,9 @@
 	   		
 	   		if (isset($_GET["restart"])) restart();
 	   		$draws=load_draws();
+	   		$drawsCount = ($draws !== null) ? count($draws) : 0;
 	   		
-	   		if ($drawmode=="manual" && (count($draws)<$maxNumber)) {
+	   		if ($drawmode=="manual" && ($drawsCount<$maxNumber)) {
 	   			echo '<body onLoad="document.random.enterednumber.focus()">Enter a number:<br><br><input tabindex="0" type="text" name="enterednumber" size="5" maxlength="3">&nbsp;&nbsp;&nbsp;&nbsp;(eg. '.$bingoletters[0].'4)<br></body>';
 	   		} else {
 	   			echo '<input type=hidden name=enterednumber value="'.$bingoletters[0].'1">'; //in automatic mode, use a hidden field with same name to avoid error msgs
@@ -39,7 +43,7 @@
 	   	<br>
 	   		
 	   	<?php 
-	   	if (count($draws)<$maxNumber)  //all numbers have been drawn, clicking the button would
+	   	if ($drawsCount<$maxNumber)  //all numbers have been drawn, clicking the button would
 	   	//make the program go into an infinite loop.
 	   		if ($drawmode=="automatic") {
 	   			echo '<input name="gimme" type="submit" value="Give Me a Number!">';
@@ -57,7 +61,7 @@
 	   	</td><td rowspan=2 width="70%" valign=top>
 	   	<b>Number of cards in play:</b> <input name="numberinplay" type="text" size="4" value="<?= $numberinplay; ?>">&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:explain('Cards in play')">help?</a>
 	   	<br><br><font size="-1">(This set has a maximum of <?= $numbercards; ?> cards)</font><br>
-	   	<?php echo '<font color="#FF5555"><b>Numbers drawn so far ('.count($draws).' of 75):</b></font><br><br>';
+	   	<?php echo '<font color="#FF5555"><b>Numbers drawn so far ('.$drawsCount.' of 75):</b></font><br><br>';
 	   		draws_table();
 	   	?>
 	   	</td></tr>

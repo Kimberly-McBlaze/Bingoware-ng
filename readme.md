@@ -30,7 +30,7 @@ Bingoware-ng is intended **only** to assist with the logistics of physical Bingo
 ## 📜 Project History
 
 - **Original Author:** Frederic Demers  
-- **Graphics & Testing:** Mike Suetkamp  
+- **Original Graphics & Testing (before v2.x):** Mike Suetkamp  
 - **Revival & Maintenance:** KimberlyMcBlaze (with Copilot)
 
 Original project: http://bingoware.sourceforge.net
@@ -154,6 +154,7 @@ Both modes fully support winner detection.
 - Improved input sanitization and security
 - HTML5 + UTF-8 compliance
 - Modern browser support
+- Project renamed to "Bingoware-ng"
 
 ## 🗂️ Previous Changelog from original author
 
@@ -241,5 +242,6 @@ have multiple sets of Bingo cards that do not overwrite one another
 ## 📄 License
 
 Open-source. See license file or original project for details.
+
 
 

@@ -2,10 +2,10 @@
 /* Constants: 
 * you can change these values at will
 */
-$date_lastmod = "10 December 03";
-$version= " v 1.5";
+$date_lastmod = "01 January 2026";
+$version= " v 1.5.1";
 $bingoletters = array("B", "I", "N", "G", "O");
-$patternkeywords = array("Normal","Four Corners","Cross-Shaped","T-Shaped","X-Shaped","+ Shaped","Z-Shaped", "N-Shaped", "Box Shaped", "Square Shaped","Full Card");
+$patternkeywords = array("Normal","Four Corners","Cross-Shaped","T-Shaped","X-Shaped","+ Shaped","Z-Shaped", "N-Shaped", "Box Shaped", "Square Shaped","Blackout (Full Card)");
 
 /* This constant allows one to run a modified bingo up to 50 or 100. 
 * Note, the value must be a multiple of 5 (because there are 5 columns)
@@ -33,6 +33,7 @@ $MAX_LIMIT = 5000;
 * maximum execution time set in the php.ini file.
 */
 set_time_limit(0); 
+
 
 
 ?>

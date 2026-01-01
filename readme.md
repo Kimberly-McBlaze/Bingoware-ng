@@ -1,6 +1,6 @@
 # Bingoware-ng v2.0.1
 # Based on Bingoware v1.5 by Frederic Demers
-# Updated and maintained by KimberlyMcBlaze with the help of Copilot.
+# Revived, Updated, and maintained by KimberlyMcBlaze with the help of Copilot.
 ## Original Bingoware URL: http://bingoware.sourceforge.net
 
 * Author: Frederic Demers
@@ -192,6 +192,7 @@ have multiple sets of Bingo cards that do not overwrite one another
 - Look at sessions to be able to save data without using files to improve speed
 - Ability to change the names of the winning patterns from config file
 - Use of external ini file script instead of current settings.php file
+
 
 
 

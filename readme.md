@@ -139,6 +139,11 @@ Both modes fully support winner detection.
 
 ## 🗂️ Changelog
 
+### v2.1 - January 1, 2026
+- Modernized the UI
+- Added light/dark mode toggle
+- Quality of life improvements
+
 ### v2.0.1 — January 1, 2026
 - Fixed card generation issues introduced in v2.0
 
@@ -236,4 +241,5 @@ have multiple sets of Bingo cards that do not overwrite one another
 ## 📄 License
 
 Open-source. See license file or original project for details.
+
 

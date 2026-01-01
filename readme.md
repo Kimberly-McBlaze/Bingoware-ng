@@ -218,9 +218,11 @@ have multiple sets of Bingo cards that do not overwrite one another
 
 ## 🛠️ Roadmap
 
-- To be determined
+- Add ability to add, modify, and delete winning patterns
+- Add an external bingo number board along with a display that shows the current number being called, useful if you want to mirror that info to a second monitor for your guests to see, just like in real life.
+- More to be determined later.
 
-## 🛠️ Original author's roadmap
+## 🛠️ Original author's roadmap (probably won't implement)
 
 - Refactoring all the code
 - PHP GD library to create column headers as graphics
@@ -242,6 +244,7 @@ have multiple sets of Bingo cards that do not overwrite one another
 ## 📄 License
 
 Open-source. See license file or original project for details.
+
 
 
 

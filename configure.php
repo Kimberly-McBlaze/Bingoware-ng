@@ -185,9 +185,7 @@
 	   	   <span><?= $patternName; ?></span>
 	   	   <div style="margin-left: auto; display: flex; gap: 0.5rem;">
 	   	     <a href="interactive.php?id=<?= $patternId; ?>" target="_blank" class="btn btn-sm btn-secondary">✏️ Edit</a>
-	   	     <?php if (!$isPreinstalled || true): // Allow deleting even preinstalled patterns ?>
 	   	     <a href="javascript:if(confirm('Are you sure you want to delete this pattern?')) { window.location.href='index.php?action=config&pattern_action=delete&pattern_id=<?= $patternId; ?>'; }" class="btn btn-sm btn-danger">🗑️ Delete</a>
-	   	     <?php endif; ?>
 	   	   </div>
 	         </label>
 	         <?php endforeach; ?>

@@ -886,6 +886,12 @@ function save_patterns_json($patterns) {
 	
 	$patternsFile = "data/patterns.json";
 	$json = json_encode($patterns, JSON_PRETTY_PRINT);
+	
+	if ($json === false) {
+		error_log("JSON encoding failed for patterns");
+		return false;
+	}
+	
 	if (@file_put_contents($patternsFile, $json) === false) {
 		error_log("Failed to save patterns to $patternsFile");
 		return false;

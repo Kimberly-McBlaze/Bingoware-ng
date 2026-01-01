@@ -1,20 +1,29 @@
 	   
-	   <p><img src="images/vc.gif"></p>
+	   <div class="content-header">
+	     <h2 class="content-title">👁️ View Cards</h2>
+	     <p class="content-subtitle">Select a card to view or print all cards</p>
+	   </div>
+	   
 	   <?php 
 		if (!set_exists()) exit;
 		else $numbercards = card_number();
 	   ?>
-	   <table width =300 cellspacing=5>
-	   <tr><td colspan=15 align=left><a href="print.php" target=_blank>Show All Cards</a> (for printing)<br><br></td></tr>
-	   <tr>
-	   <?php
-		
 	   
-	   for ($i =0; $i <$numbercards; $i++) {
-	   	//we pretend it is really cardnumber+1 for user friendliness
-	   	echo '<td width=20><a href="view.php?cardnumber='.($i+1).'" target=_blank>'.($i+1).'</a></td>'."\n";
-	   	if (($i+1)%15 == 0) echo "</tr><tr>";  //every 15 but not 0
-	   	
+	   <div class="mb-3">
+	     <a href="print.php" target="_blank" class="btn btn-primary">
+	       <span>🖨️ Show All Cards (for printing)</span>
+	     </a>
+	   </div>
+	   
+	   <div class="card">
+	     <div class="card-header">
+	       <h3 class="card-title">Select a Card (Total: <?= $numbercards ?>)</h3>
+	     </div>
+	     <div class="card-body" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(60px, 1fr)); gap: 0.75rem;">
+	   <?php
+	   for ($i = 0; $i < $numbercards; $i++) {
+	   	echo '<a href="view.php?cardnumber='.($i+1).'" target="_blank" class="btn btn-secondary" style="padding: 0.75rem;">'.($i+1).'</a>'."\n";
 	   }
-	 	 ?>
-	 	 </tr></table>
+	   ?>
+	     </div>
+	   </div>

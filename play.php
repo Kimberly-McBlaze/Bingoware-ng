@@ -1,4 +1,8 @@
-	   <p><img src="images/pb.gif"></p>
+	   <div class="content-header">
+	     <h2 class="content-title">🎮 Play Bingo</h2>
+	     <p class="content-subtitle">Draw numbers and track winning cards</p>
+	   </div>
+	   
 	   <?php 
 		if (!set_exists()) exit;
 		else $numbercards = card_number();
@@ -13,21 +17,21 @@
 		if ($numberinplay_input !== false && $numberinplay_input !== null && $numberinplay_input > 0 && $numberinplay_input <= $numbercards) {
 			$numberinplay = $numberinplay_input;
 		}
-		
-		//debug
-		//echo $numbercards."<br>";
-		//echo $numberinplay."<br>";
-		
 	   ?>
+	   
 	   <form name="random" method="post" action="index.php?action=play&numberinplay=<?= $numberinplay;?>" onSubmit="return validate_number(<?= $maxColumnNumber; ?>)">
 	   
-	   <table width="75%" border="0"><tr><td width="180">
-	   	
-	   	<table border=1 width="60%" cellpadding="4"><tr><td width="90%" align="center" <?= ($drawmode=="automatic")?'background="images/drawball.gif"':''; ?>>
-	   	<?php 
+	   <div style="display: grid; grid-template-columns: 350px 1fr; gap: 2rem; margin-bottom: 2rem;">
+	     <div>
+	       <div class="card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; text-align: center; padding: 2rem; margin-bottom: 1.5rem;">
+	         <?php 
 	   		echo '<input type="hidden" name="letters" value="'.$bingoletters[0].$bingoletters[1].$bingoletters[2].$bingoletters[3].$bingoletters[4].'">';
-	   		if (isset($_POST["gimme"]) && $drawmode=="automatic") echo '<br><font size=6 color="#000000"><b>'.random_number($numberinplay).'</b></font><br>';
-	   		else if ($drawmode=="automatic") echo '<br><font size=6 color="#000000"><b>???</b></font><br>';
+	   		if (isset($_POST["gimme"]) && $drawmode=="automatic") {
+	   			echo '<div style="font-size: 3rem; font-weight: bold; margin: 1rem 0;">'.random_number($numberinplay).'</div>';
+	   		} else if ($drawmode=="automatic") {
+	   			echo '<div style="font-size: 3rem; font-weight: bold; margin: 1rem 0;">???</div>';
+	   		}
+	   		
 	   		if (isset($_POST["gimme"]) && $drawmode=="manual") submit_number($_POST["enterednumber"],$numberinplay);
 	   		
 	   		if (isset($_GET["restart"])) restart();
@@ -35,41 +39,74 @@
 	   		$drawsCount = ($draws !== null) ? count($draws) : 0;
 	   		
 	   		if ($drawmode=="manual" && ($drawsCount<$maxNumber)) {
-	   			echo '<body onLoad="document.random.enterednumber.focus()">Enter a number:<br><br><input tabindex="0" type="text" name="enterednumber" size="5" maxlength="3">&nbsp;&nbsp;&nbsp;&nbsp;(eg. '.$bingoletters[0].'4)<br></body>';
+	   			echo '<div style="margin: 1rem 0;"><label style="display: block; margin-bottom: 0.5rem;">Enter a number:</label>';
+	   			echo '<input type="text" name="enterednumber" size="8" maxlength="3" class="form-input" style="text-align: center; font-size: 1.25rem;" placeholder="e.g. '.$bingoletters[0].'4" autofocus></div>';
 	   		} else {
-	   			echo '<input type=hidden name=enterednumber value="'.$bingoletters[0].'1">'; //in automatic mode, use a hidden field with same name to avoid error msgs
+	   			echo '<input type="hidden" name="enterednumber" value="'.$bingoletters[0].'1">';
 	   		}
-	   		 ?>
-	   	<br>
+	   		?>
 	   		
-	   	<?php 
-	   	if ($drawsCount<$maxNumber)  //all numbers have been drawn, clicking the button would
-	   	//make the program go into an infinite loop.
-	   		if ($drawmode=="automatic") {
-	   			echo '<input name="gimme" type="submit" value="Give Me a Number!">';
+	   		<?php 
+	   		if ($drawsCount<$maxNumber) {
+	   			if ($drawmode=="automatic") {
+	   				echo '<button name="gimme" type="submit" class="btn btn-success btn-lg" style="width: 100%; margin-top: 1rem;">🎲 Give Me a Number!</button>';
+	   			} else {
+	   				echo '<button name="gimme" type="submit" class="btn btn-success btn-lg" style="width: 100%; margin-top: 1rem;">✅ Enter Number</button>';
+	   			}
 	   		} else {
-	   			echo '<input name="gimme" type="submit" value="Enter!">';
+	   			echo '<button name="empty" type="button" class="btn btn-secondary btn-lg" style="width: 100%; margin-top: 1rem;" disabled>All numbers drawn!</button>';
 	   		}
-	   	else echo '<input name="emty" type="submit" value="All numbers drawn!">';
-	   	?>
-	   	</td></tr></table>
-	   	
-	   	<br>
-	   	<input name="restart" type="button" value="Restart Game" onClick="RestartConfirmation(<?= $numberinplay;?>)">
-	   	
-	   	
-	   	</td><td rowspan=2 width="70%" valign=top>
-	   	<b>Number of cards in play:</b> <input name="numberinplay" type="text" size="4" value="<?= $numberinplay; ?>">&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:explain('Cards in play')">help?</a>
-	   	<br><br><font size="-1">(This set has a maximum of <?= $numbercards; ?> cards)</font><br>
-	   	<?php echo '<font color="#FF5555"><b>Numbers drawn so far ('.$drawsCount.' of 75):</b></font><br><br>';
-	   		draws_table();
-	   	?>
-	   	</td></tr>
-	   	<tr><td width="50%" valign="top">
-	   	<?php echo '<br><font color="#FF5555"><b>Winning Card Numbers:</b><br> (New Numbers in Red)</font><br><br>';
-	   		winners_table(); ?>
-	   	</td></tr></table></form>
-	   	
-	    
+	   		?>
+	       </div>
+	       
+	       <button name="restart" type="button" class="btn btn-warning" style="width: 100%;" onClick="RestartConfirmation(<?= $numberinplay;?>); return false;">
+	         🔄 Restart Game
+	       </button>
+	     </div>
+	     
+	     <div>
+	       <div class="card mb-3">
+	         <div class="card-header">
+	           <h3 class="card-title" style="display: flex; align-items: center; gap: 0.5rem;">
+	             <span>Number of cards in play:</span>
+	             <input name="numberinplay" type="number" min="1" max="<?= $numbercards; ?>" value="<?= $numberinplay; ?>" class="form-input" style="width: 80px; display: inline-block;">
+	             <a href="javascript:explain('Cards in play')" class="help-icon">help?</a>
+	           </h3>
+	           <p style="color: var(--text-muted); font-size: 0.875rem; margin-top: 0.5rem;">(This set has a maximum of <?= $numbercards; ?> cards)</p>
+	         </div>
+	         <div class="card-body">
+	           <p style="color: var(--color-warning); font-weight: 600; margin-bottom: 1rem;">
+	             Numbers drawn so far (<?= $drawsCount; ?> of <?= $maxNumber; ?>):
+	           </p>
+	           <?php
+	           // Modern draws table
+	           $draws = load_draws();
+	           echo '<div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 0.5rem;">';
+	           if ($draws != null) {
+	             $number = count($draws);
+	             for ($i = 0; $i < $number; $i++) {
+	               echo '<div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 0.75rem; border-radius: 8px; text-align: center; font-weight: bold; font-size: 1.125rem;">';
+	               echo find_letter($draws[$i]).$draws[$i];
+	               echo '</div>';
+	             }
+	           } else {
+	             echo '<div style="grid-column: 1 / -1; text-align: center; color: var(--text-muted); padding: 2rem;">No numbers drawn yet</div>';
+	           }
+	           echo '</div>';
+	           ?>
+	         </div>
+	       </div>
+	     </div>
+	   </div>
 	   
+	   <div class="card">
+	     <div class="card-header">
+	       <h3 class="card-title" style="color: var(--color-success);">🏆 Winning Card Numbers</h3>
+	       <p style="color: var(--text-muted); font-size: 0.875rem;">(New winners shown in red)</p>
+	     </div>
+	     <div class="card-body">
+	       <?php winners_table(); ?>
+	     </div>
+	   </div>
 	   
+	   </form>

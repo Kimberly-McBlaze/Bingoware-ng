@@ -150,21 +150,79 @@ Both modes fully support winner detection.
 - HTML5 + UTF-8 compliance
 - Modern browser support
 
-### v1.5 — December 10, 2003
-- Major visual redesign
-- Security improvements
-- Configurable Bingo number ranges
+## 🗂️ Previous Changelog from original author
+
+**Version 1.5 (10 December 2003)**
+- great new look -> graphics contributed by Mike Suetkamp --> Thank you!
+- fixed header element of Rules.html file
+- new "Free" square image
+- "generate new set" no longer deletes previous set until the new set is generated
+- no longer able to change page title on the fly from URL (security)
+- ability to change the Bingo's maximum number, typically 75, to another number (multiple of 5)
+- bux fix in manual draw mode, introduced in version 1.4
+
+**Version 1.4 (28 October 2003)**
+- new graphics contributed by Mike Suetkamp in the drawn numbers table --> Thank you!
+- revamped entire code so that it is (only) compatible with the newer version of PHP
+- ability to select multiple winning patterns simultaneously
+- ability to change the font and background colours from the configuration file
+- ability to use a text files of names which will be printed on the bottom left of each card
+- ability to have a rules page that is printed on the back of each card (requires double-sided printer)
+- fixed a minor bug in play.php which prevented the change of the BINGO letters
+- fixed other minor bugs related to changes in the way browsers comply to Javascript standards
+- created a much needed folder structure
+
+
+**Version 1.3 (1 July 2002)**
+- entire web-based configuration
+- interactive user-defined winning patterns
+- ability to change the number of cards in play (up to the total number in the set)
+- ability to enter bingo draws if another random mechanism is in place (manual mode)
+- new winners indicated separately in red from other winners
+- set ID displayed on each page
+- improved help file (and added context-sensitive help throughout the program)
+- extracted Javascript into a separate file
+- strict validation rules for data entry (set ID and Manual Draw Mode)
+- removed webmaster's email address in footer
+- other minor enhancements and bug fixes
+
+
+**Version 1.2 (18 April 02)**
+- ability to select 9 winning patterns (normal, full card, square, T, X, N, Z, + and Cross)
+- ability to select 3 "Free Square" mode (no free square, center on all cards, random on
+all cards)
+- customized headers and footers for view and print pages
+- created file constants.php to remove the constant informaton from the config file
+- added a set_time_limit(0) instruction to avoid time-out problems
+- modification of the card number display in print mode to each card instead of each set
+- other minor enhancements
+
+
+**Version 1.1 (14 April 02)**
+- ability to choose a setid which enables the user to 
+have multiple sets of Bingo cards that do not overwrite one another
+- ability to change the page title on the fly from the URL
+- minor bug fixes and other enhancement
+		
+
+**Version 1.0 (7 April 02)**
+- initial release
 
 ---
 
 ## 🛠️ Roadmap
 
-- Full code refactor
-- Optional MySQL backend
-- PHP GD graphics for headers
-- Session-based storage
-- Configurable winning pattern names
-- External `.ini` configuration support
+- To be determined
+
+## 🛠️ Original author's roadmap
+
+- Refactoring all the code
+- PHP GD library to create column headers as graphics
+- A MySQL version which will be much faster than flat file (I hope)
+- Look at sessions to be able to save data without using files to improve speed
+- Ability to change the names of the winning patterns from config file
+- Use of external ini file script instead of current settings.php file
+
 
 ---
 
@@ -178,3 +236,4 @@ Both modes fully support winner detection.
 ## 📄 License
 
 Open-source. See license file or original project for details.
+

@@ -1,11 +1,13 @@
-# Bingoware v1.5
-## http://bingoware.sourceforge.net
+# Bingoware-ng v1.5.1
+# Based on Bingoware v1.5 by Frederic Demers
+# Updated and maintained by KimberlyMcBlaze with the help of Copilot.
+## Original Bingoware URL: http://bingoware.sourceforge.net
 
 * Author: Frederic Demers
 * Software testing and new contributed graphics: Mike Suetkamp
 
 * Last Version: 1.5 - 10 December 2003
-* Modernized: 2026 - Updated for PHP 8.2+ compatibility
+* Modernized: January 1, 2026 - Updated for PHP 8.2+ compatibility
 
 Bingoware is a simple open-source PHP script which facilitates the creation,
 viewing and printing of randomly generated Bingo cards and provides a game 
@@ -105,7 +107,7 @@ generating a random number, and will still be able to announce the winners.
 4. Version History (Changelog):
 ---------------------------------
 
-**Version 1.5.1 (2026)**
+**Version 1.5.1 (January 1, 2026)**
 - Modernized for PHP 8.2+ compatibility
 - Replaced short open tags `<?` with `<?php` throughout
 - Replaced deprecated `ereg()` with `str_contains()`
@@ -187,6 +189,7 @@ have multiple sets of Bingo cards that do not overwrite one another
 - Look at sessions to be able to save data without using files to improve speed
 - Ability to change the names of the winning patterns from config file
 - Use of external ini file script instead of current settings.php file
+
 
 
 

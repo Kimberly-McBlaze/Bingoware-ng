@@ -1,5 +1,5 @@
 	   <body onLoad="document.configForm.setidform.focus()">
-	   <? if (isset($_POST["submit"])) {
+	   <?php if (isset($_POST["submit"])) {
 	   			
 	   			//pull in data from the form post
 	   			
@@ -120,74 +120,74 @@
 	   	} else {
 	   ?>
 	   <p><img src="images/cf.gif"></p>
-	   <form name="configForm" action="index.php?action=config<? echo ((isset($_GET['numberinplay']))?('&numberinplay='.$_GET['numberinplay']):''); ?>" method="post" onSubmit="return ConfigConfirmation()">
+	   <form name="configForm" action="index.php?action=config<?= ((isset($_GET['numberinplay']))?('&numberinplay='.$_GET['numberinplay']):''); ?>" method="post" onSubmit="return ConfigConfirmation()">
 	   Enter the Set ID: 
-	   &nbsp;&nbsp;&nbsp;<input type="text" name="setidform" value="<? echo $setid; ?>" maxlength="10" size="4" align="right">&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:explain('Set ID')">help?</a><br>
+	   &nbsp;&nbsp;&nbsp;<input type="text" name="setidform" value="<?= $setid; ?>" maxlength="10" size="4" align="right">&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:explain('Set ID')">help?</a><br>
 	   <br><table border="1"><tr><td>
 		   <table border="0"><tr><td colspan="2">
 		   Choose the Winning Patterns: &nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:explain('Winning Pattern')">help?</a><br><br></td></tr>
 		   <tr><td width="400" colspan="2">
-		   	<input type="checkbox" name="winningpatternform0" <? echo ($winningpattern0=="on")?"checked":""; ?>>
-		   	&nbsp;&nbsp;&nbsp;<? echo $patternkeywords[0];?> (any row, column or diagonal)
+		   	<input type="checkbox" name="winningpatternform0" <?= ($winningpattern0=="on")?"checked":""; ?>>
+		   	&nbsp;&nbsp;&nbsp;<?= $patternkeywords[0];?> (any row, column or diagonal)
 		   	
 		   </td></tr>
 		   <tr><td>
-		   	<input type="checkbox" name="winningpatternform1" <? echo ($winningpattern1=="on")?"checked":""; ?>>
-		   	&nbsp;&nbsp;&nbsp;<? echo $patternkeywords[1];?>
+		   	<input type="checkbox" name="winningpatternform1" <?= ($winningpattern1=="on")?"checked":""; ?>>
+		   	&nbsp;&nbsp;&nbsp;<?= $patternkeywords[1];?>
 		   </td><td>
 			   <a href="interactive.php?cardnumber=1" target=_blank>customize!</a>
 	   	</td></tr>
 	   	<tr><td>
-	   		<input type="checkbox" name="winningpatternform2" <? echo ($winningpattern2=="on")?"checked":""; ?>>
-	   		&nbsp;&nbsp;&nbsp;<? echo $patternkeywords[2];?>
+	   		<input type="checkbox" name="winningpatternform2" <?= ($winningpattern2=="on")?"checked":""; ?>>
+	   		&nbsp;&nbsp;&nbsp;<?= $patternkeywords[2];?>
 	   	</td><td>
 	   		<a href="interactive.php?cardnumber=2" target=_blank>customize!</a>
 	   	</td></tr>
 	   	<tr><td>
-	   		<input type="checkbox" name="winningpatternform3" <? echo ($winningpattern3=="on")?"checked":""; ?>>
-	   		&nbsp;&nbsp;&nbsp;<? echo $patternkeywords[3];?>
+	   		<input type="checkbox" name="winningpatternform3" <?= ($winningpattern3=="on")?"checked":""; ?>>
+	   		&nbsp;&nbsp;&nbsp;<?= $patternkeywords[3];?>
 		   </td><td>
 			   <a href="interactive.php?cardnumber=3" target=_blank>customize!</a>
 	   	</td></tr>
 	   	<tr><td>
-			   <input type="checkbox" name="winningpatternform4" <? echo ($winningpattern4=="on")?"checked":""; ?>>
-			   &nbsp;&nbsp;&nbsp;<? echo $patternkeywords[4];?>
+			   <input type="checkbox" name="winningpatternform4" <?= ($winningpattern4=="on")?"checked":""; ?>>
+			   &nbsp;&nbsp;&nbsp;<?= $patternkeywords[4];?>
 	      </td><td>
 			   <a href="interactive.php?cardnumber=4" target=_blank>customize!</a>
 	   	</td></tr>
 	   	<tr><td>
-			   <input type="checkbox" name="winningpatternform5" <? echo ($winningpattern5=="on")?"checked":""; ?>>
-			   &nbsp;&nbsp;&nbsp;<? echo $patternkeywords[5];?>
+			   <input type="checkbox" name="winningpatternform5" <?= ($winningpattern5=="on")?"checked":""; ?>>
+			   &nbsp;&nbsp;&nbsp;<?= $patternkeywords[5];?>
 		   </td><td>
 				<a href="interactive.php?cardnumber=5" target=_blank>customize!</a>
 	   	</td></tr>
 	   	<tr><td>
-	   		<input type="checkbox" name="winningpatternform6" <? echo ($winningpattern6=="on")?"checked":""; ?>>
-	   		&nbsp;&nbsp;&nbsp;<? echo $patternkeywords[6];?>
+	   		<input type="checkbox" name="winningpatternform6" <?= ($winningpattern6=="on")?"checked":""; ?>>
+	   		&nbsp;&nbsp;&nbsp;<?= $patternkeywords[6];?>
 		   </td><td>
 			   <a href="interactive.php?cardnumber=6" target=_blank>customize!</a>
 	   	</td></tr>
 	   	<tr><td>
-			   <input type="checkbox" name="winningpatternform7" <? echo ($winningpattern7=="on")?"checked":""; ?>>
-			   &nbsp;&nbsp;&nbsp;<? echo $patternkeywords[7];?>
+			   <input type="checkbox" name="winningpatternform7" <?= ($winningpattern7=="on")?"checked":""; ?>>
+			   &nbsp;&nbsp;&nbsp;<?= $patternkeywords[7];?>
 		   </td><td>
 			   <a href="interactive.php?cardnumber=7" target=_blank>customize!</a>
 	   	</td></tr>
 	   	<tr><td>
-	   		<input type="checkbox" name="winningpatternform8" <? echo ($winningpattern8=="on")?"checked":""; ?>>
-	   		&nbsp;&nbsp;&nbsp;<? echo $patternkeywords[8];?>
+	   		<input type="checkbox" name="winningpatternform8" <?= ($winningpattern8=="on")?"checked":""; ?>>
+	   		&nbsp;&nbsp;&nbsp;<?= $patternkeywords[8];?>
 		   </td><td>
 			   <a href="interactive.php?cardnumber=8" target=_blank>customize!</a>
 	   	</td></tr>
 		   <tr><td >
-		   	<input type="checkbox" name="winningpatternform9" <? echo ($winningpattern9=="on")?"checked":""; ?>>
-		   	&nbsp;&nbsp;&nbsp;<? echo $patternkeywords[9];?>
+		   	<input type="checkbox" name="winningpatternform9" <?= ($winningpattern9=="on")?"checked":""; ?>>
+		   	&nbsp;&nbsp;&nbsp;<?= $patternkeywords[9];?>
 		   </td><td>
 			   <a href="interactive.php?cardnumber=9" target=_blank>customize!</a>
 	   	</td></tr>
 		   <tr><td >
-		   	<input type="checkbox" name="winningpatternform10" <? echo ($winningpattern10=="on")?"checked":""; ?>>
-		   	&nbsp;&nbsp;&nbsp;<? echo $patternkeywords[10];?>
+		   	<input type="checkbox" name="winningpatternform10" <?= ($winningpattern10=="on")?"checked":""; ?>>
+		   	&nbsp;&nbsp;&nbsp;<?= $patternkeywords[10];?>
 		   </td><td>
 			   <a href="interactive.php?cardnumber=10" target=_blank>customize!</a>
 	   	</td></tr>
@@ -204,12 +204,12 @@
 			</tr><tr>
 				<td>Automatic
 				</td><td>
-					<input type="radio" name="drawmodeform" value="automatic" <? echo ($drawmode=="automatic")?"checked":""; ?>>
+					<input type="radio" name="drawmodeform" value="automatic" <?= ($drawmode=="automatic")?"checked":""; ?>>
 				</td>
 			</tr><tr>
 				<td>Manual
 				</td><td>
-					<input type="radio" name="drawmodeform" value="manual" <? echo ($drawmode=="manual")?"checked":""; ?>>
+					<input type="radio" name="drawmodeform" value="manual" <?= ($drawmode=="manual")?"checked":""; ?>>
 				</td>
 			</tr></table>
 			</tr></table>
@@ -219,16 +219,16 @@
 				<td>Miscellaneous Options: 
 				</td>
 			</tr><tr><td >
-		   	Name File</td><td><input type="checkbox" name="namefileform" <? echo ($namefile=="on")?"checked":""; ?>>
+		   	Name File</td><td><input type="checkbox" name="namefileform" <?= ($namefile=="on")?"checked":""; ?>>
 		   	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:explain('Name File')">help?</a>
 		   </td></tr>
 	   		<tr><td >
-		   	Print Rules</td><td><input type="checkbox" name="printrulesform" <? echo ($printrules=="on")?"checked":""; ?>>
+		   	Print Rules</td><td><input type="checkbox" name="printrulesform" <?= ($printrules=="on")?"checked":""; ?>>
 		   	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:explain('Print Rules')">help?</a>
 		   </td></tr>
 		   
 		   <tr><td >
-		   	Print 4 cards per page</td><td><input type="checkbox" name="fourperpageform" <? echo ($fourperpage=="on")?"checked":""; ?>>
+		   	Print 4 cards per page</td><td><input type="checkbox" name="fourperpageform" <?= ($fourperpage=="on")?"checked":""; ?>>
 		   	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:explain('Four per page')">help?</a>
 		   </td></tr></table>
 			</tr></table>
@@ -252,14 +252,14 @@
 								<a href="javascript:pickColor('pick1067301017');" id="pick1067301017"
 									style="border: 1px solid #000000; font-family:Verdana; font-size:10px;
 									text-decoration: none;">&nbsp;&nbsp;&nbsp;</a>
-								<input id="pick1067301017field" size="7" type="hidden" name="headerbgcolorform" value="<? echo $headerbgcolor; ?>">
+								<input id="pick1067301017field" size="7" type="hidden" name="headerbgcolorform" value="<?= $headerbgcolor; ?>">
 								<script language="javascript">relateColor('pick1067301017', getObj('pick1067301017field').value);</script>
 							</td>
 							<td align="center">
 								<a href="javascript:pickColor('pick1067300926');" id="pick1067300926"
 									style="border: 1px solid #000000; font-family:Verdana; font-size:10px;
 									text-decoration: none;">&nbsp;&nbsp;&nbsp;</a>
-								<input id="pick1067300926field" size="7" type="hidden" name="headerfontcolorform" value="<? echo $headerfontcolor; ?>">
+								<input id="pick1067300926field" size="7" type="hidden" name="headerfontcolorform" value="<?= $headerfontcolor; ?>">
 								<script language="javascript">relateColor('pick1067300926', getObj('pick1067300926field').value);</script>
 							</td>
 						</tr>
@@ -270,7 +270,7 @@
 								<a href="javascript:pickColor('pick1067301091');" id="pick1067301091"
 									style="border: 1px solid #000000; font-family:Verdana; font-size:10px;
 									text-decoration: none;">&nbsp;&nbsp;&nbsp;</a>
-								<input id="pick1067301091field" size="7" type="hidden" name="mainbgcolorform" value="<? echo $mainbgcolor; ?>">
+								<input id="pick1067301091field" size="7" type="hidden" name="mainbgcolorform" value="<?= $mainbgcolor; ?>">
 								<script language="javascript">relateColor('pick1067301091', getObj('pick1067301091field').value);</script>								
 
 							</td>
@@ -278,7 +278,7 @@
 								<a href="javascript:pickColor('pick1067300494');" id="pick1067300494"
 									style="border: 1px solid #000000; font-family:Verdana; font-size:10px;
 									text-decoration: none;">&nbsp;&nbsp;&nbsp;</a>
-								<input id="pick1067300494field" size="7" type="hidden" name="mainfontcolorform" value="<? echo $mainfontcolor; ?>">
+								<input id="pick1067300494field" size="7" type="hidden" name="mainfontcolorform" value="<?= $mainfontcolor; ?>">
 								<script language="javascript">relateColor('pick1067300494', getObj('pick1067300494field').value);</script>
 							</td>
 						</tr>
@@ -289,7 +289,7 @@
 								<a href="javascript:pickColor('pick1067301185');" id="pick1067301185"
 									style="border: 1px solid #000000; font-family:Verdana; font-size:10px;
 									text-decoration: none;">&nbsp;&nbsp;&nbsp;</a>
-								<input id="pick1067301185field" size="7" type="hidden" name="selectedbgcolorform" value="<? echo $selectedbgcolor; ?>">
+								<input id="pick1067301185field" size="7" type="hidden" name="selectedbgcolorform" value="<?= $selectedbgcolor; ?>">
 								<script language="javascript">relateColor('pick1067301185', getObj('pick1067301185field').value);</script>
 
 
@@ -298,7 +298,7 @@
 								<a href="javascript:pickColor('pick1067301286');" id="pick1067301286"
 									style="border: 1px solid #000000; font-family:Verdana; font-size:10px;
 									text-decoration: none;">&nbsp;&nbsp;&nbsp;</a>
-								<input id="pick1067301286field" size="7" type="hidden" name="selectedfontcolorform" value="<? echo $selectedfontcolor; ?>">
+								<input id="pick1067301286field" size="7" type="hidden" name="selectedfontcolorform" value="<?= $selectedfontcolor; ?>">
 								<script language="javascript">relateColor('pick1067301286', getObj('pick1067301286field').value);</script>
 							</td>
 						</tr>
@@ -309,7 +309,7 @@
 								<center><a href="javascript:pickColor('pick1067301200',3);" id="pick1067301200"
 									style="border: 1px solid #000000; font-family:Verdana; font-size:10px;
 									text-decoration: none;">&nbsp;&nbsp;&nbsp;</a>
-								<input id="pick1067301200field" size="7" type="hidden" name="bordercolorform" value="<? echo $bordercolor; ?>">
+								<input id="pick1067301200field" size="7" type="hidden" name="bordercolorform" value="<?= $bordercolor; ?>">
 								<script language="javascript">relateColor('pick1067301200', getObj('pick1067301200field').value);</script>
 							</td>
 							<td align="center"><a href="javascript:explain('Border colour')">Note</a></center>
@@ -321,14 +321,14 @@
 			</tr>
 		</table>												
 		<br>
-	   <br>Page Title: <input type="text" name="pagetitleform" value="<? echo $pagetitleconfig; ?>" size="55"><br>
+	   <br>Page Title: <input type="text" name="pagetitleform" value="<?= $pagetitleconfig; ?>" size="55"><br>
 	   
 	   <br>When viewing one card (HTML codes allowed):&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:explain('Hint')">hint?</a><br><br>
-	   Header: <input type="text" name="viewheaderform" value='<? echo $viewheader; ?>' size="55"><br>
-	   Footer: <input type="text" name="viewfooterform" value='<? echo $viewfooter; ?>' size="55"><br><br>
+	   Header: <input type="text" name="viewheaderform" value='<?= $viewheader; ?>' size="55"><br>
+	   Footer: <input type="text" name="viewfooterform" value='<?= $viewfooter; ?>' size="55"><br><br>
 	   When printing four card per page (HTML codes allowed):<br><br>
-	   Header: <input type="text" name="printheaderform" value='<? echo $printheader; ?>' size="55"><br>
-	   Footer: <input type="text" name="printfooterform" value='<? echo $printfooter; ?>' size="55"><br>
+	   Header: <input type="text" name="printheaderform" value='<?= $printheader; ?>' size="55"><br>
+	   Footer: <input type="text" name="printfooterform" value='<?= $printfooter; ?>' size="55"><br>
 		<br>
 
 		
@@ -336,7 +336,7 @@
 	   
 	   </form>
 	   
-	   <?
+	   <?php
 	}
 	?>
 	</body>

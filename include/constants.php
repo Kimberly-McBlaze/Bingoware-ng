@@ -1,4 +1,4 @@
-<?
+<?php
 /* Constants: 
 * you can change these values at will
 */

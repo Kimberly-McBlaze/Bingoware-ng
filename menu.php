@@ -15,6 +15,10 @@
       <span class="nav-icon">🎮</span>
       <span>Play Bingo</span>
     </a>
+    <a href="patterns.php" class="nav-button">
+      <span class="nav-icon">🎯</span>
+      <span>Winning Patterns</span>
+    </a>
     <a href="index.php?action=config<?= (isset($_GET["numberinplay"]))?'&numberinplay='.$_GET["numberinplay"]:''; ?>" class="nav-button">
       <span class="nav-icon">⚙️</span>
       <span>Configure</span>

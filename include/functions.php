@@ -274,11 +274,11 @@ function is_free_square($card, $col, $row) {
 * @return bool - True if card matches pattern exactly, false otherwise
 */
 function check_pattern_exact_match($card, $mask) {
-	// Convert mask to a set for efficient lookup
+	// Convert mask to a set for efficient lookup using numeric keys (col * 5 + row)
 	$maskSet = [];
 	foreach ($mask as $cell) {
 		list($c, $r) = $cell;
-		$maskSet["$c,$r"] = true;
+		$maskSet[$c * 5 + $r] = true;
 	}
 	
 	// Check all 25 squares on the card
@@ -289,7 +289,7 @@ function check_pattern_exact_match($card, $mask) {
 				continue;
 			}
 			
-			$isInMask = isset($maskSet["$col,$row"]);
+			$isInMask = isset($maskSet[$col * 5 + $row]);
 			$isChecked = $card[$col][$row]["checked"];
 			
 			// If square is in mask, it must be checked

@@ -4,6 +4,9 @@
  * Handles CRUD operations for winning patterns
  */
 
+// Include constants for pattern keywords
+include_once("constants.php");
+
 /**
  * Get the patterns storage file path
  */
@@ -102,6 +105,14 @@ function get_default_patterns() {
 function migrate_patterns_from_old_format() {
     global $winningpatternarray, $patternkeywords;
     
+    // Ensure constants are loaded
+    if (!isset($patternkeywords)) {
+        include_once("constants.php");
+    }
+    if (!isset($winningpatternarray)) {
+        $winningpatternarray = array_fill(0, 11, '');
+    }
+    
     $patterns = [];
     
     // Pattern 0 (Normal) - special case
@@ -116,9 +127,9 @@ function migrate_patterns_from_old_format() {
     ];
     
     // Load grid patterns from winningpatterns.dat
-    $winningset = load_winning_patterns();
+    $winningset = @load_winning_patterns();
     
-    if (is_array($winningset)) {
+    if (is_array($winningset) && isset($patternkeywords)) {
         for ($i = 1; $i < count($patternkeywords); $i++) {
             $grid = [];
             
@@ -126,7 +137,7 @@ function migrate_patterns_from_old_format() {
             if (isset($winningset[$i - 1])) {
                 for ($col = 0; $col < 5; $col++) {
                     for ($row = 0; $row < 5; $row++) {
-                        if ($winningset[$i - 1][$col][$row]["checked"]) {
+                        if (isset($winningset[$i - 1][$col][$row]["checked"]) && $winningset[$i - 1][$col][$row]["checked"]) {
                             $grid[] = ['col' => $col, 'row' => $row];
                         }
                     }

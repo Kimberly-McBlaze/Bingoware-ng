@@ -12,6 +12,7 @@ This project updates the original codebase for **PHP 8.2+** while preserving its
 - 🖨️ View and print Bingo cards
 - 🔢 Automatic or manual number draws
 - 🏆 Automatic detection of winning cards
+- 🎯 **NEW:** Full CRUD for custom winning patterns (add, edit, delete)
 - 🧩 Support for multiple winning patterns
 - 🆔 Multiple independent card sets via Set IDs
 - 🌐 Works in all modern browsers
@@ -218,7 +219,7 @@ have multiple sets of Bingo cards that do not overwrite one another
 
 ## 🛠️ Roadmap
 
-- Add ability to add, modify, and delete winning patterns
+- ✅ **COMPLETED:** Full CRUD support for winning patterns - [See documentation](docs/pattern-management.md)
 - Add an external bingo number board along with a display that shows the current number being called, useful if you want to mirror that info to a second monitor for your guests to see, just like in real life.
 - More to be determined later.
 

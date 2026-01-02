@@ -108,7 +108,7 @@
 	   ?>
 	   <div class="content-header">
 	     <h2 class="content-title">⚙️ Configure</h2>
-	     <p class="content-subtitle">Customize your Bingoware settings</p>
+	     <p class="content-subtitle">Customize your Bingoware-ng settings</p>
 	   </div>
 	   
 	   <form name="configForm" action="index.php?action=config<?= ((isset($_GET['numberinplay']))?('&numberinplay='.$_GET['numberinplay']):''); ?>" method="post" class="modern-form" onSubmit="return ConfigConfirmation()">

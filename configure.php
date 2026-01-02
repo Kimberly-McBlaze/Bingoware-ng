@@ -84,10 +84,15 @@
 						
 						//if user forgets to choose 1 winning pattern, then the default, pattern 0, is chosen anyways
 						// Check submitted form values (winningpatternform*) and JSON patterns (pattern_enabled)
-						$classicPatterns = array($winningpatternform0, $winningpatternform1, $winningpatternform2, $winningpatternform3, $winningpatternform4, $winningpatternform5,
-							$winningpatternform6, $winningpatternform7, $winningpatternform8, $winningpatternform9, $winningpatternform10);
-						$hasClassicPattern = count(array_filter($classicPatterns, function($p) { return $p != ""; })) > 0;
-						$hasJsonPattern = isset($_POST["pattern_enabled"]) && is_array($_POST["pattern_enabled"]) && count($_POST["pattern_enabled"]) > 0;
+						$classicPatterns = array();
+						for ($i = 0; $i <= 10; $i++) {
+							$varName = "winningpatternform" . $i;
+							if (isset($$varName)) {
+								$classicPatterns[] = $$varName;
+							}
+						}
+						$hasClassicPattern = !empty(array_filter($classicPatterns, function($p) { return $p != ""; }));
+						$hasJsonPattern = isset($_POST["pattern_enabled"]) && is_array($_POST["pattern_enabled"]) && !empty($_POST["pattern_enabled"]);
 						
 						// Only default to pattern 0 if no patterns are selected at all
 						if (!$hasClassicPattern && !$hasJsonPattern) {

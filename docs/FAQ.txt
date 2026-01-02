@@ -15,7 +15,7 @@ view online at : http://bingoware.sf.net/faq.php
 10. I want my Bingo to read "xyzab" instead of Bingo on top of each card. Can I do that?
 11. I want my Bingo to run from 1 to 50 or 100 instead of 1 to 75. Can I do that? 
 12. Link Exchange: Can you put a link to my gambling site on your site?
-13. I found a problem with the latest version of Bingoware!
+13. I found a problem with the latest version of Bingoware-ng!
 
 -------------------------------------------
 1. Can I use Bingoware-ng to run an online bingo?

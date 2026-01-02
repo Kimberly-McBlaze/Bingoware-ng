@@ -62,6 +62,18 @@
 	       <button name="restart" type="button" class="btn btn-warning" style="width: 100%;" onClick="RestartConfirmation(<?= $numberinplay;?>);">
 	         🔄 Restart Game
 	       </button>
+	       
+	       <?php 
+	       // Winner Indicator
+	       $total_winners = count_total_winners();
+	       $indicator_color = ($total_winners > 0) ? 'var(--color-success)' : 'var(--text-muted)';
+	       $indicator_icon = ($total_winners > 0) ? '🏆' : 'ℹ️';
+	       $indicator_text = ($total_winners > 0) ? "Winners: $total_winners" : "No winners yet";
+	       ?>
+	       <div class="winner-indicator" style="border: 2px solid <?= $indicator_color; ?>;">
+	         <div class="winner-indicator-icon"><?= $indicator_icon; ?></div>
+	         <div class="winner-indicator-text" style="color: <?= $indicator_color; ?>;"><?= $indicator_text; ?></div>
+	       </div>
 	     </div>
 	     
 	     <div>

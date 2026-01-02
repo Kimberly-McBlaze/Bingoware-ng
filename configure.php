@@ -25,17 +25,7 @@
 		   		
 		   		//echo "debug: ".$headerfontcolorform."<br>";
 
-				if (isset($_POST["winningpatternform0"])) $winningpatternform0 = $_POST["winningpatternform0"]; else  $winningpatternform0 ="";
-				if (isset($_POST["winningpatternform1"])) $winningpatternform1 = $_POST["winningpatternform1"]; else  $winningpatternform1 ="";
-				if (isset($_POST["winningpatternform2"])) $winningpatternform2 = $_POST["winningpatternform2"]; else  $winningpatternform2 ="";
-				if (isset($_POST["winningpatternform3"])) $winningpatternform3 = $_POST["winningpatternform3"]; else  $winningpatternform3 ="";
-				if (isset($_POST["winningpatternform4"])) $winningpatternform4 = $_POST["winningpatternform4"]; else  $winningpatternform4 ="";
-				if (isset($_POST["winningpatternform5"])) $winningpatternform5 = $_POST["winningpatternform5"]; else  $winningpatternform5 ="";
-				if (isset($_POST["winningpatternform6"])) $winningpatternform6 = $_POST["winningpatternform6"]; else  $winningpatternform6 ="";
-				if (isset($_POST["winningpatternform7"])) $winningpatternform7 = $_POST["winningpatternform7"]; else  $winningpatternform7 ="";
-				if (isset($_POST["winningpatternform8"])) $winningpatternform8 = $_POST["winningpatternform8"]; else  $winningpatternform8 ="";
-				if (isset($_POST["winningpatternform9"])) $winningpatternform9 = $_POST["winningpatternform9"]; else  $winningpatternform9 ="";
-				if (isset($_POST["winningpatternform10"])) $winningpatternform10 = $_POST["winningpatternform10"]; else  $winningpatternform10 ="";
+				// Winning patterns are now managed via the Winning Patterns page (patterns.php)
 	   		          
 				// Magic quotes were removed in PHP 5.4, no longer needed
 	   		          
@@ -48,27 +38,10 @@
 						//There will be only one replacement completed, but
 						//preg_replace will return the original line in any other cases.
 						
-						//if user forgets to choose 1 winning pattern, then the default, pattern 0, is chosen anyways
-						if (($winningpattern0.$winningpattern1.$winningpattern2.$winningpattern3.$winningpattern4.$winningpattern5.
-							$winningpattern6.$winningpattern7.$winningpattern8.$winningpattern9.$winningpattern10)=="" ) $winningpattern0 = 'on';
-						
-						
 						$line = preg_replace("/(setid=').*'/","$1".$setidform."'",$line);
 						$line = preg_replace("/(pagetitleconfig=').*'/","$1".$pagetitleform."'",$line);
 						
-						//winning patterns
-						
-						$line = preg_replace("/(winningpattern0=').*;/","$1".$winningpatternform0."';",$line);
-						$line = preg_replace("/(winningpattern1=').*;/","$1".$winningpatternform1."';",$line);
-						$line = preg_replace("/(winningpattern2=').*;/","$1".$winningpatternform2."';",$line);
-						$line = preg_replace("/(winningpattern3=').*;/","$1".$winningpatternform3."';",$line);
-						$line = preg_replace("/(winningpattern4=').*;/","$1".$winningpatternform4."';",$line);
-						$line = preg_replace("/(winningpattern5=').*;/","$1".$winningpatternform5."';",$line);
-						$line = preg_replace("/(winningpattern6=').*;/","$1".$winningpatternform6."';",$line);
-						$line = preg_replace("/(winningpattern7=').*;/","$1".$winningpatternform7."';",$line);
-						$line = preg_replace("/(winningpattern8=').*;/","$1".$winningpatternform8."';",$line);
-						$line = preg_replace("/(winningpattern9=').*;/","$1".$winningpatternform9."';",$line);
-						$line = preg_replace("/(winningpattern10=').*;/","$1".$winningpatternform10."';",$line);
+						// Winning patterns are now managed via the Winning Patterns page (patterns.php)
 						
 						//misc settings
 						
@@ -121,82 +94,7 @@
 	     <input type="text" name="setidform" value="<?= $setid; ?>" maxlength="10" class="form-input" style="max-width: 200px;">
 	   </div>
 	   
-	   <div class="card mb-3">
-	     <div class="card-header">
-	       <h3 class="card-title">
-	         Winning Patterns
-	         <a href="javascript:explain('Winning Pattern')" class="help-icon">help?</a>
-	       </h3>
-	     </div>
-	     <div class="card-body">
-	       <div class="checkbox-group">
-	         <label class="checkbox-option">
-	   	   <input type="checkbox" name="winningpatternform0" <?= ($winningpattern0=="on")?"checked":""; ?>>
-	   	   <span><?= $patternkeywords[0];?> (any row, column or diagonal)</span>
-	         </label>
-	         
-	         <label class="checkbox-option">
-	   	   <input type="checkbox" name="winningpatternform1" <?= ($winningpattern1=="on")?"checked":""; ?>>
-	   	   <span><?= $patternkeywords[1];?></span>
-	   	   <a href="interactive.php?cardnumber=1" target="_blank" class="btn btn-sm btn-secondary" style="margin-left: auto;">customize!</a>
-	         </label>
-	         
-	         <label class="checkbox-option">
-	   	   <input type="checkbox" name="winningpatternform2" <?= ($winningpattern2=="on")?"checked":""; ?>>
-	   	   <span><?= $patternkeywords[2];?></span>
-	   	   <a href="interactive.php?cardnumber=2" target="_blank" class="btn btn-sm btn-secondary" style="margin-left: auto;">customize!</a>
-	         </label>
-	         
-	         <label class="checkbox-option">
-	   	   <input type="checkbox" name="winningpatternform3" <?= ($winningpattern3=="on")?"checked":""; ?>>
-	   	   <span><?= $patternkeywords[3];?></span>
-	   	   <a href="interactive.php?cardnumber=3" target="_blank" class="btn btn-sm btn-secondary" style="margin-left: auto;">customize!</a>
-	         </label>
-	         
-	         <label class="checkbox-option">
-	   	   <input type="checkbox" name="winningpatternform4" <?= ($winningpattern4=="on")?"checked":""; ?>>
-	   	   <span><?= $patternkeywords[4];?></span>
-	   	   <a href="interactive.php?cardnumber=4" target="_blank" class="btn btn-sm btn-secondary" style="margin-left: auto;">customize!</a>
-	         </label>
-	         
-	         <label class="checkbox-option">
-	   	   <input type="checkbox" name="winningpatternform5" <?= ($winningpattern5=="on")?"checked":""; ?>>
-	   	   <span><?= $patternkeywords[5];?></span>
-	   	   <a href="interactive.php?cardnumber=5" target="_blank" class="btn btn-sm btn-secondary" style="margin-left: auto;">customize!</a>
-	         </label>
-	         
-	         <label class="checkbox-option">
-	   	   <input type="checkbox" name="winningpatternform6" <?= ($winningpattern6=="on")?"checked":""; ?>>
-	   	   <span><?= $patternkeywords[6];?></span>
-	   	   <a href="interactive.php?cardnumber=6" target="_blank" class="btn btn-sm btn-secondary" style="margin-left: auto;">customize!</a>
-	         </label>
-	         
-	         <label class="checkbox-option">
-	   	   <input type="checkbox" name="winningpatternform7" <?= ($winningpattern7=="on")?"checked":""; ?>>
-	   	   <span><?= $patternkeywords[7];?></span>
-	   	   <a href="interactive.php?cardnumber=7" target="_blank" class="btn btn-sm btn-secondary" style="margin-left: auto;">customize!</a>
-	         </label>
-	         
-	         <label class="checkbox-option">
-	   	   <input type="checkbox" name="winningpatternform8" <?= ($winningpattern8=="on")?"checked":""; ?>>
-	   	   <span><?= $patternkeywords[8];?></span>
-	   	   <a href="interactive.php?cardnumber=8" target="_blank" class="btn btn-sm btn-secondary" style="margin-left: auto;">customize!</a>
-	         </label>
-	         
-	         <label class="checkbox-option">
-	   	   <input type="checkbox" name="winningpatternform9" <?= ($winningpattern9=="on")?"checked":""; ?>>
-	   	   <span><?= $patternkeywords[9];?></span>
-	   	   <a href="interactive.php?cardnumber=9" target="_blank" class="btn btn-sm btn-secondary" style="margin-left: auto;">customize!</a>
-	         </label>
-	         
-	         <label class="checkbox-option">
-	   	   <input type="checkbox" name="winningpatternform10" <?= ($winningpattern10=="on")?"checked":""; ?>>
-	   	   <span><?= $patternkeywords[10];?></span>
-	   	   <a href="interactive.php?cardnumber=10" target="_blank" class="btn btn-sm btn-secondary" style="margin-left: auto;">customize!</a>
-	         </label>
-	       </div>
-	     </div>
-	   </div>
+	   <!-- Winning Patterns are now managed via the dedicated Winning Patterns page (patterns.php) -->
 		
 		<div class="card mb-3">
 		  <div class="card-header">

@@ -21,7 +21,7 @@ $setid='A';
 * The pagetitle displayed on the top of the browser window can be changed as well.
 * As of version 1.5, the page title cannot be changed by a crafted URL.
 */
-$pagetitleconfig='Welcome to Bingoware';
+$pagetitleconfig='Welcome to Bingoware-ng';
 
 //if pagetitleconfig empty, set to version number
 $pagetitle =($pagetitleconfig =='')?$version:$pagetitleconfig;
@@ -69,7 +69,7 @@ $winningpattern5, $winningpattern6, $winningpattern7, $winningpattern8, $winning
 $namefile='';
 
 /* Print Rules
-* Bingoware will insert a rules page between each card when viewing for printing is this option
+* Bingoware-ng will insert a rules page between each card when viewing for printing is this option
 * is selected.  The rules file must be called rules.txt and is best used when your printer
 * is set to print double-sided
 */
@@ -78,9 +78,9 @@ $printrules='';
 
 /* Draw Mode
 * The game play mode can be "automatic" or "manual", and indicates how the random bingo numbers
-* are generated.  For Bingoware to draw the numbers for you, use "automatic".  If you are
+* are generated.  For Bingoware-ng to draw the numbers for you, use "automatic".  If you are
 * using a different physical device to draw the numbers for you, the "manual" setting will
-* let you enter the drawn numbers into Bingoware so that you can still discover which are
+* let you enter the drawn numbers into Bingoware-ng so that you can still discover which are
 * the winning cards.
 * Changing of this setting should be done from the configure menu item.
 */
@@ -107,7 +107,7 @@ $viewheader='<center><b><font size="+4">B I N G O</font></b></center>';
 * You should ensure to close your HTML tags so you do not disrupt the display
 * of the cards.
 */
-$viewfooter='<center><b>Created with Bingoware 1.5</b><br><br><a href="javascript:window.close();">close window</a></center>';
+$viewfooter='<center><b>Created with Bingoware-ng</b><br><br><a href="javascript:window.close();">close window</a></center>';
 
 
 /* Print header
@@ -125,7 +125,7 @@ $printheader='<center><b><font size="+6">Bingo Card</font></b></center>';
 * You should ensure to close your HTML tags so you do not disrupt the display
 * of the cards.
 */
-$printfooter='<center><b><font size="-1">Created with Bingoware 1.5</font></b></center>';
+$printfooter='<center><b><font size="-1">Created with Bingoware-ng</font></b></center>';
 
 
 /* color settings

@@ -147,7 +147,7 @@ So far, AI has been unable to properly fix this issue.
 ## 🗂️ Changelog
 
 ### v2.2 - January 2, 2026
-- Improved winning pattern customization, allowing for more customization options.
+- Added full CRUD (Create, Read, Update, Delete) support for winning patterns - [See documentation](docs/pattern-management.md)
 - Moved card customization to its own menu.
 - Added persistent winner indicator on Play Bingo page
 - Winner indicator displays near number generation controls
@@ -260,6 +260,7 @@ have multiple sets of Bingo cards that do not overwrite one another
 ## 📄 License
 
 Open-source. See license file or original project for details.
+
 
 
 

@@ -43,7 +43,7 @@ $pagetitle =($pagetitleconfig =='')?$version:$pagetitleconfig;
 *
 * NOTE: Changing the winning pattern in the middle of a game will produce undesired results
 */
-$winningpattern0='on';
+$winningpattern0='';
 $winningpattern1='';
 $winningpattern2='';
 $winningpattern3='';

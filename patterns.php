@@ -223,7 +223,7 @@ $patterns = load_patterns();
   <main class="content-area">
     <div class="content-header">
       <h2 class="content-title">🎯 Manage Winning Patterns</h2>
-      <p class="content-subtitle">Add, edit, and delete custom winning patterns</p>
+      <p class="content-subtitle">Add, edit, and delete custom winning patterns <a href="javascript:explain('Winning Pattern')" class="help-icon">help?</a></p>
     </div>
     
     <div class="card mb-3">
@@ -234,12 +234,12 @@ $patterns = load_patterns();
       <div class="card-body">
         <div class="pattern-list" id="patternList">
           <?php foreach ($patterns as $pattern): ?>
-          <div class="pattern-item" data-id="<?= htmlspecialchars($pattern['id']); ?>">
+          <div class="pattern-item" data-id="<?= htmlspecialchars($pattern['id']); ?>" data-enabled="<?= $pattern['enabled'] ? '1' : '0'; ?>">
             <div class="pattern-info">
               <div class="pattern-name">
                 <?= htmlspecialchars($pattern['name']); ?>
                 <?php if ($pattern['enabled']): ?>
-                  <span class="badge badge-success">ENABLED</span>
+                  <span class="badge badge-success pattern-status">ENABLED</span>
                 <?php endif; ?>
                 <?php if ($pattern['is_default']): ?>
                   <span class="badge badge-default">DEFAULT</span>
@@ -252,8 +252,10 @@ $patterns = load_patterns();
             <div class="pattern-actions">
               <label class="checkbox-option" style="margin: 0;">
                 <input type="checkbox" 
+                       class="pattern-enable-checkbox"
+                       data-pattern-id="<?= htmlspecialchars($pattern['id']); ?>"
                        <?= $pattern['enabled'] ? 'checked' : ''; ?>
-                       onchange="togglePattern('<?= htmlspecialchars($pattern['id']); ?>', this.checked)">
+                       onchange="markPatternChanged('<?= htmlspecialchars($pattern['id']); ?>', this.checked)">
                 <span>Enable</span>
               </label>
               <?php if (!$pattern['is_special']): ?>
@@ -271,6 +273,10 @@ $patterns = load_patterns();
             </div>
           </div>
           <?php endforeach; ?>
+        </div>
+        <div id="saveButtonContainer" style="margin-top: 1rem; text-align: right; display: none;">
+          <button class="btn btn-primary" onclick="savePatternChanges()">💾 Save Changes</button>
+          <button class="btn btn-secondary" onclick="cancelPatternChanges()">Cancel</button>
         </div>
       </div>
     </div>
@@ -332,6 +338,7 @@ $patterns = load_patterns();
 <script>
 let editingGrid = [];
 const bingoLetters = ['B', 'I', 'N', 'G', 'O'];
+let pendingChanges = {}; // Track pending enable/disable changes
 
 // Initialize grid
 function initGrid() {
@@ -449,28 +456,86 @@ async function savePattern(event) {
   }
 }
 
-async function togglePattern(patternId, enabled) {
-  const formData = new FormData();
-  formData.set('id', patternId);
-  formData.set('enabled', enabled ? 'true' : 'false');
-  formData.set('action', 'api');
+// Mark a pattern as changed (for enable/disable)
+function markPatternChanged(patternId, enabled) {
+  const patternItem = document.querySelector(`.pattern-item[data-id="${patternId}"]`);
+  const originalEnabled = patternItem.dataset.enabled === '1';
+  
+  if (enabled !== originalEnabled) {
+    pendingChanges[patternId] = enabled;
+  } else {
+    delete pendingChanges[patternId];
+  }
+  
+  // Show/hide save button based on pending changes
+  const saveContainer = document.getElementById('saveButtonContainer');
+  if (Object.keys(pendingChanges).length > 0) {
+    saveContainer.style.display = 'block';
+  } else {
+    saveContainer.style.display = 'none';
+  }
+}
+
+// Save all pending pattern changes
+async function savePatternChanges() {
+  if (Object.keys(pendingChanges).length === 0) {
+    return;
+  }
+  
+  const saveButton = event.target;
+  saveButton.disabled = true;
+  saveButton.textContent = '💾 Saving...';
   
   try {
-    const response = await fetch('patterns.php?action=api', {
-      method: 'POST',
-      body: formData
-    });
+    let hasError = false;
     
-    const data = await response.json();
+    for (const [patternId, enabled] of Object.entries(pendingChanges)) {
+      const formData = new FormData();
+      formData.set('id', patternId);
+      formData.set('enabled', enabled ? 'true' : 'false');
+      formData.set('action', 'api');
+      
+      const response = await fetch('patterns.php?action=api', {
+        method: 'POST',
+        body: formData
+      });
+      
+      const data = await response.json();
+      
+      if (!data.success) {
+        alert('Error updating pattern: ' + data.error);
+        hasError = true;
+        break;
+      }
+    }
     
-    if (!data.success) {
-      alert('Error: ' + data.error);
+    if (!hasError) {
+      alert('Changes saved successfully!');
       location.reload();
+    } else {
+      saveButton.disabled = false;
+      saveButton.textContent = '💾 Save Changes';
     }
   } catch (error) {
     alert('Error: ' + error.message);
-    location.reload();
+    saveButton.disabled = false;
+    saveButton.textContent = '💾 Save Changes';
   }
+}
+
+// Cancel pending changes
+function cancelPatternChanges() {
+  // Reset all checkboxes to original state
+  document.querySelectorAll('.pattern-enable-checkbox').forEach(checkbox => {
+    const patternId = checkbox.dataset.patternId;
+    const patternItem = checkbox.closest('.pattern-item');
+    const originalEnabled = patternItem.dataset.enabled === '1';
+    checkbox.checked = originalEnabled;
+  });
+  
+  // Clear pending changes
+  pendingChanges = {};
+  document.getElementById('saveButtonContainer').style.display = 'none';
 }
 
 async function deletePattern(patternId, patternName) {

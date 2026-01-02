@@ -224,13 +224,17 @@ function update_pattern($pattern_id, $name, $description, $grid, $enabled = null
     $found = false;
     
     foreach ($patterns as $idx => $pattern) {
-        // Check for duplicate name (excluding current pattern)
-        if ($pattern['id'] !== $pattern_id && strcasecmp($pattern['name'], $name) === 0) {
-            return ['success' => false, 'error' => 'A pattern with this name already exists'];
-        }
-        
         if ($pattern['id'] === $pattern_id) {
             $found = true;
+            
+            // Check for duplicate name only if name is being changed
+            if ($name !== null && $name !== '' && strcasecmp($pattern['name'], $name) !== 0) {
+                foreach ($patterns as $other_pattern) {
+                    if ($other_pattern['id'] !== $pattern_id && strcasecmp($other_pattern['name'], $name) === 0) {
+                        return ['success' => false, 'error' => 'A pattern with this name already exists'];
+                    }
+                }
+            }
             
             // Don't allow editing special patterns (pattern 0)
             if ($pattern['is_special']) {
@@ -248,12 +252,18 @@ function update_pattern($pattern_id, $name, $description, $grid, $enabled = null
                     $patterns[$idx]['grid'] = $grid;
                 }
                 
-                $patterns[$idx]['name'] = trim($name);
-                $patterns[$idx]['description'] = trim($description);
+                // Only update name and description if provided
+                if ($name !== null && $name !== '') {
+                    $patterns[$idx]['name'] = trim($name);
+                }
+                if ($description !== null) {
+                    $patterns[$idx]['description'] = trim($description);
+                }
                 if ($enabled !== null) {
                     $patterns[$idx]['enabled'] = $enabled;
                 }
             }
+            break;
         }
     }
     

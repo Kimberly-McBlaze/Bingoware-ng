@@ -249,6 +249,64 @@ function mark_cards($col, $num) { //col provided here to speed up search in the 
 	save_set($set);
 }
 
+/** is_free_square()
+* Helper function to determine if a given square on a card is a "Free" square.
+* Free squares are always checked and should be ignored in exact-match pattern validation.
+* 
+* @param array $card - The card array [col][row]["number"/"checked"]
+* @param int $col - Column index (0-4)
+* @param int $row - Row index (0-4)
+* @return bool - True if the square is a "Free" square, false otherwise
+*/
+function is_free_square($card, $col, $row) {
+	return isset($card[$col][$row]["number"]) && $card[$col][$row]["number"] === "Free";
+}
+
+/** check_pattern_exact_match()
+* Helper function to check if a card matches a pattern with exact-match validation.
+* A card wins with a pattern ONLY if:
+*   1) Every coordinate in the pattern mask is checked on the card, AND
+*   2) Every coordinate NOT in the pattern mask is NOT checked on the card
+*   3) Free squares are IGNORED in the exact-match comparison (can be checked or unchecked)
+* 
+* @param array $card - The card array [col][row]["number"/"checked"]
+* @param array $mask - Pattern mask array of [col, row] pairs
+* @return bool - True if card matches pattern exactly, false otherwise
+*/
+function check_pattern_exact_match($card, $mask) {
+	// Convert mask to a set for efficient lookup using numeric keys (col * 5 + row)
+	$maskSet = [];
+	foreach ($mask as $cell) {
+		list($c, $r) = $cell;
+		$maskSet[$c * 5 + $r] = true;
+	}
+	
+	// Check all 25 squares on the card
+	for ($col = 0; $col < 5; $col++) {
+		for ($row = 0; $row < 5; $row++) {
+			// Skip Free squares - they are ignored in exact-match validation
+			if (is_free_square($card, $col, $row)) {
+				continue;
+			}
+			
+			$isInMask = isset($maskSet[$col * 5 + $row]);
+			$isChecked = $card[$col][$row]["checked"];
+			
+			// If square is in mask, it must be checked
+			if ($isInMask && !$isChecked) {
+				return false;
+			}
+			
+			// If square is NOT in mask, it must NOT be checked (exact match requirement)
+			if (!$isInMask && $isChecked) {
+				return false;
+			}
+		}
+	}
+	
+	return true;
+}
+
 /** check_bingo()
 * This function goes through the complete set and attempts to find
 * winning cards.
@@ -323,6 +381,8 @@ function check_bingo ($numberinplay) {
 		}
 		
 		// Check patterns from JSON store (patterns 1-N)
+		// Uses exact-match validation: all mask squares must be checked AND
+		// all non-mask squares must be unchecked (except Free squares which are ignored)
 		foreach ($jsonPatterns as $pattern) {
 			if (!$pattern['enabled']) {
 				$p = $pattern['id']; // Use pattern ID as index
@@ -337,15 +397,8 @@ function check_bingo ($numberinplay) {
 				continue;
 			}
 			
-			// Check if card matches this pattern
-			$winner = true;
-			foreach ($pattern['mask'] as $cell) {
-				list($c, $r) = $cell;
-				if (!$set[$n][$c][$r]["checked"]) {
-					$winner = false;
-					break;
-				}
-			}
+			// Check if card matches this pattern with exact-match validation
+			$winner = check_pattern_exact_match($set[$n], $pattern['mask']);
 			
 			$new_winners[$n][$p] = $winner;
 		}

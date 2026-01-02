@@ -1,6 +1,7 @@
 <?php
 
 include ("config/settings.php");
+include_once ("include/patterns.php");
 
 /** set_exists()
 * This function tests the existence of a card set,
@@ -259,12 +260,14 @@ function mark_cards($col, $num) { //col provided here to speed up search in the 
 * Each card can be a winner in many patterns at the same time
 */
 function check_bingo ($numberinplay) {
-	global $winningpatternarray;
 	global $setid;
 
 	$set=load_set();
 	$numcards = count($set);
-	$winningset = load_winning_patterns();
+	
+	// Load enabled patterns from new system
+	$patterns = get_enabled_patterns();
+	$pattern_list = array_values($patterns); // Re-index from 0
 
 	$new_winners = load_new_winners(); //load the latest winner array
 
@@ -278,19 +281,13 @@ function check_bingo ($numberinplay) {
 
 	for ($n=0; $n<min($numberinplay,$numcards);$n++) {  //checking each card
 
-		for ($p=0; $p<count($winningpatternarray); $p++) { //cycle through all winning patterns
-					//** optimize conditions
-		
-			if ($winningpatternarray [$p]!= "on") {
-				$new_winners[$n][$p]=false;
-				continue;  // go to the next pattern if user doesn't want this pattern checked
-			}
+		for ($p=0; $p<count($pattern_list); $p++) { //cycle through all winning patterns
+			$pattern = $pattern_list[$p];
+			
 			if (isset($new_winners[$n][$p]) && $new_winners[$n][$p]) continue; //this card already won against this pattern, no test required
 
-
-			//normal bingo
-			if ($p==0) { //normal bingo
-
+			//normal bingo (special pattern)
+			if ($pattern['is_special']) {
 				for ($c=0; $c<5; $c++) {
 					$rowbingo=true; //assume there is bingo in rows and prove wrong
 					$colbingo=true; //assume there is bingo in columns and prove wrong
@@ -299,13 +296,13 @@ function check_bingo ($numberinplay) {
 						if (!$set[$n][$r][$c]["checked"]) $rowbingo=false; //as soon as one is not checked
 					} //end of that column/row, if we still have either bingo, we have a winner
 					if ($rowbingo||$colbingo){
-						$new_winners[$n][0]=true;  //current winning pattern is good, normal bingo
-						break 2; //no need to keep checking for this pattern
-					} else $new_winners[$n][0]=false;
+						$new_winners[$n][$p]=true;  //current winning pattern is good, normal bingo
+						break; //exit column loop, continue to next pattern
+					} else $new_winners[$n][$p]=false;
 				}
 				
 				//if it is still not a winner, check the diagonals
-				if (!isset($new_winners[$n][0]) or !$new_winners[$n][0]) { 
+				if (!isset($new_winners[$n][$p]) or !$new_winners[$n][$p]) { 
 					$bingod1=true; //assume there is bingo in diagonals, prove wrong
 					$bingod2=true;
 					for ($d=0; $d<5 ; $d++) {
@@ -313,27 +310,25 @@ function check_bingo ($numberinplay) {
 						if (!$set[$n][$d][4-$d]["checked"]) $bingod2=false;
 					}
 					if ($bingod1||$bingod2) {
-						$new_winners[$n][0]=true;
-					} else $new_winners[$n][0]=false;
+						$new_winners[$n][$p]=true;
+					} else $new_winners[$n][$p]=false;
 				}
-				
-			} //if $p==0
-			
-			//for all patterns but normal bingo
-			//check all the "winning squares" against the current card
-			//by loading the appropriate card of the "winningpatterns" set
-			//stop at the first unmatching square
+			} 
+			//for all grid-based patterns
 			else {
-				for ($c=0; $c<5; $c++) {
-					for ($r=0; $r<5;	$r++) {
-						if ($winningset[$p-1][$c][$r]["checked"] && !$set[$n][$c][$r]["checked"]) {
-							$new_winners[$n][$p]=false; //as soon as one square is not checked, not a winner
-							continue 3; //break from loop 1, loop 2, continue testing at the next pattern
-						}
+				$grid = $pattern['grid'];
+				$is_winner = true;
+				
+				// Check if all required squares are checked
+				foreach ($grid as $square) {
+					if (!$set[$n][$square['col']][$square['row']]["checked"]) {
+						$is_winner = false;
+						break;
 					}
 				}
-				$new_winners[$n][$p]=true; //if it made it here, this pattern is winning
-			} //if $p!= 0
+				
+				$new_winners[$n][$p] = $is_winner;
+			}
 
 		} // end for
 
@@ -407,8 +402,9 @@ function draws_table() { //table of all numbers drawn
 * Each winning card number is displayed with its view link.
 */
 function winners_table() {
-	global $patternkeywords;
-	global $winningpatternarray;
+	// Load enabled patterns from new system
+	$patterns = get_enabled_patterns();
+	$pattern_list = array_values($patterns); // Re-index from 0
 
 	$winners = load_new_winners();
 
@@ -416,50 +412,30 @@ function winners_table() {
 
 	echo '<table width="100%" border=1><tr>';
 
-	for ($patterncountdown=count($winningpatternarray)-1; $patterncountdown >= 0; $patterncountdown--) { //for all winning patterns
-
-		if ($winningpatternarray[$patterncountdown]!="on") continue; // if pattern not selected, continue to the next one
+	for ($patterncountdown=count($pattern_list)-1; $patterncountdown >= 0; $patterncountdown--) { //for all winning patterns
+		$pattern = $pattern_list[$patterncountdown];
 
 		//write the title of the winning pattern
-		echo '<td nowrap valign="top" align=center><font size="1"><b>'.$patternkeywords[$patterncountdown].'</b></font><br>';
+		echo '<td nowrap valign="top" align=center><font size="1"><b>'.htmlspecialchars($pattern['name']).'</b></font><br>';
 
-            //Place graphic to match winning pattern
-            switch ($patternkeywords[$patterncountdown]) {
-					case 'Normal':
-                                    echo '<img src="images/nc.gif">';
-                                    break;
-					case 'Four Corners':
-                                    echo '<img src="images/fc.gif">';
-                                    break;
-					case 'Cross-Shaped':
-                                    echo '<img src="images/cs.gif">';
-                                    break;
-					case 'T-Shaped':
-                                    echo '<img src="images/ts.gif">';
-                                    break;
-					case 'X-Shaped':
-                                    echo '<img src="images/xs.gif">';
-                                    break;
-					case '+ Shaped':
-                                    echo '<img src="images/ps.gif">';
-                                    break;
-					case 'Z-Shaped':
-                                    echo '<img src="images/zs.gif">';
-                                    break;
-					case 'N-Shaped':
-                                    echo '<img src="images/ns.gif">';
-                                    break;
-					case 'Box Shaped':
-                                    echo '<img src="images/bs.gif">';
-                                    break;
-					case 'Square Shaped':
-                                    echo '<img src="images/ss.gif">';
-                                    break;
-					case 'Full Card':
-                                    echo '<img src="images/ffc.gif">';
-                                    break;
-
-            } //end switch
+            //Place graphic to match winning pattern (if exists)
+            $image_map = [
+                'Normal' => 'nc.gif',
+                'Four Corners' => 'fc.gif',
+                'Cross-Shaped' => 'cs.gif',
+                'T-Shaped' => 'ts.gif',
+                'X-Shaped' => 'xs.gif',
+                '+ Shaped' => 'ps.gif',
+                'Z-Shaped' => 'zs.gif',
+                'N-Shaped' => 'ns.gif',
+                'Box Shaped' => 'bs.gif',
+                'Square Shaped' => 'ss.gif',
+                'Blackout (Full Card)' => 'ffc.gif'
+            ];
+            
+            if (isset($image_map[$pattern['name']]) && file_exists('images/' . $image_map[$pattern['name']])) {
+                echo '<img src="images/' . $image_map[$pattern['name']] . '">';
+            }
 
             echo '</td><td><table cols=12><tr>';
 

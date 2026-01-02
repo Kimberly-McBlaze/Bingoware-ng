@@ -239,7 +239,7 @@ $patterns = load_patterns();
               <div class="pattern-name">
                 <?= htmlspecialchars($pattern['name']); ?>
                 <?php if ($pattern['enabled']): ?>
-                  <span class="badge badge-success pattern-status">ENABLED</span>
+                  <span class="badge badge-success">ENABLED</span>
                 <?php endif; ?>
                 <?php if ($pattern['is_default']): ?>
                   <span class="badge badge-default">DEFAULT</span>
@@ -275,7 +275,7 @@ $patterns = load_patterns();
           <?php endforeach; ?>
         </div>
         <div id="saveButtonContainer" style="margin-top: 1rem; text-align: right; display: none;">
-          <button class="btn btn-primary" onclick="savePatternChanges()">💾 Save Changes</button>
+          <button class="btn btn-primary" onclick="savePatternChanges(event)">💾 Save Changes</button>
           <button class="btn btn-secondary" onclick="cancelPatternChanges()">Cancel</button>
         </div>
       </div>
@@ -477,7 +477,7 @@ function markPatternChanged(patternId, enabled) {
 }
 
 // Save all pending pattern changes
-async function savePatternChanges() {
+async function savePatternChanges(event) {
   if (Object.keys(pendingChanges).length === 0) {
     return;
   }

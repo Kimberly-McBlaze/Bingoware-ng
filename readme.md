@@ -145,6 +145,8 @@ Both modes fully support winner detection.
 - Winner indicator displays near number generation controls
 - Shows real-time winner count without requiring scroll
 - Visual feedback with trophy icon when winners are detected
+- Improved winning pattern customization, allowing for more customization options.
+- Moved card customization to its own menu.
 
 ### v2.1 - January 1, 2026
 - Modernized the UI
@@ -251,6 +253,7 @@ have multiple sets of Bingo cards that do not overwrite one another
 ## 📄 License
 
 Open-source. See license file or original project for details.
+
 
 
 

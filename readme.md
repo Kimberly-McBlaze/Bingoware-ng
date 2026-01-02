@@ -12,7 +12,11 @@ This project updates the original codebase for **PHP 8.2+** while preserving its
 - 🖨️ View and print Bingo cards
 - 🔢 Automatic or manual number draws
 - 🏆 Automatic detection of winning cards
-- 🧩 Support for multiple winning patterns
+- 🧩 Support for multiple winning patterns with full CRUD management
+  - ✏️ Create custom winning patterns
+  - 📝 Edit existing patterns using interactive grid editor
+  - 🗑️ Delete patterns you no longer need
+  - 🔄 Factory reset to restore default patterns
 - 🆔 Multiple independent card sets via Set IDs
 - 🌐 Works in all modern browsers
 
@@ -142,6 +146,13 @@ Both modes fully support winner detection.
 ### v2.1 - January 1, 2026
 - Modernized the UI
 - Added light/dark mode toggle
+- **Pattern Management Overhaul**:
+  - Full CRUD support for winning patterns (Create, Read, Update, Delete)
+  - Added "Add New Pattern" feature
+  - Added "Factory Reset" to restore default patterns
+  - JSON-based storage for patterns (improved security over PHP serialization)
+  - Dynamic pattern list in Configure page
+- Updated branding to "Bingoware-ng" throughout the application
 - Quality of life improvements
 
 ### v2.0.1 — January 1, 2026
@@ -218,7 +229,7 @@ have multiple sets of Bingo cards that do not overwrite one another
 
 ## 🛠️ Roadmap
 
-- Add ability to add, modify, and delete winning patterns
+- ~~Add ability to add, modify, and delete winning patterns~~ ✅ **Completed in v2.1**
 - Add an external bingo number board along with a display that shows the current number being called, useful if you want to mirror that info to a second monitor for your guests to see, just like in real life.
 - More to be determined later.
 

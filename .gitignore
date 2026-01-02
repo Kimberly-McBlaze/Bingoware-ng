@@ -1,3 +1,4 @@
 .project
 data/
+!data/winningpatterns.defaults.json
 sets/

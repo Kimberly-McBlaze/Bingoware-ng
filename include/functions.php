@@ -264,6 +264,11 @@ function check_bingo ($numberinplay) {
 
 	$set=load_set();
 	$numcards = count($set);
+	
+	// Load patterns from new JSON store
+	$jsonPatterns = load_patterns_json();
+	
+	// For backward compatibility, also load old patterns
 	$winningset = load_winning_patterns();
 
 	$new_winners = load_new_winners(); //load the latest winner array
@@ -278,64 +283,72 @@ function check_bingo ($numberinplay) {
 
 	for ($n=0; $n<min($numberinplay,$numcards);$n++) {  //checking each card
 
-		for ($p=0; $p<count($winningpatternarray); $p++) { //cycle through all winning patterns
-					//** optimize conditions
-		
-			if ($winningpatternarray [$p]!= "on") {
-				$new_winners[$n][$p]=false;
-				continue;  // go to the next pattern if user doesn't want this pattern checked
-			}
-			if (isset($new_winners[$n][$p]) && $new_winners[$n][$p]) continue; //this card already won against this pattern, no test required
-
-
-			//normal bingo
-			if ($p==0) { //normal bingo
-
+		// Check pattern 0 (Normal) if enabled
+		$p = 0;
+		if ($winningpatternarray[$p] == "on") {
+			if (!isset($new_winners[$n][$p]) || !$new_winners[$n][$p]) {
+				//normal bingo - check rows, columns, diagonals
+				$winner = false;
+				
 				for ($c=0; $c<5; $c++) {
 					$rowbingo=true; //assume there is bingo in rows and prove wrong
 					$colbingo=true; //assume there is bingo in columns and prove wrong
 					for ($r=0; $r<5;$r++) {
-						if (!$set[$n][$c][$r]["checked"]) $colbingo=false; //as soon as one is not checked
-						if (!$set[$n][$r][$c]["checked"]) $rowbingo=false; //as soon as one is not checked
-					} //end of that column/row, if we still have either bingo, we have a winner
+						if (!$set[$n][$c][$r]["checked"]) $colbingo=false;
+						if (!$set[$n][$r][$c]["checked"]) $rowbingo=false;
+					}
 					if ($rowbingo||$colbingo){
-						$new_winners[$n][0]=true;  //current winning pattern is good, normal bingo
-						break 2; //no need to keep checking for this pattern
-					} else $new_winners[$n][0]=false;
+						$winner = true;
+						break;
+					}
 				}
 				
 				//if it is still not a winner, check the diagonals
-				if (!isset($new_winners[$n][0]) or !$new_winners[$n][0]) { 
+				if (!$winner) { 
 					$bingod1=true; //assume there is bingo in diagonals, prove wrong
 					$bingod2=true;
 					for ($d=0; $d<5 ; $d++) {
-						if (!$set[$n][$d][$d]["checked"]) $bingod1=false; //as soon as one item from diagonal is not checked
+						if (!$set[$n][$d][$d]["checked"]) $bingod1=false;
 						if (!$set[$n][$d][4-$d]["checked"]) $bingod2=false;
 					}
 					if ($bingod1||$bingod2) {
-						$new_winners[$n][0]=true;
-					} else $new_winners[$n][0]=false;
-				}
-				
-			} //if $p==0
-			
-			//for all patterns but normal bingo
-			//check all the "winning squares" against the current card
-			//by loading the appropriate card of the "winningpatterns" set
-			//stop at the first unmatching square
-			else {
-				for ($c=0; $c<5; $c++) {
-					for ($r=0; $r<5;	$r++) {
-						if ($winningset[$p-1][$c][$r]["checked"] && !$set[$n][$c][$r]["checked"]) {
-							$new_winners[$n][$p]=false; //as soon as one square is not checked, not a winner
-							continue 3; //break from loop 1, loop 2, continue testing at the next pattern
-						}
+						$winner = true;
 					}
 				}
-				$new_winners[$n][$p]=true; //if it made it here, this pattern is winning
-			} //if $p!= 0
-
-		} // end for
+				
+				$new_winners[$n][0] = $winner;
+			}
+		} else {
+			$new_winners[$n][0] = false;
+		}
+		
+		// Check patterns from JSON store (patterns 1-N)
+		foreach ($jsonPatterns as $pattern) {
+			if (!$pattern['enabled']) {
+				$p = $pattern['id']; // Use pattern ID as index
+				$new_winners[$n][$p] = false;
+				continue;
+			}
+			
+			$p = $pattern['id'];
+			
+			// Skip if already won
+			if (isset($new_winners[$n][$p]) && $new_winners[$n][$p]) {
+				continue;
+			}
+			
+			// Check if card matches this pattern
+			$winner = true;
+			foreach ($pattern['mask'] as $cell) {
+				list($c, $r) = $cell;
+				if (!$set[$n][$c][$r]["checked"]) {
+					$winner = false;
+					break;
+				}
+			}
+			
+			$new_winners[$n][$p] = $winner;
+		}
 
 	} //for each card
 
@@ -411,68 +424,98 @@ function winners_table() {
 	global $winningpatternarray;
 
 	$winners = load_new_winners();
-
 	$old_winners = load_old_winners(); //to be indicated in a different color
+	
+	// Load patterns from JSON store
+	$jsonPatterns = load_patterns_json();
+	
+	// Build a combined list of patterns to display
+	$displayPatterns = [];
+	
+	// Add pattern 0 (Normal) if enabled
+	if ($winningpatternarray[0] == "on") {
+		$displayPatterns[] = [
+			'id' => 0,
+			'name' => 'Normal',
+			'enabled' => true
+		];
+	}
+	
+	// Add patterns from JSON store
+	foreach ($jsonPatterns as $pattern) {
+		if ($pattern['enabled']) {
+			$displayPatterns[] = $pattern;
+		}
+	}
+	
+	// Sort by ID descending for display (highest first)
+	usort($displayPatterns, function($a, $b) {
+		return $b['id'] - $a['id'];
+	});
 
 	echo '<table width="100%" border=1><tr>';
 
-	for ($patterncountdown=count($winningpatternarray)-1; $patterncountdown >= 0; $patterncountdown--) { //for all winning patterns
-
-		if ($winningpatternarray[$patterncountdown]!="on") continue; // if pattern not selected, continue to the next one
-
+	foreach ($displayPatterns as $pattern) {
+		$patternId = $pattern['id'];
+		$patternName = $pattern['name'];
+		
 		//write the title of the winning pattern
-		echo '<td nowrap valign="top" align=center><font size="1"><b>'.$patternkeywords[$patterncountdown].'</b></font><br>';
+		echo '<td nowrap valign="top" align=center><font size="1"><b>'.htmlspecialchars($patternName).'</b></font><br>';
 
-            //Place graphic to match winning pattern
-            switch ($patternkeywords[$patterncountdown]) {
-					case 'Normal':
-                                    echo '<img src="images/nc.gif">';
-                                    break;
-					case 'Four Corners':
-                                    echo '<img src="images/fc.gif">';
-                                    break;
-					case 'Cross-Shaped':
-                                    echo '<img src="images/cs.gif">';
-                                    break;
-					case 'T-Shaped':
-                                    echo '<img src="images/ts.gif">';
-                                    break;
-					case 'X-Shaped':
-                                    echo '<img src="images/xs.gif">';
-                                    break;
-					case '+ Shaped':
-                                    echo '<img src="images/ps.gif">';
-                                    break;
-					case 'Z-Shaped':
-                                    echo '<img src="images/zs.gif">';
-                                    break;
-					case 'N-Shaped':
-                                    echo '<img src="images/ns.gif">';
-                                    break;
-					case 'Box Shaped':
-                                    echo '<img src="images/bs.gif">';
-                                    break;
-					case 'Square Shaped':
-                                    echo '<img src="images/ss.gif">';
-                                    break;
-					case 'Full Card':
-                                    echo '<img src="images/ffc.gif">';
-                                    break;
+		//Place graphic to match winning pattern
+		switch ($patternName) {
+			case 'Normal':
+				echo '<img src="images/nc.gif">';
+				break;
+			case 'Four Corners':
+				echo '<img src="images/fc.gif">';
+				break;
+			case 'Cross-Shaped':
+				echo '<img src="images/cs.gif">';
+				break;
+			case 'T-Shaped':
+				echo '<img src="images/ts.gif">';
+				break;
+			case 'X-Shaped':
+				echo '<img src="images/xs.gif">';
+				break;
+			case '+ Shaped':
+				echo '<img src="images/ps.gif">';
+				break;
+			case 'Z-Shaped':
+				echo '<img src="images/zs.gif">';
+				break;
+			case 'N-Shaped':
+				echo '<img src="images/ns.gif">';
+				break;
+			case 'Box Shaped':
+				echo '<img src="images/bs.gif">';
+				break;
+			case 'Square Shaped':
+				echo '<img src="images/ss.gif">';
+				break;
+			case 'Blackout (Full Card)':
+			case 'Full Card':
+				echo '<img src="images/ffc.gif">';
+				break;
+			default:
+				// For custom patterns, show a generic icon or no icon
+				echo '<span style="font-size: 40px;">🎯</span>';
+				break;
+		}
 
-            } //end switch
-
-            echo '</td><td><table cols=12><tr>';
+		echo '</td><td><table cols=12><tr>';
 
 		$wincounter = 0;  // counts the number of winning cards per pattern for line return
 		// and enables the No winners yet! msg for each category
 		if ($winners!=null) {
 
 			for ($i =0; $i<count($winners); $i++) {  //cycle through all cards
-				if (isset($winners[$i][$patterncountdown]) && $winners[$i][$patterncountdown]) {
+				if (isset($winners[$i][$patternId]) && $winners[$i][$patternId]) {
 					$wincounter++;
 
 					//if this card pattern combinations was already true, black, else red.					
-					$color = ($old_winners[$i][$patterncountdown])? "#000000":"#ff5555";
+					$color = (isset($old_winners[$i][$patternId]) && $old_winners[$i][$patternId])? "#000000":"#ff5555";
 
 					//Resize card numbers to fit background image
 					if ($i<100) $font_size="3";
@@ -787,6 +830,214 @@ function display_interactive_card($cardnumber) {
 	return $hiddenstring;
 }
 
+/** load_patterns_json()
+* Load patterns from the new JSON-based storage system.
+* If the patterns.json file doesn't exist, it will be created from defaults.
+* Returns an array of pattern objects with structure:
+* [
+*   {
+*     "id": 1,
+*     "name": "Pattern Name",
+*     "mask": [[col, row], ...],
+*     "isPreinstalled": true/false,
+*     "enabled": true/false
+*   },
+*   ...
+* ]
+*/
+function load_patterns_json() {
+	// Ensure data directory exists
+	if (!file_exists("data")) {
+		@mkdir("data", 0755, true);
+	}
+	
+	$patternsFile = "data/patterns.json";
+	
+	// If patterns.json doesn't exist, create it from defaults
+	if (!file_exists($patternsFile)) {
+		$defaultsFile = "data/winningpatterns.defaults.json";
+		if (file_exists($defaultsFile)) {
+			$patterns = json_decode(file_get_contents($defaultsFile), true);
+			// Add enabled state based on current settings
+			global $winningpatternarray;
+			foreach ($patterns as &$pattern) {
+				$patternIndex = $pattern['id']; // IDs 1-10 map to patterns 1-10
+				$pattern['enabled'] = isset($winningpatternarray[$patternIndex]) && $winningpatternarray[$patternIndex] === 'on';
+			}
+			save_patterns_json($patterns);
+			return $patterns;
+		}
+		return [];
+	}
+	
+	$json = file_get_contents($patternsFile);
+	$patterns = json_decode($json, true);
+	return is_array($patterns) ? $patterns : [];
+}
+
+/** save_patterns_json()
+* Save patterns to the new JSON-based storage system.
+*/
+function save_patterns_json($patterns) {
+	// Ensure data directory exists
+	if (!file_exists("data")) {
+		@mkdir("data", 0755, true);
+	}
+	
+	$patternsFile = "data/patterns.json";
+	$json = json_encode($patterns, JSON_PRETTY_PRINT);
+	
+	if ($json === false) {
+		error_log("JSON encoding failed for patterns");
+		return false;
+	}
+	
+	if (@file_put_contents($patternsFile, $json) === false) {
+		error_log("Failed to save patterns to $patternsFile");
+		return false;
+	}
+	return true;
+}
+
+/** get_pattern_by_id()
+* Get a single pattern by its ID from the JSON store.
+*/
+function get_pattern_by_id($id) {
+	$patterns = load_patterns_json();
+	foreach ($patterns as $pattern) {
+		if ($pattern['id'] == $id) {
+			return $pattern;
+		}
+	}
+	return null;
+}
+
+/** add_pattern_json()
+* Add a new pattern to the JSON store.
+* Returns the new pattern ID.
+*/
+function add_pattern_json($name, $mask = []) {
+	$patterns = load_patterns_json();
+	
+	// Find the next available ID
+	$maxId = 0;
+	foreach ($patterns as $pattern) {
+		if ($pattern['id'] > $maxId) {
+			$maxId = $pattern['id'];
+		}
+	}
+	
+	$newPattern = [
+		'id' => $maxId + 1,
+		'name' => $name,
+		'mask' => $mask,
+		'isPreinstalled' => false,
+		'enabled' => false
+	];
+	
+	$patterns[] = $newPattern;
+	save_patterns_json($patterns);
+	
+	return $newPattern['id'];
+}
+
+/** update_pattern_json()
+* Update an existing pattern in the JSON store.
+*/
+function update_pattern_json($id, $name = null, $mask = null, $enabled = null) {
+	$patterns = load_patterns_json();
+	$updated = false;
+	
+	foreach ($patterns as &$pattern) {
+		if ($pattern['id'] == $id) {
+			if ($name !== null) {
+				$pattern['name'] = $name;
+			}
+			if ($mask !== null) {
+				$pattern['mask'] = $mask;
+			}
+			if ($enabled !== null) {
+				$pattern['enabled'] = $enabled;
+			}
+			$updated = true;
+			break;
+		}
+	}
+	
+	if ($updated) {
+		save_patterns_json($patterns);
+	}
+	
+	return $updated;
+}
+
+/** delete_pattern_json()
+* Delete a pattern from the JSON store.
+*/
+function delete_pattern_json($id) {
+	$patterns = load_patterns_json();
+	$newPatterns = [];
+	$deleted = false;
+	
+	foreach ($patterns as $pattern) {
+		if ($pattern['id'] != $id) {
+			$newPatterns[] = $pattern;
+		} else {
+			$deleted = true;
+		}
+	}
+	
+	if ($deleted) {
+		save_patterns_json($newPatterns);
+	}
+	
+	return $deleted;
+}
+
+/** reset_patterns_to_defaults()
+* Reset all patterns to factory defaults.
+*/
+function reset_patterns_to_defaults() {
+	$defaultsFile = "data/winningpatterns.defaults.json";
+	if (!file_exists($defaultsFile)) {
+		return false;
+	}
+	
+	$patterns = json_decode(file_get_contents($defaultsFile), true);
+	// Set all patterns to enabled by default on reset
+	foreach ($patterns as &$pattern) {
+		$pattern['enabled'] = true;
+	}
+	
+	save_patterns_json($patterns);
+	return true;
+}
+
+/** pattern_mask_to_card_format()
+* Convert a pattern mask (array of [col, row] pairs) to the old card format
+* used by load_winning_patterns() for backward compatibility.
+*/
+function pattern_mask_to_card_format($mask) {
+	$card = [];
+	
+	// Initialize all cells as unchecked
+	for ($col = 0; $col < 5; $col++) {
+		for ($row = 0; $row < 5; $row++) {
+			$card[$col][$row] = [
+				'number' => ($col * 15 + $row + 1), // Dummy number
+				'checked' => false
+			];
+		}
+	}
+	
+	// Mark the cells in the mask as checked
+	foreach ($mask as $cell) {
+		list($col, $row) = $cell;
+		$card[$col][$row]['checked'] = true;
+	}
+	
+	return $card;
+}
 
 
 ?>

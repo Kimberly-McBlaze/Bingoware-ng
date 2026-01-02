@@ -86,10 +86,16 @@ When creating or editing patterns:
 
 During a bingo game:
 1. Only **enabled** patterns are checked for winners
-2. Each time a number is drawn, all cards are checked against all enabled patterns
+2. Each time a number is drawn, all cards are checked **immediately** against all enabled patterns
 3. If a card matches all required squares for a pattern, it's marked as a winner
 4. Multiple patterns can trigger on the same card
 5. Winners are displayed at the bottom of the Play page, grouped by pattern
+
+### Winner Checking Performance
+- Winner checking happens **immediately** after each number is drawn
+- The system uses optimized algorithms with early exit conditions
+- For custom patterns, checking is as fast as built-in patterns
+- If you notice delays, they may be due to browser rendering with large card sets, not the checking logic itself
 
 ## Migration from Old System
 
@@ -104,6 +110,7 @@ If you're upgrading from an older version of Bingoware-ng:
 ### Pattern not appearing in game
 - Verify the pattern is **enabled** (green ENABLED badge)
 - Make sure at least one square is selected in the pattern grid
+- Click **Save Changes** if you modified any enabled checkboxes
 - Restart the game to apply pattern changes
 
 ### Cannot delete a pattern
@@ -113,6 +120,13 @@ If you're upgrading from an older version of Bingoware-ng:
 ### Duplicate name error
 - Pattern names must be unique across all patterns
 - Try using a different name or adding a suffix (e.g., "L-Shaped v2")
+- This error should no longer appear when simply enabling/disabling patterns
+
+### Enabling/Disabling Patterns
+- Changes to pattern enable/disable status are **not** saved automatically
+- Toggle checkboxes to mark patterns you want to enable or disable
+- Click the **Save Changes** button to apply your changes
+- Click **Cancel** to revert to the previous state
 
 ## Best Practices
 

@@ -297,7 +297,7 @@ function check_bingo ($numberinplay) {
 					} //end of that column/row, if we still have either bingo, we have a winner
 					if ($rowbingo||$colbingo){
 						$new_winners[$n][$p]=true;  //current winning pattern is good, normal bingo
-						break 2; //no need to keep checking for this pattern
+						break; //exit column loop, continue to next pattern
 					} else $new_winners[$n][$p]=false;
 				}
 				

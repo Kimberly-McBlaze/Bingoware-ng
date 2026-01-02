@@ -1,145 +1,56 @@
 <?php
-include_once ("include/constants.php");
 
-/* -------------- User configuration ------------- */
+/*  Bingoware 1.5 Settings file. Use Options-Page.
+ *  Created by LamboLloyd and Kimberly McBlaze
+ */
 
+$lightThemes = array("themehollow", "themeclassic", "thememodern", "themebase");
+$darkThemes = array("themedark", "themeloader", "themetime", "themejungle", "themekiyat", "themetrans" );
 
-/* the variable setid allows the user to create different sets of cards
-* The setid will appear in front of the card number: for example, if choosing
-* setid to be 'A', the cards will be numbered from A0001 to ...
-* The setid is also used with the filenames so that the user can transfer sets from
-* one server to the next.  It also prevents the specific sets from being overwritten.
-* The files will be named set.A.dat, winners.A.dat, and draws.A.dat.  If no file is found
-* with the current setid, the user will be invited to generate a new set.
-* Therefore if the user wants to keep the current set untouched, a simple change to the
-* variabe below will behave as if there was no set generated.  Changing the setid back
-* to the original will force the program to reopen the previous card set.
-*/
-$setid='A';
+/*
+ * current - which theme file to load by default.
+ * viewheader - whether or not the fortnite header is displayed.
+ * viewfooter - whether or not the footer is displayed.
+ * viewdesc - whether or not the description is displayed.
+ * viewrules - whether or not the rules and level file name is displayed.
+ * viewback - whether or not the background is displayed.
+ * viewtitle - whether or not the title is displayed.
+ * viewdifficulty - whether or not the difficulty selection is displayed.
+ * viewnewgame - whether or not new game button is displayed.
+ * viewreset - whether or not the reset game button is displayed.
+ * viewnav - whether or not the navigation bar is displayed.
+ * viewoptions - whether or not the options and configuration files are displayed.
+ * viewbigboard - whether or not big board is displayed.
+ * viewdev - whether or not developer tools are displayed.
+ * viewcredits - whether or not the credits button is displayed.
+ * viewgenerator - whether or not the generator is displayed.
+ * viewstyles - whether or not the style switcher is displayed.
+ */
 
-/* Pagetitle
-* The pagetitle displayed on the top of the browser window can be changed as well.
-* As of version 1.5, the page title cannot be changed by a crafted URL.
-*/
-$pagetitleconfig='Welcome to Bingoware';
+$settings = array(
 
-//if pagetitleconfig empty, set to version number
-$pagetitle =($pagetitleconfig =='')?$version:$pagetitleconfig;
+//General Settings
 
-/* This parameter allows the user to choose the winning criterias, according to the
-* following codes:
-*
-* 0: regular Bingo rules (any row, any column or any diagonal)
-* 1: full card
-* 2: square (perimeter)
-* 3: cross (squares I-0, N-All, G-0)
-* 4: T shape (squares All-0, N-All)
-* 5: Z shape (squares All-0, All-4, G-1, N-2, I-3)
-* 6: N shape (squares B-All, O-All, I-3, N-2, G-1)
-* 7: + shape (squares N-All, All-2)
-* 8: X shape (two diagonals)
-* 9: Box shaped (all but perimeter)
-* 10: User-defined winning pattern
-*
-* NOTE: Changing the winning pattern in the middle of a game will produce undesired results
-*/
-$winningpattern0='on';
-$winningpattern1='on';
-$winningpattern2='';
-$winningpattern3='';
-$winningpattern4='';
-$winningpattern5='';
-$winningpattern6='';
-$winningpattern7='';
-$winningpattern8='';
-$winningpattern9='';
-$winningpattern10='';
+	"current" => "themeclassic",
+	"viewheader" => true,
+	"viewfooter" => true,
+	"viewdesc" => true,
+	"viewrules" => true,
+	"viewback" => true,
+	"viewtitle" => true,
+	"viewdifficulty" => true,
+	"viewnewgame" => true,
+	"viewreset" => true,
+	"viewnav" => true,
+	"viewoptions" => true,
+	"viewbigboard" => false,
+	"viewdev" => false,
+	"viewcredits" => true,
+	"viewgenerator" => true,
+	"viewstyles" => true,
+	"viewfootertext" => "<center><footer><p>Created with Bingoware-ng (based on Bingoware 1.5)</p></footer></center>",
+	"printfooter" => "Created with Bingoware-ng (based on Bingoware 1.5)"
 
-$winningpatternarray = array ($winningpattern0,$winningpattern1, $winningpattern2, $winningpattern3, $winningpattern4,
-$winningpattern5, $winningpattern6, $winningpattern7, $winningpattern8, $winningpattern9, $winningpattern10);
-
-/* Name File
-* The game can read a list of names from a text file and display the names on each of the cards.
-* This feature is ideal for people that would like to customize the cards by printing each
-* person's name on the cards.  The file name must be a text file without blank lines name
-* names.A.dat where A is the applicable setID.  If the number of names is smaller than
-* the number of generated cards, the remaining cards will not have a name.  If the number
-* of names is greater than the number of cards, the remaining names will not be considered.
-*/
-$namefile='';
-
-/* Print Rules
-* Bingoware will insert a rules page between each card when viewing for printing is this option
-* is selected.  The rules file must be called rules.txt and is best used when your printer
-* is set to print double-sided
-*/
-$printrules='';
-
-
-/* Draw Mode
-* The game play mode can be "automatic" or "manual", and indicates how the random bingo numbers
-* are generated.  For Bingoware to draw the numbers for you, use "automatic".  If you are
-* using a different physical device to draw the numbers for you, the "manual" setting will
-* let you enter the drawn numbers into Bingoware so that you can still discover which are
-* the winning cards.
-* Changing of this setting should be done from the configure menu item.
-*/
-$drawmode='automatic';
-
-/* Four Per Page
-* When printing the cards, you have the otion of printing only one card per page or printing
-* four cards per page.  The rest of the program is unaffected.  The only difference is seen
-* when printing the cards, i.e., show all.
-*/
-$fourperpage='';
-
-/* View header
-* This variable may contain HTML and will be printed at the top of each
-* page viewed (when viewing one card)
-* You should ensure to close your HTML tags so you do not disrupt the display
-* of the cards.
-*/
-$viewheader='<center><b><font size="+4">B I N G O</font></b></center>';
-
-/* View footer
-* This variable may contain HTML and will be printed at the bottom of each
-* page viewed (when viewing one card)
-* You should ensure to close your HTML tags so you do not disrupt the display
-* of the cards.
-*/
-$viewfooter='<center><b>Created with Bingoware 1.5</b><br><br><a href="javascript:window.close();">close window</a></center>';
-
-
-/* Print header
-* This variable may contain HTML and will be printed at the top of each
-* page (when viewing all cards)
-* You should ensure to close your HTML tags so you do not disrupt the display
-* of the cards.
-*/
-$printheader='<center><b><font size="+6">Bingo Card</font></b></center>';
-
-
-/* Print footer
-* This variable may contain HTML and will be printed at the bottom of each
-* page (when viewing all cards)
-* You should ensure to close your HTML tags so you do not disrupt the display
-* of the cards.
-*/
-$printfooter='<center><b><font size="-1">Created with Bingoware 1.5</font></b></center>';
-
-
-/* color settings
-* Several users have expressed their difficulty in changing font colours and background colors for display
-* and printing of the cards. Fear no more!  You can change the colours right from the configuration page now.
-*
-*/
-
-$headerfontcolor='#CC00CC';
-$headerbgcolor='#3333FF';
-$mainfontcolor='#0000CC';
-$mainbgcolor='#9999FF';
-$selectedfontcolor='#FF0000';
-$selectedbgcolor='#FFFF66';
-$bordercolor='#000000';
+);
 
 ?>

@@ -137,8 +137,23 @@ Only those cards will be checked for winners.
 Both modes fully support winner detection.
 
 ---
+## 🗂️ Known Issues
+- The logic that checks for winning cards is delayed.
+Even when a card meets the winning condition, the system
+doesn’t detect it until several more numbers are drawn.
+So far, AI has been unable to properly fix this issue.
+
 
 ## 🗂️ Changelog
+
+### v2.2 - January 2, 2026
+- Improved winning pattern customization, allowing for more customization options.
+- Moved card customization to its own menu.
+- Added persistent winner indicator on Play Bingo page
+- Winner indicator displays near number generation controls
+- Shows real-time winner count without requiring scroll
+- Visual feedback with trophy icon when winners are detected
+
 
 ### v2.1 - January 1, 2026
 - Modernized the UI
@@ -245,6 +260,9 @@ have multiple sets of Bingo cards that do not overwrite one another
 ## 📄 License
 
 Open-source. See license file or original project for details.
+
+
+
 
 
 

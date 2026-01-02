@@ -640,6 +640,37 @@ function save_new_winners(&$new_winners) {
 	}
 }
 
+/** count_total_winners()
+* This function returns the total number of unique winning cards
+* across all winning patterns.
+*/
+function count_total_winners() {
+	$winners = load_new_winners();
+	
+	if ($winners == null) {
+		return 0;
+	}
+	
+	$unique_winners = [];
+	for ($i = 0; $i < count($winners); $i++) {
+		// Check if this card has won any pattern
+		$has_won = false;
+		if (is_array($winners[$i])) {
+			foreach ($winners[$i] as $pattern_result) {
+				if ($pattern_result) {
+					$has_won = true;
+					break;
+				}
+			}
+		}
+		if ($has_won) {
+			$unique_winners[$i] = true;
+		}
+	}
+	
+	return count($unique_winners);
+}
+
 /** load_name_file()
 * This function attempts to load the word list (wordlist.txt)
 */

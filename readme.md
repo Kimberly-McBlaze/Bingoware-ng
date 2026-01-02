@@ -139,6 +139,12 @@ Both modes fully support winner detection.
 
 ## 🗂️ Changelog
 
+### v2.2 - January 2, 2026
+- Added persistent winner indicator on Play Bingo page
+- Winner indicator displays near number generation controls
+- Shows real-time winner count without requiring scroll
+- Visual feedback with trophy icon when winners are detected
+
 ### v2.1 - January 1, 2026
 - Modernized the UI
 - Added light/dark mode toggle

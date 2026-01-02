@@ -235,7 +235,11 @@ have multiple sets of Bingo cards that do not overwrite one another
 ## 🛠️ Roadmap
 
 - ✅ **COMPLETED:** Full CRUD support for winning patterns - [See documentation](docs/pattern-management.md)
-- Add an external bingo number board along with a display that shows the current number being called, useful if you want to mirror that info to a second monitor for your guests to see, just like in real life.
+  
+- External Number Board & Caller Display: Add support for an external bingo number board with a dedicated display showing the currently called number, allowing easy mirroring to a second screen for player viewing—similar to a real-world bingo hall setup.
+  
+- Virtual Bingo Support: Adapt the software for seamless use in virtual bingo sessions, enabling easy creation, saving, and sharing of individual bingo cards for remote play via video conferencing, radio, or other remote communication methods.
+  
 - More to be determined later.
 
 ## 🛠️ Original author's roadmap (probably won't implement)
@@ -260,6 +264,7 @@ have multiple sets of Bingo cards that do not overwrite one another
 ## 📄 License
 
 Open-source. See license file or original project for details.
+
 
 
 

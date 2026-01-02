@@ -694,3 +694,23 @@ body {
 .gap-1 { gap: 0.5rem; }
 .gap-2 { gap: 1rem; }
 .gap-3 { gap: 1.5rem; }
+
+/* Winner Indicator */
+.winner-indicator {
+  margin-top: 1rem;
+  padding: 1rem;
+  background: var(--bg-secondary);
+  border-radius: 8px;
+  text-align: center;
+  box-shadow: var(--shadow-sm);
+}
+
+.winner-indicator-icon {
+  font-size: 1.5rem;
+  margin-bottom: 0.25rem;
+}
+
+.winner-indicator-text {
+  font-weight: bold;
+  font-size: 1.125rem;
+}

@@ -647,12 +647,13 @@ function save_new_winners(&$new_winners) {
 function count_total_winners() {
 	$winners = load_new_winners();
 	
-	if ($winners == null) {
+	if ($winners === null) {
 		return 0;
 	}
 	
 	$unique_winners = [];
-	for ($i = 0; $i < count($winners); $i++) {
+	$winner_count = count($winners);
+	for ($i = 0; $i < $winner_count; $i++) {
 		// Check if this card has won any pattern
 		$has_won = false;
 		if (is_array($winners[$i])) {

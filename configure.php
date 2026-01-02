@@ -83,8 +83,21 @@
 						//preg_replace will return the original line in any other cases.
 						
 						//if user forgets to choose 1 winning pattern, then the default, pattern 0, is chosen anyways
-						if (($winningpattern0.$winningpattern1.$winningpattern2.$winningpattern3.$winningpattern4.$winningpattern5.
-							$winningpattern6.$winningpattern7.$winningpattern8.$winningpattern9.$winningpattern10)=="" ) $winningpattern0 = 'on';
+						// Check submitted form values (winningpatternform*) and JSON patterns (pattern_enabled)
+						$classicPatterns = array();
+						for ($i = 0; $i <= 10; $i++) {
+							$varName = "winningpatternform" . $i;
+							if (isset($$varName)) {
+								$classicPatterns[] = $$varName;
+							}
+						}
+						$hasClassicPattern = !empty(array_filter($classicPatterns, function($p) { return $p != ""; }));
+						$hasJsonPattern = isset($_POST["pattern_enabled"]) && is_array($_POST["pattern_enabled"]) && !empty($_POST["pattern_enabled"]);
+						
+						// Only default to pattern 0 if no patterns are selected at all
+						if (!$hasClassicPattern && !$hasJsonPattern) {
+							$winningpatternform0 = 'on';
+						}
 						
 						
 						$line = preg_replace("/(setid=').*'/","$1".$setidform."'",$line);

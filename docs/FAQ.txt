@@ -1,5 +1,5 @@
 Bingoware-ng FAQ
-Last edited: 10 December 03
+Last edited: 02 January 2026, previous edit: 10 December 2003
 view online at : http://bingoware.sf.net/faq.php
 -------------------------------------------
 
@@ -90,6 +90,7 @@ NO! Bingoware-ng needs no publicity, it's an open source program. Further, the t
 13. I found a problem with the latest version of Bingoware-ng!
 
 Please let us know! The development team of Bingoware-ng tries it's best to ensure the software is bug free, however, you may have tested Bingoware-ng in a way we have not thought of... Please send us an email and be as specific as possible in explaining the problem you discovered. Thank you!
+
 
 
 -----------------------------------------------------

@@ -574,14 +574,14 @@ function save_draws(&$draws) {
 
 	sort($draws);
 	$fp = fopen("data/draws.".$setid.".dat","w");
-	if ($fp) {
-		fwrite($fp, serialize($draws));
-		fclose($fp);
-		return true;
-	} else {
+	if (!$fp) {
 		error_log("Failed to open data/draws.".$setid.".dat for writing");
 		return false;
 	}
+	
+	fwrite($fp, serialize($draws));
+	fclose($fp);
+	return true;
 }
 
 /** load_old_winners()
@@ -609,14 +609,14 @@ function save_old_winners(&$winners) {
 	global $setid;
 
 	$fp = fopen("data/old_winners.".$setid.".dat","w");
-	if ($fp) {
-		fwrite($fp, serialize($winners));
-		fclose($fp);
-		return true;
-	} else {
+	if (!$fp) {
 		error_log("Failed to open data/old_winners.".$setid.".dat for writing");
 		return false;
 	}
+	
+	fwrite($fp, serialize($winners));
+	fclose($fp);
+	return true;
 }
 
 /** load_new_winners()
@@ -644,14 +644,14 @@ function save_new_winners(&$new_winners) {
 	global $setid;
 
 	$fp = fopen("data/new_winners.".$setid.".dat","w");
-	if ($fp) {
-		fwrite($fp, serialize($new_winners));
-		fclose($fp);
-		return true;
-	} else {
+	if (!$fp) {
 		error_log("Failed to open data/new_winners.".$setid.".dat for writing");
 		return false;
 	}
+	
+	fwrite($fp, serialize($new_winners));
+	fclose($fp);
+	return true;
 }
 
 /** count_total_winners()

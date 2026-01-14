@@ -141,5 +141,3 @@ function validate_json($value, $default = null) {
     
     return $decoded;
 }
-
-?>

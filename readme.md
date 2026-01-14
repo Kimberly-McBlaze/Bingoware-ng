@@ -242,7 +242,7 @@ have multiple sets of Bingo cards that do not overwrite one another
   
 - More to be determined later.
 
-## 🛠️ Original author's roadmap (Not sure if these will be implemented)
+## 🛠️ Original author's roadmap
 
 - Refactoring all the code
 - PHP GD library to create column headers as graphics
@@ -263,6 +263,7 @@ have multiple sets of Bingo cards that do not overwrite one another
 ## 📄 License
 
 Open-source. See license file or original project for details.
+
 
 
 

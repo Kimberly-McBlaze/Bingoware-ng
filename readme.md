@@ -242,13 +242,12 @@ have multiple sets of Bingo cards that do not overwrite one another
   
 - More to be determined later.
 
-## 🛠️ Original author's roadmap (probably won't implement)
+## 🛠️ Original author's roadmap (Not sure if these will be implemented)
 
 - Refactoring all the code
 - PHP GD library to create column headers as graphics
 - A MySQL version which will be much faster than flat file (I hope)
 - Look at sessions to be able to save data without using files to improve speed
-- Ability to change the names of the winning patterns from config file
 - Use of external ini file script instead of current settings.php file
 
 
@@ -264,6 +263,7 @@ have multiple sets of Bingo cards that do not overwrite one another
 ## 📄 License
 
 Open-source. See license file or original project for details.
+
 
 
 

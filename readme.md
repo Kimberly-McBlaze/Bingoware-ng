@@ -143,6 +143,19 @@ Both modes fully support winner detection.
 
 ## 🗂️ Changelog
 
+### v2.5.2 - January 14, 2026
+- **Bug Fixes:**
+  - Fixed flashboard blinking state management where previous numbers would continue blinking after new numbers were drawn
+    - Root cause: `latestNumber` state could become out of sync with the `draws` array during rapid updates or multiple postMessage events
+    - Solution: Refactored flashboard state management to derive `latestNumber` from the `draws` array as single source of truth
+    - The `getLatestNumber()` helper function now ensures consistent state derivation across all update paths
+    - `updateBoard()` now applies the `latest` (blinking) class only after marking all called numbers, ensuring only one number blinks at a time
+  - Fixed "Current Number" display reliability
+    - Current Number display now uses the same derived `latestNumber` value from `draws` array
+    - Eliminates race conditions that could cause the display to show stale values or stop updating
+  - After each draw, exactly one number now blinks (the latest), and all previously drawn numbers remain lit without blinking
+  - Current Number UI now continues to reflect the latest draw reliably during extended gameplay sessions
+
 ### v2.5.1 - January 14, 2026
 - **Bug Fixes:**
   - Fixed flashboard not updating when numbers are drawn during gameplay

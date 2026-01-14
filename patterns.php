@@ -44,6 +44,13 @@ if (isset($_GET['action']) && $_GET['action'] === 'api') {
         exit;
     }
     
+    // Reset patterns to default - Check this BEFORE create/update to avoid false matches
+    if ($method === 'POST' && isset($_POST['reset_to_default'])) {
+        $result = reset_patterns_to_default();
+        echo json_encode($result);
+        exit;
+    }
+    
     // Create pattern
     if ($method === 'POST' && (!isset($_POST['id']) || empty($_POST['id']))) {
         $name = validate_string($_POST['name'] ?? '', 50);
@@ -75,13 +82,6 @@ if (isset($_GET['action']) && $_GET['action'] === 'api') {
         $enabled = isset($_POST['enabled']) ? validate_bool($_POST['enabled']) : null;
         
         $result = update_pattern($id, $name, $description, $grid, $enabled);
-        echo json_encode($result);
-        exit;
-    }
-    
-    // Reset patterns to default
-    if ($method === 'POST' && isset($_POST['reset_to_default'])) {
-        $result = reset_patterns_to_default();
         echo json_encode($result);
         exit;
     }

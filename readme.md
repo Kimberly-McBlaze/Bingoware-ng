@@ -146,6 +146,22 @@ So far, AI has been unable to properly fix this issue.
 
 ## 🗂️ Changelog
 
+### v2.4 - January 14, 2026
+- **Major Refactoring:**
+  - **Separated Patterns API:** Created dedicated `api/patterns.php` endpoint for all pattern CRUD operations
+  - **Extracted Inline Assets:** Moved patterns page CSS to `include/app.css` and JavaScript to `include/patterns-ui.js`
+  - **Storage Utilities:** Created `include/storage.php` with centralized file operations (JSON read/write, atomic writes)
+  - **Bootstrap System:** Created `include/bootstrap.php` for consistent initialization across all entry points
+  - **JavaScript Consolidation:** Enhanced `include/modern-ui.js` with legacy function wrappers (`explain()`, `validate_number()`)
+  - **Winner Checking Module:** Extracted winner checking logic into pure functions in `include/winner_check.php`
+  - **Test Harness:** Added `tests/winner_check_smoke.php` for deterministic winner checking validation
+- **Architecture Improvements:**
+  - All entry points now use centralized bootstrap
+  - Patterns library refactored to use storage utilities
+  - Winner checking now uses pure, testable functions
+  - Clear separation between API and UI layers
+  - Reduced code duplication and improved maintainability
+
 ### v2.3.2 - January 14, 2026
 - **Bug Fixes:**
   - Fixed delete pattern validation error: Deleting custom patterns no longer triggers "Pattern name is required" error

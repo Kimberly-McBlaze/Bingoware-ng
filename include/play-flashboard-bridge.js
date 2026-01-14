@@ -101,9 +101,27 @@
    * Extract current pattern from the page
    */
   function extractPatternFromPage() {
-    // Default pattern info - in a real implementation, this would be extracted from the page
-    // For now, we'll check if we can find pattern information in the page
-    return 'Check Winning Patterns page';
+    // Read pattern information from data attribute
+    const gameStateData = document.getElementById('game-state-data');
+    if (gameStateData) {
+      const patternsAttr = gameStateData.getAttribute('data-patterns');
+      if (patternsAttr) {
+        try {
+          const patterns = JSON.parse(patternsAttr);
+          if (patterns && patterns.length === 1) {
+            // Exactly one pattern selected - show its name
+            return patterns[0];
+          } else if (patterns && patterns.length > 1) {
+            // Multiple patterns - show count
+            return `${patterns.length} patterns selected`;
+          }
+        } catch (e) {
+          console.error('Error parsing patterns:', e);
+        }
+      }
+    }
+    // No patterns enabled
+    return 'No pattern selected';
   }
 
   /**
@@ -170,6 +188,10 @@
     switch (event.data.type) {
       case 'flashboard_ready':
         console.log('Flashboard ready, sending initial state');
+        // Re-establish flashboard window reference after page reload
+        if (event.source && event.source !== window) {
+          flashboardWindow = event.source;
+        }
         sendInitialState();
         break;
       case 'flashboard_closed':
@@ -186,18 +208,29 @@
     const form = document.querySelector('form[name="random"]');
     if (!form) return;
 
-    // Intercept form submission
-    form.addEventListener('submit', function(e) {
-      // Allow form to submit normally, then check for updates
-      setTimeout(() => {
-        const state = getCurrentState();
-        if (state.latestNumber) {
-          sendDrawUpdate(state.latestNumber);
-        }
-      }, 100);
-    });
+    // On page load, try to find existing flashboard window and send current state
+    // After a form submission that reloads the page, flashboardWindow is lost
+    // but we can try to re-establish connection by checking for the named window
+    checkAndUpdateFlashboard();
 
     console.log('Game action monitoring initialized');
+  }
+
+  /**
+   * Check if flashboard is open and send current state
+   */
+  function checkAndUpdateFlashboard() {
+    // Try to get reference to the flashboard window by name
+    // This only works if the flashboard was opened by this window
+    // After page reload, we lose the reference, so we rely on the flashboard
+    // sending us a 'flashboard_ready' message to re-establish the connection
+    
+    // If we have a reference to the flashboard, send current state
+    if (flashboardWindow && !flashboardWindow.closed) {
+      setTimeout(() => {
+        sendInitialState();
+      }, 100);
+    }
   }
 
   /**

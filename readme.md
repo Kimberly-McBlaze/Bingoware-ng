@@ -143,6 +143,21 @@ Both modes fully support winner detection.
 
 ## 🗂️ Changelog
 
+### v2.5.1 - January 14, 2026
+- **Bug Fixes:**
+  - Fixed flashboard not updating when numbers are drawn during gameplay
+    - Root cause: Form submission caused page reload, breaking postMessage communication
+    - Solution: Flashboard now periodically requests state updates from parent window, automatically re-establishing connection after page reloads
+  - Fixed flashboard displaying "Check Winning Patterns page" instead of actual selected pattern
+    - Root cause: Pattern information was not exposed to JavaScript
+    - Solution: Added data attributes to play page containing enabled pattern names, JavaScript now reads and displays them correctly
+  - Flashboard now correctly shows:
+    - Current drawn number (e.g., N35, O62)
+    - Selected winning pattern name when exactly one pattern is enabled
+    - Pattern count (e.g., "2 patterns selected") when multiple patterns are enabled
+    - "No pattern selected" message when no patterns are enabled
+  - Real-time synchronization between play page and flashboard now works reliably across page reloads
+
 ### v2.5 - January 14, 2026
 - **New Feature: Bingo Flashboard Display**
   - Added "Open Flashboard" button on Play Bingo page

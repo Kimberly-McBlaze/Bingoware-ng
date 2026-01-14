@@ -24,8 +24,25 @@
     updateDisplay();
     
     // Request initial state from parent
+    requestParentState();
+    
+    // Periodically request state from parent in case parent page reloads
+    // This ensures flashboard stays in sync even when parent page navigates
+    setInterval(() => {
+      requestParentState();
+    }, 2000); // Check every 2 seconds
+  }
+
+  /**
+   * Request current state from parent window
+   */
+  function requestParentState() {
     if (window.opener && !window.opener.closed) {
-      window.opener.postMessage({ type: 'flashboard_ready' }, '*');
+      try {
+        window.opener.postMessage({ type: 'flashboard_ready' }, '*');
+      } catch (e) {
+        console.error('Error sending message to parent:', e);
+      }
     }
   }
 

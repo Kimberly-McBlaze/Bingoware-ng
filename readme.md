@@ -146,6 +146,14 @@ So far, AI has been unable to properly fix this issue.
 
 ## 🗂️ Changelog
 
+### v2.4.1 - January 14, 2026
+- **Bug Fixes:**
+  - Fixed "Add New Pattern" button not working - button now properly opens the pattern creation modal
+  - Fixed "Edit" buttons not working - buttons now properly open the pattern editing modal
+  - Fixed Save/Apply button not appearing - button now correctly shows when enable/disable changes are made
+  - Root cause: JavaScript functions in patterns-ui.js were wrapped in an IIFE (closure) and not exposed to global scope, making them inaccessible from HTML onclick handlers
+  - Solution: Exposed necessary functions to window object (openAddModal, openEditModal, markPatternChanged, savePatternChanges, etc.)
+
 ### v2.4 - January 14, 2026
 - **Major Refactoring:**
   - **Separated Patterns API:** Created dedicated `api/patterns.php` endpoint for all pattern CRUD operations

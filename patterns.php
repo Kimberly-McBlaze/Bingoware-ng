@@ -31,6 +31,26 @@ if (isset($_GET['action']) && $_GET['action'] === 'api') {
         exit;
     }
     
+    // Delete pattern - Check this BEFORE create/update to avoid false matches
+    if ($method === 'POST' && isset($_POST['delete_id'])) {
+        $pattern_id = validate_pattern_id($_POST['delete_id']);
+        if (!$pattern_id) {
+            echo json_encode(['success' => false, 'error' => 'Invalid pattern ID']);
+            exit;
+        }
+        
+        $result = delete_pattern($pattern_id);
+        echo json_encode($result);
+        exit;
+    }
+    
+    // Reset patterns to default - Check this BEFORE create/update to avoid false matches
+    if ($method === 'POST' && isset($_POST['reset_to_default'])) {
+        $result = reset_patterns_to_default();
+        echo json_encode($result);
+        exit;
+    }
+    
     // Create pattern
     if ($method === 'POST' && (!isset($_POST['id']) || empty($_POST['id']))) {
         $name = validate_string($_POST['name'] ?? '', 50);
@@ -62,19 +82,6 @@ if (isset($_GET['action']) && $_GET['action'] === 'api') {
         $enabled = isset($_POST['enabled']) ? validate_bool($_POST['enabled']) : null;
         
         $result = update_pattern($id, $name, $description, $grid, $enabled);
-        echo json_encode($result);
-        exit;
-    }
-    
-    // Delete pattern
-    if ($method === 'POST' && isset($_POST['delete_id'])) {
-        $pattern_id = validate_pattern_id($_POST['delete_id']);
-        if (!$pattern_id) {
-            echo json_encode(['success' => false, 'error' => 'Invalid pattern ID']);
-            exit;
-        }
-        
-        $result = delete_pattern($pattern_id);
         echo json_encode($result);
         exit;
     }
@@ -250,7 +257,12 @@ $patterns = load_patterns();
     <div class="card mb-3">
       <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
         <h3 class="card-title">Winning Patterns</h3>
-        <button class="btn btn-primary" onclick="openAddModal()">➕ Add New Pattern</button>
+        <div style="display: flex; gap: 0.5rem;">
+          <button class="btn btn-secondary" onclick="resetToDefault()" title="Remove all custom patterns and restore defaults">
+            🔄 Reset to Default
+          </button>
+          <button class="btn btn-primary" onclick="openAddModal()">➕ Add New Pattern</button>
+        </div>
       </div>
       <div class="card-body">
         <div class="pattern-list" id="patternList">
@@ -578,6 +590,34 @@ async function deletePattern(patternId, patternName) {
     
     if (data.success) {
       alert('Pattern deleted successfully!');
+      location.reload();
+    } else {
+      alert('Error: ' + data.error);
+    }
+  } catch (error) {
+    alert('Error: ' + error.message);
+  }
+}
+
+async function resetToDefault() {
+  if (!confirm('Are you sure you want to reset all patterns to defaults? This will:\n\n• Remove all custom patterns\n• Restore default patterns to their original state\n• Reset all enabled/disabled states\n\nThis action cannot be undone.')) {
+    return;
+  }
+  
+  const formData = new FormData();
+  formData.set('reset_to_default', 'true');
+  formData.set('action', 'api');
+  
+  try {
+    const response = await fetch('patterns.php?action=api', {
+      method: 'POST',
+      body: formData
+    });
+    
+    const data = await response.json();
+    
+    if (data.success) {
+      alert('Patterns reset to defaults successfully!');
       location.reload();
     } else {
       alert('Error: ' + data.error);

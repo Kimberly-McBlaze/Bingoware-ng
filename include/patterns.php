@@ -383,4 +383,66 @@ function grid_to_winningset_format($grid) {
     return $winningset;
 }
 
+/**
+ * Reset patterns to defaults
+ * Removes all custom patterns and restores default patterns to their original state
+ */
+function reset_patterns_to_default() {
+    // Load the original winningpatterns.dat to get the grid data
+    $winningset = load_winning_patterns();
+    
+    // Ensure constants are loaded
+    global $patternkeywords;
+    if (!isset($patternkeywords)) {
+        include_once("constants.php");
+    }
+    
+    $patterns = [];
+    
+    // Pattern 0 (Normal) - special case
+    $patterns[] = [
+        'id' => 'pattern_0',
+        'name' => 'Normal',
+        'description' => 'Any row, column, or diagonal',
+        'enabled' => true,
+        'is_default' => true,
+        'is_special' => true,
+        'grid' => null
+    ];
+    
+    // Load grid patterns from winningpatterns.dat
+    if (is_array($winningset) && isset($patternkeywords)) {
+        for ($i = 1; $i < count($patternkeywords); $i++) {
+            $grid = [];
+            
+            // Convert old format to simple grid array
+            if (isset($winningset[$i - 1])) {
+                for ($col = 0; $col < 5; $col++) {
+                    for ($row = 0; $row < 5; $row++) {
+                        if (isset($winningset[$i - 1][$col][$row]["checked"]) && $winningset[$i - 1][$col][$row]["checked"]) {
+                            $grid[] = ['col' => $col, 'row' => $row];
+                        }
+                    }
+                }
+            }
+            
+            $patterns[] = [
+                'id' => 'pattern_' . $i,
+                'name' => $patternkeywords[$i],
+                'description' => '',
+                'enabled' => false,
+                'is_default' => true,
+                'is_special' => false,
+                'grid' => $grid
+            ];
+        }
+    }
+    
+    if (save_patterns($patterns)) {
+        return ['success' => true, 'message' => 'Patterns reset to defaults successfully'];
+    } else {
+        return ['success' => false, 'error' => 'Failed to save default patterns'];
+    }
+}
+
 ?>

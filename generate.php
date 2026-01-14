@@ -3,10 +3,16 @@
 	   $numcard = filter_input(INPUT_POST, 'numcard', FILTER_VALIDATE_INT);
 	   if (isset($_POST["submit"]) && $numcard !== false && $numcard !== null && ($numcard>=1) && ($numcard<=$MAX_LIMIT)) {
 	   		restart(); //clears winners and draws
-			@unlink("sets/set.".$setid.".dat");
+			// Remove old set file if it exists
+			$set_file = "sets/set.".$setid.".dat";
+			if (file_exists($set_file)) {
+				if (!unlink($set_file)) {
+					error_log("Failed to delete $set_file");
+				}
+			}
 			$freesquare = filter_input(INPUT_POST, 'freesquare', FILTER_VALIDATE_INT);
 			if ($freesquare === null || $freesquare === false) $freesquare = 2;
-	   		generate_cards($numcard, $freesquare);	   	
+	   		generate_cards($numcard, $freesquare);
 		   	echo '<div class="alert alert-success"><strong>✅ Success!</strong><br>'.$numcard. ' cards have been generated successfully!</div>';
 	   	} else {
 	   ?>

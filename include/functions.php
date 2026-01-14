@@ -1,8 +1,8 @@
 <?php
 
-include ("config/settings.php");
-include_once ("include/patterns.php");
-include_once ("include/winner_check.php");
+include (__DIR__ . "/../config/settings.php");
+include_once (__DIR__ . "/patterns.php");
+include_once (__DIR__ . "/winner_check.php");
 
 /** set_exists()
 * This function tests the existence of a card set,
@@ -10,7 +10,7 @@ include_once ("include/winner_check.php");
 */
 function set_exists() {
 	global $setid;
-	return (file_exists("sets/set.".$setid.".dat"));
+	return (file_exists(__DIR__ . "/../sets/set.".$setid.".dat"));
 }
 
 /** card_number()
@@ -445,13 +445,14 @@ function find_letter($num) {
 function load_set() {
 	global $setid;
 	if (set_exists()) {
-		$filearray = file("sets/set.".$setid.".dat");
+		$filepath = __DIR__ . "/../sets/set.".$setid.".dat";
+		$filearray = file($filepath);
 		for ($i=0; $i< $filearray[0]; $i++) { //first row is number of rows
 			$set[$i] = unserialize(trim($filearray[$i+1]), ['allowed_classes' => false]);
 		}
 		return $set;
 	} else {
-		echo "set could not be loaded";
+		error_log("Card set not found for setid: $setid");
 		return null;
 	}
 }
@@ -657,15 +658,15 @@ function load_name_file() {
 * customize a given winning pattern.
 */
 function load_winning_patterns() {
-
-	if (file_exists("data/winningpatterns.dat")) {
-		$filearray = file("data/winningpatterns.dat");
+	$filepath = __DIR__ . "/../data/winningpatterns.dat";
+	if (file_exists($filepath)) {
+		$filearray = file($filepath);
 		for ($i=0; $i< $filearray[0]; $i++) { //first row is number of rows
 			$set[$i] = unserialize(trim($filearray[$i+1]), ['allowed_classes' => false]);
 		}
 		return $set;
 	} else {
-		echo "set could not be loaded";
+		error_log("Winning patterns file not found: $filepath");
 		return null;
 	}
 }

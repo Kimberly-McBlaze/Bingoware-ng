@@ -1,5 +1,5 @@
 <?php
-include_once ("include/constants.php");
+include_once (__DIR__ . "/../include/constants.php");
 
 /* -------------- User configuration ------------- */
 

@@ -146,6 +146,21 @@ So far, AI has been unable to properly fix this issue.
 
 ## 🗂️ Changelog
 
+### v2.4.2 - January 14, 2026
+- **Bug Fixes:**
+  - Fixed JSON parsing errors on Winning Patterns page for all UI actions (Save Changes, Save Pattern, Edit, Reset to Default)
+  - Root cause: Relative file paths in include files caused path resolution issues when API endpoints were called from `/api/` subdirectory
+  - PHP warnings from failed file includes were corrupting JSON responses, causing "Unexpected token" errors in browser
+  - Solution: Converted all relative paths to absolute paths using `__DIR__` in:
+    - `include/functions.php` - Fixed paths for config/settings.php, patterns.php, winner_check.php, set files, and winningpatterns.dat; replaced echo with error_log
+    - `config/settings.php` - Fixed path for include/constants.php
+    - `include/patterns.php` - Fixed path for patterns.json storage and includes
+  - All four actions now work correctly with valid JSON responses:
+    - ✅ Save Changes (enable/disable patterns)
+    - ✅ Save Pattern (create new pattern)
+    - ✅ Edit (edit existing pattern)
+    - ✅ Reset to Default (restore default patterns)
+
 ### v2.4.1 - January 14, 2026
 - **Bug Fixes:**
   - Fixed "Add New Pattern" button not working - button now properly opens the pattern creation modal

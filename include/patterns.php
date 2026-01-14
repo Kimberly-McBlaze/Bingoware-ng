@@ -5,14 +5,14 @@
  */
 
 // Include dependencies
-include_once("constants.php");
-include_once("storage.php");
+include_once(__DIR__ . "/constants.php");
+include_once(__DIR__ . "/storage.php");
 
 /**
  * Get the patterns storage file path
  */
 function get_patterns_file() {
-    return "data/patterns.json";
+    return __DIR__ . "/../data/patterns.json";
 }
 
 /**
@@ -43,7 +43,8 @@ function save_patterns($patterns) {
     $file = get_patterns_file();
     
     // Ensure data directory exists using storage utility
-    if (!ensure_data_dir("data")) {
+    $data_dir = dirname($file);
+    if (!ensure_data_dir($data_dir)) {
         return false;
     }
     

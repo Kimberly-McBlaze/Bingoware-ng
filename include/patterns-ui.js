@@ -267,4 +267,15 @@ if (document.readyState === 'loading') {
   initGrid();
 }
 
+// Expose functions to global scope for onclick handlers
+window.openAddModal = openAddModal;
+window.openEditModal = openEditModal;
+window.closeModal = closeModal;
+window.savePattern = savePattern;
+window.markPatternChanged = markPatternChanged;
+window.savePatternChanges = savePatternChanges;
+window.cancelPatternChanges = cancelPatternChanges;
+window.deletePattern = deletePattern;
+window.resetToDefault = resetToDefault;
+
 })(); // End IIFE

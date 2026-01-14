@@ -143,6 +143,21 @@ Both modes fully support winner detection.
 
 ## 🗂️ Changelog
 
+### v2.5 - January 14, 2026
+- **New Feature: Bingo Flashboard Display**
+  - Added "Open Flashboard" button on Play Bingo page
+  - New flashboard window displays full 5×15 bingo board with vertical BINGO labels
+  - Number ranges: B (1-15), I (16-30), N (31-45), G (46-60), O (61-75)
+  - All numbers always visible with darker/inactive default state
+  - Called numbers illuminate with lighter/active color
+  - Most recently called number blinks for emphasis
+  - Displays current called number (e.g., N34)
+  - Shows currently selected winning pattern
+  - Real-time communication via postMessage for non-invasive updates
+  - Designed for secondary monitor/display usage
+  - No interference with existing gameplay controls or logic
+  - Gracefully handles popup blockers and window closure
+
 ### v2.4.2 - January 14, 2026
 - **Bug Fixes:**
   - Fixed JSON parsing errors on Winning Patterns page for all UI actions (Save Changes, Save Pattern, Edit, Reset to Default)
@@ -299,7 +314,7 @@ have multiple sets of Bingo cards that do not overwrite one another
 
 - ✅ **COMPLETED:** Full CRUD support for winning patterns - [See documentation](docs/pattern-management.md)
   
-- External Number Board & Caller Display: Add support for an external bingo number board with a dedicated display showing the currently called number, allowing easy mirroring to a second screen for player viewing—similar to a real-world bingo hall setup.
+- ✅ **COMPLETED:** External Number Board & Caller Display: Add support for an external bingo number board with a dedicated display showing the currently called number, allowing easy mirroring to a second screen for player viewing—similar to a real-world bingo hall setup.
   
 - Virtual Bingo Support: Adapt the software for seamless use in virtual bingo sessions, enabling easy creation, saving, and sharing of individual bingo cards for remote play via video conferencing, radio, or other remote communication methods.
   

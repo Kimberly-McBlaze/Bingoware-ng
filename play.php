@@ -3,7 +3,7 @@
 	     <p class="content-subtitle">Draw numbers and track winning cards</p>
 	   </div>
 	   
-	   <?php 
+	   <?php
 		if (!set_exists()) exit;
 		else $numbercards = card_number();
 		
@@ -20,6 +20,17 @@
 	   ?>
 	   
 	   <form name="random" method="post" action="index.php?action=play&numberinplay=<?= $numberinplay;?>" onSubmit="return validate_number(<?= $maxColumnNumber; ?>)">
+	   
+	   <?php
+	   // Expose pattern information for flashboard
+	   $enabled_patterns = get_enabled_patterns();
+	   $pattern_names = array();
+	   if (is_array($enabled_patterns)) {
+	       $pattern_names = array_map(function($p) { return $p['name']; }, $enabled_patterns);
+	   }
+	   $pattern_json = json_encode($pattern_names);
+	   ?>
+	   <div id="game-state-data" data-patterns='<?= htmlspecialchars($pattern_json, ENT_QUOTES, 'UTF-8'); ?>' style="display: none;"></div>
 	   
 	   <div style="display: grid; grid-template-columns: 350px 1fr; gap: 2rem; margin-bottom: 2rem;">
 	     <div>
@@ -59,11 +70,15 @@
 	   		?>
 	       </div>
 	       
-	       <button name="restart" type="button" class="btn btn-warning" style="width: 100%;" onClick="RestartConfirmation(<?= $numberinplay;?>);">
+	       <button name="restart" type="button" class="btn btn-warning" style="width: 100%; margin-bottom: 1rem;" onClick="RestartConfirmation(<?= $numberinplay;?>);">
 	         🔄 Restart Game
 	       </button>
 	       
-	       <?php 
+	       <button type="button" class="btn btn-primary" style="width: 100%;" onClick="openFlashboard();">
+	         📺 Open Flashboard
+	       </button>
+	       
+	       <?php
 	       // Winner Indicator
 	       $total_winners = count_total_winners();
 	       $indicator_color = ($total_winners > 0) ? 'var(--color-success)' : 'var(--text-muted)';
@@ -122,3 +137,6 @@
 	   </div>
 	   
 	   </form>
+	   
+	   <!-- Include Flashboard Bridge Script -->
+	   <script src="include/play-flashboard-bridge.js"></script>

@@ -143,6 +143,49 @@ Both modes fully support winner detection.
 
 ## 🗂️ Changelog
 
+### v2.5.2 - January 14, 2026
+- **Bug Fixes:**
+  - Fixed flashboard blinking state management where previous numbers would continue blinking after new numbers were drawn
+    - Root cause: `latestNumber` state could become out of sync with the `draws` array during rapid updates or multiple postMessage events
+    - Solution: Refactored flashboard state management to derive `latestNumber` from the `draws` array as single source of truth
+    - The `getLatestNumber()` helper function now ensures consistent state derivation across all update paths
+    - `updateBoard()` now applies the `latest` (blinking) class only after marking all called numbers, ensuring only one number blinks at a time
+  - Fixed "Current Number" display reliability
+    - Current Number display now uses the same derived `latestNumber` value from `draws` array
+    - Eliminates race conditions that could cause the display to show stale values or stop updating
+  - After each draw, exactly one number now blinks (the latest), and all previously drawn numbers remain lit without blinking
+  - Current Number UI now continues to reflect the latest draw reliably during extended gameplay sessions
+
+### v2.5.1 - January 14, 2026
+- **Bug Fixes:**
+  - Fixed flashboard not updating when numbers are drawn during gameplay
+    - Root cause: Form submission caused page reload, breaking postMessage communication
+    - Solution: Flashboard now periodically requests state updates from parent window, automatically re-establishing connection after page reloads
+  - Fixed flashboard displaying "Check Winning Patterns page" instead of actual selected pattern
+    - Root cause: Pattern information was not exposed to JavaScript
+    - Solution: Added data attributes to play page containing enabled pattern names, JavaScript now reads and displays them correctly
+  - Flashboard now correctly shows:
+    - Current drawn number (e.g., N35, O62)
+    - Selected winning pattern name when exactly one pattern is enabled
+    - Pattern count (e.g., "2 patterns selected") when multiple patterns are enabled
+    - "No pattern selected" message when no patterns are enabled
+  - Real-time synchronization between play page and flashboard now works reliably across page reloads
+
+### v2.5 - January 14, 2026
+- **New Feature: Bingo Flashboard Display**
+  - Added "Open Flashboard" button on Play Bingo page
+  - New flashboard window displays full 5×15 bingo board with vertical BINGO labels
+  - Number ranges: B (1-15), I (16-30), N (31-45), G (46-60), O (61-75)
+  - All numbers always visible with darker/inactive default state
+  - Called numbers illuminate with lighter/active color
+  - Most recently called number blinks for emphasis
+  - Displays current called number (e.g., N34)
+  - Shows currently selected winning pattern
+  - Real-time communication via postMessage for non-invasive updates
+  - Designed for secondary monitor/display usage
+  - No interference with existing gameplay controls or logic
+  - Gracefully handles popup blockers and window closure
+
 ### v2.4.2 - January 14, 2026
 - **Bug Fixes:**
   - Fixed JSON parsing errors on Winning Patterns page for all UI actions (Save Changes, Save Pattern, Edit, Reset to Default)
@@ -299,7 +342,7 @@ have multiple sets of Bingo cards that do not overwrite one another
 
 - ✅ **COMPLETED:** Full CRUD support for winning patterns - [See documentation](docs/pattern-management.md)
   
-- External Number Board & Caller Display: Add support for an external bingo number board with a dedicated display showing the currently called number, allowing easy mirroring to a second screen for player viewing—similar to a real-world bingo hall setup.
+- ✅ **COMPLETED:** External Number Board & Caller Display: Add support for an external bingo number board with a dedicated display showing the currently called number, allowing easy mirroring to a second screen for player viewing—similar to a real-world bingo hall setup.
   
 - Virtual Bingo Support: Adapt the software for seamless use in virtual bingo sessions, enabling easy creation, saving, and sharing of individual bingo cards for remote play via video conferencing, radio, or other remote communication methods.
   

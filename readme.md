@@ -152,10 +152,9 @@ So far, AI has been unable to properly fix this issue.
   - Root cause: Relative file paths in include files caused path resolution issues when API endpoints were called from `/api/` subdirectory
   - PHP warnings from failed file includes were corrupting JSON responses, causing "Unexpected token" errors in browser
   - Solution: Converted all relative paths to absolute paths using `__DIR__` in:
-    - `include/functions.php` - Fixed paths for config/settings.php, patterns.php, winner_check.php
+    - `include/functions.php` - Fixed paths for config/settings.php, patterns.php, winner_check.php, set files, and winningpatterns.dat; replaced echo with error_log
     - `config/settings.php` - Fixed path for include/constants.php
     - `include/patterns.php` - Fixed path for patterns.json storage and includes
-    - `include/functions.php` - Fixed paths for set files and winningpatterns.dat, replaced echo with error_log
   - All four actions now work correctly with valid JSON responses:
     - ✅ Save Changes (enable/disable patterns)
     - ✅ Save Pattern (create new pattern)

@@ -108,12 +108,14 @@
       if (patternsAttr) {
         try {
           const patterns = JSON.parse(patternsAttr);
-          if (patterns && patterns.length === 1) {
-            // Exactly one pattern selected - show its name
-            return patterns[0];
-          } else if (patterns && patterns.length > 1) {
-            // Multiple patterns - show count
-            return `${patterns.length} patterns selected`;
+          if (Array.isArray(patterns)) {
+            if (patterns.length === 1) {
+              // Exactly one pattern selected - show its name
+              return patterns[0];
+            } else if (patterns.length > 1) {
+              // Multiple patterns - show count
+              return `${patterns.length} patterns selected`;
+            }
           }
         } catch (e) {
           console.error('Error parsing patterns:', e);

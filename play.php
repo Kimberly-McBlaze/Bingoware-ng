@@ -24,7 +24,10 @@
 	   <?php
 	   // Expose pattern information for flashboard
 	   $enabled_patterns = get_enabled_patterns();
-	   $pattern_names = array_map(function($p) { return $p['name']; }, $enabled_patterns);
+	   $pattern_names = array();
+	   if (is_array($enabled_patterns)) {
+	       $pattern_names = array_map(function($p) { return $p['name']; }, $enabled_patterns);
+	   }
 	   $pattern_json = json_encode($pattern_names);
 	   ?>
 	   <div id="game-state-data" data-patterns='<?= htmlspecialchars($pattern_json, ENT_QUOTES, 'UTF-8'); ?>' style="display: none;"></div>

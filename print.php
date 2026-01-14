@@ -1,4 +1,4 @@
-<?php include_once("include/functions.php"); ?>
+<?php include_once("include/bootstrap.php"); ?>
 <html>
 <head>
 <title>View all cards</title>

@@ -1,5 +1,5 @@
-<?php include_once ("include/functions.php");
-   include_once ("header.php");
+<?php include_once("include/bootstrap.php");
+   include_once("header.php");
 
 ?>
 <div class="main-container">

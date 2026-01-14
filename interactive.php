@@ -1,5 +1,5 @@
 <?php 
-include_once("include/functions.php");
+include_once("include/bootstrap.php");
 $cardnumber = filter_input(INPUT_GET, 'cardnumber', FILTER_VALIDATE_INT);
 if ($cardnumber === false || $cardnumber === null || $cardnumber < 1) {
 	$cardnumber = 1;

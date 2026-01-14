@@ -1,5 +1,6 @@
 <?php 
 include_once("include/functions.php");
+include_once("include/input_helpers.php");
 
 // Handle AJAX requests
 if (isset($_GET['action']) && $_GET['action'] === 'api') {
@@ -15,7 +16,13 @@ if (isset($_GET['action']) && $_GET['action'] === 'api') {
     
     // Get single pattern
     if ($method === 'GET' && isset($_GET['id'])) {
-        $pattern = get_pattern_by_id($_GET['id']);
+        $pattern_id = validate_pattern_id($_GET['id']);
+        if (!$pattern_id) {
+            echo json_encode(['success' => false, 'error' => 'Invalid pattern ID']);
+            exit;
+        }
+        
+        $pattern = get_pattern_by_id($pattern_id);
         if ($pattern) {
             echo json_encode(['success' => true, 'pattern' => $pattern]);
         } else {
@@ -26,12 +33,16 @@ if (isset($_GET['action']) && $_GET['action'] === 'api') {
     
     // Create pattern
     if ($method === 'POST' && (!isset($_POST['id']) || empty($_POST['id']))) {
-        $name = $_POST['name'] ?? '';
-        $description = $_POST['description'] ?? '';
-        $grid_json = $_POST['grid'] ?? '[]';
-        $enabled = isset($_POST['enabled']) && $_POST['enabled'] === 'true';
+        $name = validate_string($_POST['name'] ?? '', 50);
+        $description = validate_string($_POST['description'] ?? '', 200);
+        $grid = validate_json($_POST['grid'] ?? '[]', []);
+        $enabled = validate_bool($_POST['enabled'] ?? false);
         
-        $grid = json_decode($grid_json, true);
+        if (empty($name)) {
+            echo json_encode(['success' => false, 'error' => 'Pattern name is required']);
+            exit;
+        }
+        
         $result = create_pattern($name, $description, $grid, $enabled);
         echo json_encode($result);
         exit;
@@ -39,13 +50,17 @@ if (isset($_GET['action']) && $_GET['action'] === 'api') {
     
     // Update pattern
     if ($method === 'POST' && isset($_POST['id']) && !empty($_POST['id'])) {
-        $id = $_POST['id'];
-        $name = $_POST['name'] ?? '';
-        $description = $_POST['description'] ?? '';
-        $grid_json = $_POST['grid'] ?? null;
-        $enabled = isset($_POST['enabled']) ? ($_POST['enabled'] === 'true') : null;
+        $id = validate_pattern_id($_POST['id']);
+        if (!$id) {
+            echo json_encode(['success' => false, 'error' => 'Invalid pattern ID']);
+            exit;
+        }
         
-        $grid = $grid_json ? json_decode($grid_json, true) : null;
+        $name = validate_string($_POST['name'] ?? '', 50);
+        $description = validate_string($_POST['description'] ?? '', 200);
+        $grid = isset($_POST['grid']) ? validate_json($_POST['grid'], null) : null;
+        $enabled = isset($_POST['enabled']) ? validate_bool($_POST['enabled']) : null;
+        
         $result = update_pattern($id, $name, $description, $grid, $enabled);
         echo json_encode($result);
         exit;
@@ -53,7 +68,13 @@ if (isset($_GET['action']) && $_GET['action'] === 'api') {
     
     // Delete pattern
     if ($method === 'POST' && isset($_POST['delete_id'])) {
-        $result = delete_pattern($_POST['delete_id']);
+        $pattern_id = validate_pattern_id($_POST['delete_id']);
+        if (!$pattern_id) {
+            echo json_encode(['success' => false, 'error' => 'Invalid pattern ID']);
+            exit;
+        }
+        
+        $result = delete_pattern($pattern_id);
         echo json_encode($result);
         exit;
     }

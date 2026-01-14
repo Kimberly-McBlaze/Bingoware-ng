@@ -47,7 +47,10 @@ function save_patterns($patterns) {
     
     // Ensure data directory exists
     if (!file_exists("data")) {
-        @mkdir("data", 0755, true);
+        if (!mkdir("data", 0755, true)) {
+            error_log("Failed to create data directory");
+            return false;
+        }
     }
     
     $data = [
@@ -56,7 +59,12 @@ function save_patterns($patterns) {
     ];
     
     $json = json_encode($data, JSON_PRETTY_PRINT);
-    return @file_put_contents($file, $json) !== false;
+    $result = file_put_contents($file, $json);
+    if ($result === false) {
+        error_log("Failed to write patterns to $file");
+        return false;
+    }
+    return true;
 }
 
 /**
@@ -127,7 +135,7 @@ function migrate_patterns_from_old_format() {
     ];
     
     // Load grid patterns from winningpatterns.dat
-    $winningset = @load_winning_patterns();
+    $winningset = load_winning_patterns();
     
     if (is_array($winningset) && isset($patternkeywords)) {
         for ($i = 1; $i < count($patternkeywords); $i++) {

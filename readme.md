@@ -146,6 +146,15 @@ So far, AI has been unable to properly fix this issue.
 
 ## 🗂️ Changelog
 
+### v2.3.2 - January 14, 2026
+- **Bug Fixes:**
+  - Fixed delete pattern validation error: Deleting custom patterns no longer triggers "Pattern name is required" error
+  - Reordered API endpoint checks in `patterns.php` to properly handle delete requests before create/update validation
+- **Features:**
+  - Added "Reset to Default" button in winning patterns section
+  - Reset functionality removes all custom patterns and restores default patterns to original state
+  - Added `reset_patterns_to_default()` function in `include/patterns.php`
+
 ### v2.3.1 - January 14, 2026
 - **Documentation & Verification:**
   - Verified complete removal of all PHP error suppression operators (@) from filesystem operations

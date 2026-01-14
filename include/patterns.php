@@ -4,8 +4,9 @@
  * Handles CRUD operations for winning patterns
  */
 
-// Include constants for pattern keywords
+// Include dependencies
 include_once("constants.php");
+include_once("storage.php");
 
 /**
  * Get the patterns storage file path
@@ -26,17 +27,13 @@ function load_patterns() {
         migrate_patterns_from_old_format();
     }
     
-    if (file_exists($file)) {
-        $json = file_get_contents($file);
-        $data = json_decode($json, true);
-        if ($data === null) {
-            error_log("Failed to parse patterns.json");
-            return get_default_patterns();
-        }
-        return $data['patterns'] ?? get_default_patterns();
+    // Use storage utility to read JSON
+    $data = read_json($file, null);
+    if ($data === null) {
+        return get_default_patterns();
     }
     
-    return get_default_patterns();
+    return $data['patterns'] ?? get_default_patterns();
 }
 
 /**
@@ -45,12 +42,9 @@ function load_patterns() {
 function save_patterns($patterns) {
     $file = get_patterns_file();
     
-    // Ensure data directory exists
-    if (!file_exists("data")) {
-        if (!mkdir("data", 0755, true)) {
-            error_log("Failed to create data directory");
-            return false;
-        }
+    // Ensure data directory exists using storage utility
+    if (!ensure_data_dir("data")) {
+        return false;
     }
     
     $data = [
@@ -58,13 +52,8 @@ function save_patterns($patterns) {
         'patterns' => $patterns
     ];
     
-    $json = json_encode($data, JSON_PRETTY_PRINT);
-    $result = file_put_contents($file, $json);
-    if ($result === false) {
-        error_log("Failed to write patterns to $file");
-        return false;
-    }
-    return true;
+    // Use atomic write for safer storage
+    return atomic_write_json($file, $data);
 }
 
 /**

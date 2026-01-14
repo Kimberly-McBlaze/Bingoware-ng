@@ -2,6 +2,7 @@
 
 include ("config/settings.php");
 include_once ("include/patterns.php");
+include_once ("include/winner_check.php");
 
 /** set_exists()
 * This function tests the existence of a card set,
@@ -267,11 +268,10 @@ function check_bingo ($numberinplay) {
 	
 	// Load enabled patterns from new system
 	$patterns = get_enabled_patterns();
-	$pattern_list = array_values($patterns); // Re-index from 0
 
-	$new_winners = load_new_winners(); //load the latest winner array
+	$previous_winners = load_new_winners(); //load the latest winner array
 
-	if ($new_winners<>null) save_old_winners($new_winners); //saves the current list of winners as the old one
+	if ($previous_winners<>null) save_old_winners($previous_winners); //saves the current list of winners as the old one
 
 	// Erase the new winners file
 	$new_winners_file = "data/new_winners.".$setid.".dat";
@@ -281,65 +281,8 @@ function check_bingo ($numberinplay) {
 		}
 	}
 
-	//if a numberinplay is given that is smaller than the the number
-	// of cards in the set, the rest of the cards are not verified.
-	// because of multiple winning patterns, each card must be verified whether or not it was a previous winner
-
-	for ($n=0; $n<min($numberinplay,$numcards);$n++) {  //checking each card
-
-		for ($p=0; $p<count($pattern_list); $p++) { //cycle through all winning patterns
-			$pattern = $pattern_list[$p];
-			
-			if (isset($new_winners[$n][$p]) && $new_winners[$n][$p]) continue; //this card already won against this pattern, no test required
-
-			//normal bingo (special pattern)
-			if ($pattern['is_special']) {
-				for ($c=0; $c<5; $c++) {
-					$rowbingo=true; //assume there is bingo in rows and prove wrong
-					$colbingo=true; //assume there is bingo in columns and prove wrong
-					for ($r=0; $r<5;$r++) {
-						if (!$set[$n][$c][$r]["checked"]) $colbingo=false; //as soon as one is not checked
-						if (!$set[$n][$r][$c]["checked"]) $rowbingo=false; //as soon as one is not checked
-					} //end of that column/row, if we still have either bingo, we have a winner
-					if ($rowbingo||$colbingo){
-						$new_winners[$n][$p]=true;  //current winning pattern is good, normal bingo
-						break; //exit column loop, continue to next pattern
-					} else $new_winners[$n][$p]=false;
-				}
-				
-				//if it is still not a winner, check the diagonals
-				if (!isset($new_winners[$n][$p]) or !$new_winners[$n][$p]) { 
-					$bingod1=true; //assume there is bingo in diagonals, prove wrong
-					$bingod2=true;
-					for ($d=0; $d<5 ; $d++) {
-						if (!$set[$n][$d][$d]["checked"]) $bingod1=false; //as soon as one item from diagonal is not checked
-						if (!$set[$n][$d][4-$d]["checked"]) $bingod2=false;
-					}
-					if ($bingod1||$bingod2) {
-						$new_winners[$n][$p]=true;
-					} else $new_winners[$n][$p]=false;
-				}
-			} 
-			//for all grid-based patterns
-			else {
-				$grid = $pattern['grid'];
-				$is_winner = true;
-				
-				// Check if all required squares are checked
-				foreach ($grid as $square) {
-					if (!$set[$n][$square['col']][$square['row']]["checked"]) {
-						$is_winner = false;
-						break;
-					}
-				}
-				
-				$new_winners[$n][$p] = $is_winner;
-			}
-
-		} // end for
-
-	} //for each card
-
+	// Use pure winner checking module
+	$new_winners = check_winners($set, $patterns, $numberinplay, $previous_winners);
 
 	//refresh the new winner list
 	save_new_winners($new_winners);

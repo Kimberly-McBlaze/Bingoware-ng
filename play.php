@@ -1,9 +1,12 @@
+	   <!-- Include Flashboard Bridge Script -->
+	   <script src="include/play-flashboard-bridge.js"></script>
+	   
 	   <div class="content-header">
 	     <h2 class="content-title">🎮 Play Bingo</h2>
 	     <p class="content-subtitle">Draw numbers and track winning cards</p>
 	   </div>
 	   
-	   <?php 
+	   <?php
 		if (!set_exists()) exit;
 		else $numbercards = card_number();
 		
@@ -59,11 +62,15 @@
 	   		?>
 	       </div>
 	       
-	       <button name="restart" type="button" class="btn btn-warning" style="width: 100%;" onClick="RestartConfirmation(<?= $numberinplay;?>);">
+	       <button name="restart" type="button" class="btn btn-warning" style="width: 100%; margin-bottom: 1rem;" onClick="RestartConfirmation(<?= $numberinplay;?>);">
 	         🔄 Restart Game
 	       </button>
 	       
-	       <?php 
+	       <button type="button" class="btn btn-primary" style="width: 100%;" onClick="openFlashboard();">
+	         📺 Open Flashboard
+	       </button>
+	       
+	       <?php
 	       // Winner Indicator
 	       $total_winners = count_total_winners();
 	       $indicator_color = ($total_winners > 0) ? 'var(--color-success)' : 'var(--text-muted)';

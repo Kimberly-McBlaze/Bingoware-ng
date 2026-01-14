@@ -273,7 +273,13 @@ function check_bingo ($numberinplay) {
 
 	if ($new_winners<>null) save_old_winners($new_winners); //saves the current list of winners as the old one
 
-	@unlink("data/new_winners.".$setid.".dat"); //erases the new winners file
+	// Erase the new winners file
+	$new_winners_file = "data/new_winners.".$setid.".dat";
+	if (file_exists($new_winners_file)) {
+		if (!unlink($new_winners_file)) {
+			error_log("Failed to delete $new_winners_file");
+		}
+	}
 
 	//if a numberinplay is given that is smaller than the the number
 	// of cards in the set, the rest of the cards are not verified.
@@ -350,9 +356,20 @@ function check_bingo ($numberinplay) {
 function restart() { //erases winners, draws, and clears all cards but keeps numbers
 	global $setid;
 
-	@unlink ("data/old_winners.".$setid.".dat");
-	@unlink ("data/new_winners.".$setid.".dat");
-	@unlink("data/draws.".$setid.".dat");
+	// Remove winner and draw files if they exist
+	$files_to_remove = [
+		"data/old_winners.".$setid.".dat",
+		"data/new_winners.".$setid.".dat",
+		"data/draws.".$setid.".dat"
+	];
+	
+	foreach ($files_to_remove as $file) {
+		if (file_exists($file)) {
+			if (!unlink($file)) {
+				error_log("Failed to delete $file during restart");
+			}
+		}
+	}
 
 	if (set_exists()) {
 		$set = load_set();
@@ -511,18 +528,24 @@ function save_set(&$set) {
 
 	// Ensure the sets directory exists
 	if (!file_exists("sets")) {
-		@mkdir("sets", 0755, true);
-	}
-
-	if (@$fp = fopen("sets/set.".$setid.".dat","w")) {
-
-		fwrite($fp,$numcards."\n");
-		for ($i =0; $i<$numcards; $i++) {
-			fwrite($fp, serialize($set[$i])."\n");  //one card per row
+		if (!mkdir("sets", 0755, true)) {
+			error_log("Failed to create sets directory");
+			return false;
 		}
-		fclose($fp);
-		return true;
 	}
+
+	$fp = fopen("sets/set.".$setid.".dat","w");
+	if (!$fp) {
+		error_log("Failed to open sets/set.".$setid.".dat for writing");
+		return false;
+	}
+
+	fwrite($fp,$numcards."\n");
+	for ($i =0; $i<$numcards; $i++) {
+		fwrite($fp, serialize($set[$i])."\n");  //one card per row
+	}
+	fclose($fp);
+	return true;
 }
 
 /** load_draws()
@@ -531,7 +554,7 @@ function save_set(&$set) {
 */
 function load_draws() {
 	global $setid;
-	if (@file_exists("data/draws.".$setid.".dat")){
+	if (file_exists("data/draws.".$setid.".dat")){
 		$filearray=file("data/draws.".$setid.".dat");
 		$draws = unserialize(trim($filearray[0]), ['allowed_classes' => false]);
 		return $draws;
@@ -550,10 +573,15 @@ function save_draws(&$draws) {
 	global $setid;
 
 	sort($draws);
-	if (@$fp=fopen("data/draws.".$setid.".dat","w")) {
-		fwrite($fp, serialize($draws));
-		fclose($fp);
+	$fp = fopen("data/draws.".$setid.".dat","w");
+	if (!$fp) {
+		error_log("Failed to open data/draws.".$setid.".dat for writing");
+		return false;
 	}
+	
+	fwrite($fp, serialize($draws));
+	fclose($fp);
+	return true;
 }
 
 /** load_old_winners()
@@ -562,7 +590,7 @@ function save_draws(&$draws) {
 */
 function load_old_winners() {
 	global $setid;
-	if (@file_exists("data/old_winners.".$setid.".dat")){
+	if (file_exists("data/old_winners.".$setid.".dat")){
 		$filearray=file("data/old_winners.".$setid.".dat");
 		$winners = unserialize(trim($filearray[0]), ['allowed_classes' => false]);
 		return $winners;
@@ -580,10 +608,15 @@ function load_old_winners() {
 function save_old_winners(&$winners) {
 	global $setid;
 
-	if (@$fp=fopen("data/old_winners.".$setid.".dat","w")) {
-		fwrite($fp, serialize($winners));
-		fclose($fp);
+	$fp = fopen("data/old_winners.".$setid.".dat","w");
+	if (!$fp) {
+		error_log("Failed to open data/old_winners.".$setid.".dat for writing");
+		return false;
 	}
+	
+	fwrite($fp, serialize($winners));
+	fclose($fp);
+	return true;
 }
 
 /** load_new_winners()
@@ -592,7 +625,7 @@ function save_old_winners(&$winners) {
 */
 function load_new_winners() {
 	global $setid;
-	if (@file_exists("data/new_winners.".$setid.".dat")){
+	if (file_exists("data/new_winners.".$setid.".dat")){
 		$filearray=file("data/new_winners.".$setid.".dat");
 		$new_winners = unserialize(trim($filearray[0]), ['allowed_classes' => false]);
 		return $new_winners;
@@ -610,10 +643,15 @@ function load_new_winners() {
 function save_new_winners(&$new_winners) {
 	global $setid;
 
-	if (@$fp=fopen("data/new_winners.".$setid.".dat","w")) {
-		fwrite($fp, serialize($new_winners));
-		fclose($fp);
+	$fp = fopen("data/new_winners.".$setid.".dat","w");
+	if (!$fp) {
+		error_log("Failed to open data/new_winners.".$setid.".dat for writing");
+		return false;
 	}
+	
+	fwrite($fp, serialize($new_winners));
+	fclose($fp);
+	return true;
 }
 
 /** count_total_winners()
@@ -701,7 +739,7 @@ function load_winning_patterns() {
 function update_winning_patterns($hiddenstring, $cardnumber) {
 	global $bingoletters;
 
-	@$winningset=load_winning_patterns();
+	$winningset=load_winning_patterns();
 
 	if (is_array($winningset)) {
 
@@ -735,14 +773,20 @@ function save_winning_patterns(&$set) {
 		$numcards= trim($filearray[0]);
 
 		//then we write the appropriate number of cards in the previewpatterns set
-		if (@$fp=fopen("data/winningpatterns.dat","w")) {
+		$fp = fopen("data/winningpatterns.dat","w");
+		if ($fp) {
 			fwrite($fp,$numcards."\n");
 			for ($i =0; $i<$numcards; $i++) {
 				fwrite($fp, serialize($set[$i])."\n");  //one card per row
 			}
 			fclose($fp);
+			return true;
+		} else {
+			error_log("Failed to open data/winningpatterns.dat for writing");
+			return false;
 		}
 	}
+	return false;
 }
 
 
@@ -765,7 +809,7 @@ function save_winning_patterns(&$set) {
 function display_interactive_card($cardnumber) {
 	global $bingoletters;
 	
-	@$winningset=load_winning_patterns(); //display a pattern preview
+	$winningset=load_winning_patterns(); //display a pattern preview
 	$hiddenstring="";  //sets the initial value to avoid error msg below.
 	if (is_array($winningset)) {
 		

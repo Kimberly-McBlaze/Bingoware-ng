@@ -146,6 +146,17 @@ So far, AI has been unable to properly fix this issue.
 
 ## 🗂️ Changelog
 
+### v2.3 - January 14, 2026
+- **Security & Code Quality Improvements:**
+  - Removed all PHP error suppression operators (@) from filesystem operations
+  - Added explicit error handling with proper logging for file operations
+  - Created input validation/sanitization helper library (`include/input_helpers.php`)
+  - Hardened request input handling in `menu.php` and `patterns.php`
+  - Validated and sanitized `$_GET["numberinplay"]` parameter with safe URL encoding
+  - Added comprehensive validation for patterns API endpoints (id, name, description, grid, enabled)
+  - Improved error responses with JSON error messages for invalid inputs
+  - All filesystem operations now return proper success/failure status
+
 ### v2.2 - January 2, 2026
 - Added full CRUD (Create, Read, Update, Delete) support for winning patterns - [See documentation](docs/pattern-management.md)
 - Moved card customization to its own menu.

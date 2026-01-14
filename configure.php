@@ -29,9 +29,13 @@
 	   		          
 				// Magic quotes were removed in PHP 5.4, no longer needed
 	   		          
-	   		if (@file_exists("config/settings.php")){
+	   		if (file_exists("config/settings.php")){
 					$filearray=file("config/settings.php");
-					@$fp=fopen("config/settings.php","w");
+					$fp = fopen("config/settings.php","w");
+					if (!$fp) {
+						error_log("Failed to open config/settings.php for writing");
+						echo '<div class="alert alert-error">Failed to save configuration. Check file permissions.</div>';
+					} else {
 	
 					foreach ($filearray as $line_num => $line) {
 						//sequence all replacements.
@@ -66,12 +70,13 @@
 						$line = preg_replace("/(selectedbgcolor=').*'/","$1".$selectedbgcolorform."'",$line);
 						$line = preg_replace("/(bordercolor=').*'/","$1".$bordercolorform."'",$line);
 																	
-						@fwrite($fp, trim($line)."\n"); //@ to avoid warnings in Demo on sourceforge
+						fwrite($fp, trim($line)."\n");
 					}
-					@fclose($fp); //@ to avoid warnings in Demo on sourceforge
+					fclose($fp);
 					if (isset($_POST["pagetitleform"])) $pagetitle=$_POST["pagetitleform"];
 					restart();
 					echo '<div class="alert alert-success"><strong>✅ Configuration Accepted!</strong><br>Your settings have been saved successfully.</div>';
+					}
 				} else {
 					echo '<div class="alert alert-error"><strong>❌ Configuration not Accepted!</strong><br>Unable to save settings. Please check file permissions.</div>';
 				}

@@ -3,6 +3,9 @@
  * Handles pattern grid editing, CRUD operations, and modal interactions
  */
 
+(function() {
+  'use strict';
+
 let editingGrid = [];
 const bingoLetters = ['B', 'I', 'N', 'G', 'O'];
 let pendingChanges = {}; // Track pending enable/disable changes
@@ -263,3 +266,5 @@ if (document.readyState === 'loading') {
 } else {
   initGrid();
 }
+
+})(); // End IIFE

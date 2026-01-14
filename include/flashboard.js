@@ -9,10 +9,17 @@
   // State management
   let state = {
     draws: [],
-    latestNumber: null,
     currentPattern: 'No pattern selected',
     maxNumber: 75
   };
+
+  /**
+   * Get the latest drawn number from the draws array
+   * This ensures latestNumber is always derived from the single source of truth
+   */
+  function getLatestNumber() {
+    return state.draws.length > 0 ? state.draws[state.draws.length - 1] : null;
+  }
 
   /**
    * Initialize the flashboard
@@ -135,9 +142,7 @@
     if (data.draws) {
       state.draws = data.draws;
     }
-    if (data.latestNumber !== undefined) {
-      state.latestNumber = data.latestNumber;
-    }
+    // latestNumber is now derived from draws, no need to set it separately
     updateDisplay();
   }
 
@@ -156,7 +161,7 @@
    */
   function handleRestart() {
     state.draws = [];
-    state.latestNumber = null;
+    // latestNumber is now derived from draws, no need to reset it separately
     updateDisplay();
   }
 
@@ -167,9 +172,7 @@
     if (data.draws) {
       state.draws = data.draws;
     }
-    if (data.latestNumber !== undefined) {
-      state.latestNumber = data.latestNumber;
-    }
+    // latestNumber is now derived from draws, no need to set it separately
     if (data.pattern) {
       state.currentPattern = data.pattern;
     }
@@ -192,9 +195,10 @@
     const element = document.getElementById('current-number');
     if (!element) return;
 
-    if (state.latestNumber !== null) {
-      const letter = getLetterForNumber(state.latestNumber);
-      element.textContent = letter + state.latestNumber;
+    const latestNumber = getLatestNumber();
+    if (latestNumber !== null) {
+      const letter = getLetterForNumber(latestNumber);
+      element.textContent = letter + latestNumber;
     } else {
       element.textContent = '---';
     }
@@ -213,6 +217,9 @@
    * Update the board cells based on drawn numbers
    */
   function updateBoard() {
+    // Get the latest number once at the start to ensure consistency
+    const latestNumber = getLatestNumber();
+
     // Reset all cells
     const cells = document.querySelectorAll('.number-cell');
     cells.forEach(cell => {
@@ -227,9 +234,10 @@
       }
     });
 
-    // Mark latest number with blinking
-    if (state.latestNumber !== null) {
-      const latestCell = document.querySelector(`[data-number="${state.latestNumber}"]`);
+    // Mark latest number with blinking - do this AFTER marking all called numbers
+    // This ensures only the most recent number has the 'latest' class
+    if (latestNumber !== null) {
+      const latestCell = document.querySelector(`[data-number="${latestNumber}"]`);
       if (latestCell) {
         latestCell.classList.add('latest');
       }

@@ -3,7 +3,7 @@
 * you can change these values at will
 */
 $date_lastmod = "14 January 2026";
-$version= " v2.3";
+$version = " v2.3.1";
 $bingoletters = array("B", "I", "N", "G", "O");
 $patternkeywords = array("Normal","Four Corners","Cross-Shaped","T-Shaped","X-Shaped","+ Shaped","Z-Shaped", "N-Shaped", "Box Shaped", "Square Shaped","Blackout (Full Card)");
 

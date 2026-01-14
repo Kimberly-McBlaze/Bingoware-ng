@@ -138,10 +138,7 @@ Both modes fully support winner detection.
 
 ---
 ## 🗂️ Known Issues
-- The logic that checks for winning cards appears to be delayed.
-Even when a card meets the winning condition, the system
-sometimes doesn’t detect it until several more numbers are drawn.
-So far, AI has been unable to properly fix this issue.
+- None
 
 
 ## 🗂️ Changelog
@@ -329,6 +326,7 @@ have multiple sets of Bingo cards that do not overwrite one another
 ## 📄 License
 
 Open-source. See license file or original project for details.
+
 
 
 

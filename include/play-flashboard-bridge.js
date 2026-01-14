@@ -79,16 +79,20 @@
   function extractDrawsFromPage() {
     const draws = [];
     
-    // Try to find draws in the display grid
-    const drawElements = document.querySelectorAll('div[style*="background: linear-gradient(135deg, #667eea"]');
-    drawElements.forEach(el => {
-      const text = el.textContent.trim();
-      // Extract number from text like "B12"
-      const match = text.match(/[BINGO](\d+)/);
-      if (match) {
-        draws.push(parseInt(match[1]));
-      }
-    });
+    // Look for draw display elements in the numbers drawn section
+    // These are styled with the gradient background in the play page
+    const drawContainer = document.querySelector('div[style*="grid-template-columns: repeat(5, 1fr)"]');
+    if (drawContainer) {
+      const drawElements = drawContainer.querySelectorAll('div[style*="background: linear-gradient"]');
+      drawElements.forEach(el => {
+        const text = el.textContent.trim();
+        // Extract number from text like "B12"
+        const match = text.match(/[BINGO](\d+)/);
+        if (match) {
+          draws.push(parseInt(match[1]));
+        }
+      });
+    }
 
     return draws;
   }
@@ -149,6 +153,18 @@
    * Listen for messages from flashboard
    */
   window.addEventListener('message', (event) => {
+    // Security: Validate origin
+    const allowedOrigins = [
+      window.location.origin,
+      'http://localhost:8000',
+      'http://localhost:8080',
+      'http://127.0.0.1:8000'
+    ];
+    
+    if (!allowedOrigins.includes(event.origin)) {
+      return;
+    }
+
     if (!event.data || !event.data.type) return;
 
     switch (event.data.type) {
@@ -188,19 +204,27 @@
    * Monitor restart button
    */
   function monitorRestartButton() {
-    const restartBtn = document.querySelector('button[onClick*="RestartConfirmation"]');
+    // Monitor for restart parameter in URL which indicates a game restart
+    const checkRestart = () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.has('restart')) {
+        sendRestart();
+      }
+    };
+    
+    // Check on page load
+    checkRestart();
+    
+    // Also add click listener to restart button to detect restarts
+    const restartBtn = document.querySelector('button[name="restart"]');
     if (restartBtn) {
-      // We'll hook into the restart via a global function override
-      const originalRestart = window.RestartConfirmation;
-      window.RestartConfirmation = function(...args) {
-        if (originalRestart) {
-          originalRestart.apply(this, args);
-        }
-        // Send restart to flashboard after a short delay
+      restartBtn.addEventListener('click', function() {
+        // Send restart to flashboard after user confirms and page reloads
+        // The actual restart happens via navigation, so we'll detect it on next load
         setTimeout(() => {
           sendRestart();
-        }, 100);
-      };
+        }, 500);
+      });
     }
   }
 

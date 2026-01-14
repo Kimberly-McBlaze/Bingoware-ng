@@ -74,7 +74,20 @@
    */
   function setupMessageListener() {
     window.addEventListener('message', (event) => {
-      // Security: In production, you might want to check event.origin
+      // Security: Validate origin to prevent unauthorized messages
+      // In development, accept localhost; in production, check specific domain
+      const allowedOrigins = [
+        window.location.origin, // Same origin
+        'http://localhost:8000',
+        'http://localhost:8080',
+        'http://127.0.0.1:8000'
+      ];
+      
+      if (!allowedOrigins.includes(event.origin)) {
+        console.warn('Rejected message from unauthorized origin:', event.origin);
+        return;
+      }
+
       if (!event.data || !event.data.type) return;
 
       console.log('Flashboard received message:', event.data);

@@ -1,6 +1,3 @@
-	   <!-- Include Flashboard Bridge Script -->
-	   <script src="include/play-flashboard-bridge.js"></script>
-	   
 	   <div class="content-header">
 	     <h2 class="content-title">🎮 Play Bingo</h2>
 	     <p class="content-subtitle">Draw numbers and track winning cards</p>
@@ -129,3 +126,6 @@
 	   </div>
 	   
 	   </form>
+	   
+	   <!-- Include Flashboard Bridge Script -->
+	   <script src="include/play-flashboard-bridge.js"></script>

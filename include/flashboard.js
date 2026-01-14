@@ -219,7 +219,7 @@
   function updateBoard() {
     // Get the latest number once at the start to ensure consistency
     const latestNumber = getLatestNumber();
-    
+
     // Reset all cells
     const cells = document.querySelectorAll('.number-cell');
     cells.forEach(cell => {

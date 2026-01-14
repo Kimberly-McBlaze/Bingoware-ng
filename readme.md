@@ -138,7 +138,7 @@ Both modes fully support winner detection.
 
 ---
 ## 🗂️ Known Issues
-- None
+- Hmmm, despite the attempted bug fixes mentioned below, the flashboard still doesn't behave properly. It's still not properly updating itself as new numbers are drawn.
 
 
 ## 🗂️ Changelog
@@ -369,6 +369,7 @@ have multiple sets of Bingo cards that do not overwrite one another
 ## 📄 License
 
 Open-source. See license file or original project for details.
+
 
 
 

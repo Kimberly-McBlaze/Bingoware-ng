@@ -268,8 +268,6 @@ function get_all_virtual_stacks_for_display() {
     return $display_stacks;
 }
 
-?>
-
 /**
  * Delete all virtual card stacks for the current set
  * 
@@ -306,3 +304,4 @@ function has_virtual_stacks() {
     $stacks = load_virtual_card_stacks();
     return !empty($stacks);
 }
+?>

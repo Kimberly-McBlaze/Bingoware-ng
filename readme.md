@@ -138,10 +138,22 @@ Both modes fully support winner detection.
 
 ---
 ## 🗂️ Known Issues
-- Hmmm, despite the attempted bug fixes mentioned below, the flashboard still doesn't behave properly. It's still not properly updating itself as new numbers are drawn.
+- None at this time! The flashboard synchronization issues have been resolved in v2.5.3.
 
 
 ## 🗂️ Changelog
+
+### v2.5.3 - January 15, 2026
+- **Bug Fixes:**
+  - Fixed flashboard synchronization issues where the latest number and "Current Number" display would not reliably update
+    - Root cause: Bridge script used brittle DOM scraping with fragile inline-style selectors (e.g., matching `grid-template-columns` and `linear-gradient` style strings) that could intermittently fail or return incomplete/stale draws
+    - Solution: Replaced DOM scraping with stable, deterministic data source by exposing draws array in machine-readable JSON format via `data-draws` attribute on the play page
+    - The `extractDrawsFromPage()` function now reads from the `data-draws` attribute instead of parsing DOM styles
+    - This ensures flashboard receives consistent, accurate state updates after every draw
+  - Flashboard now reliably updates with each number drawn
+  - "Current Number" display consistently shows the latest drawn number
+  - Exactly one cell (the latest) blinks/highlights in the flashboard grid at all times
+  - No more desync issues between play page and flashboard display
 
 ### v2.5.2 - January 14, 2026
 - **Bug Fixes:**

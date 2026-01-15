@@ -191,6 +191,16 @@ Once enabled, a **Virtual Bingo** menu item appears in the main menu.
 
 ## 🗂️ Changelog
 
+- ### [2.6.3] - 2026-01-15
+- **Critical Bug Fixes:**
+  - Fixed `preg_match()` warnings when saving configuration settings via the Configure page
+    - Root cause: Using regex patterns with `preg_match()` for line matching was fragile and could cause "Unknown modifier" errors with certain settings values containing special regex characters
+    - Solution: Replaced all `preg_match()` calls with safe `str_starts_with()` string prefix checks
+    - This eliminates any possibility of regex delimiter or modifier errors when processing settings
+    - Values are still properly escaped using `addslashes()` when written to config/settings.php
+    - All settings (headers, footers, colors, virtual bingo, etc.) now save reliably without warnings
+  - Settings file remains valid PHP and preserves all comments and unrelated lines
+
 - ### [2.6.2] - 2026-01-15
 - **Critical Bug Fixes:**
   - Fixed settings.php parse error when saving any configuration changes via the web UI

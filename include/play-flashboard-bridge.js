@@ -136,11 +136,14 @@
           const patterns = JSON.parse(patternsAttr);
           if (Array.isArray(patterns)) {
             if (patterns.length === 1) {
-              // Exactly one pattern selected - show its name
+              // Exactly one pattern selected - return the full pattern object
               return patterns[0];
             } else if (patterns.length > 1) {
-              // Multiple patterns - show count
-              return `${patterns.length} patterns selected`;
+              // Multiple patterns - return count as string for backward compatibility
+              return {
+                name: `${patterns.length} patterns selected`,
+                description: ''
+              };
             }
           }
         } catch (e) {
@@ -149,7 +152,10 @@
       }
     }
     // No patterns enabled
-    return 'No pattern selected';
+    return {
+      name: 'No pattern selected',
+      description: ''
+    };
   }
 
   /**

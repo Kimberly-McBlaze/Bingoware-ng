@@ -269,3 +269,40 @@ function get_all_virtual_stacks_for_display() {
 }
 
 ?>
+
+/**
+ * Delete all virtual card stacks for the current set
+ * 
+ * @return bool Success status
+ */
+function delete_all_virtual_stacks() {
+    global $setid;
+    
+    // Validate setid to prevent path traversal
+    if (!preg_match('/^[a-zA-Z0-9_-]+$/', $setid)) {
+        error_log("Invalid setid for deleting virtual card stacks: $setid");
+        return false;
+    }
+    
+    $filepath = __DIR__ . "/../data/virtualstacks." . $setid . ".dat";
+    
+    if (file_exists($filepath)) {
+        $result = unlink($filepath);
+        if (!$result) {
+            error_log("Failed to delete virtual card stacks file: $filepath");
+            return false;
+        }
+    }
+    
+    return true;
+}
+
+/**
+ * Check if there are any virtual card stacks for the current set
+ * 
+ * @return bool True if stacks exist, false otherwise
+ */
+function has_virtual_stacks() {
+    $stacks = load_virtual_card_stacks();
+    return !empty($stacks);
+}

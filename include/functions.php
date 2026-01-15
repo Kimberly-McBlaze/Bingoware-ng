@@ -817,6 +817,48 @@ function display_interactive_card($cardnumber) {
 	return $hiddenstring;
 }
 
+/** get_available_sets()
+* This function returns a list of available set IDs
+* by scanning the sets directory for set.*.dat files
+*/
+function get_available_sets() {
+    $sets = array();
+    $files = glob(__DIR__ . "/../sets/set.*.dat");
+    
+    foreach ($files as $file) {
+        // Extract setid from filename
+        if (preg_match('/set\.(.+?)\.dat$/', basename($file), $matches)) {
+            $sets[] = $matches[1];
+        }
+    }
+    
+    // Sort alphabetically
+    sort($sets);
+    
+    return $sets;
+}
 
+/** get_set_card_count()
+* This function returns the number of cards in a specific set
+* @param string $setid The set ID to check
+* @return int Number of cards in the set, or 0 if set doesn't exist
+*/
+function get_set_card_count($targetSetid) {
+    global $setid;
+    $originalSetid = $setid;
+    
+    // Temporarily switch to target set
+    $setid = $targetSetid;
+    
+    $count = 0;
+    if (set_exists()) {
+        $count = card_number();
+    }
+    
+    // Restore original setid
+    $setid = $originalSetid;
+    
+    return $count;
+}
 
 ?>

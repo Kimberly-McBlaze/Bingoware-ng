@@ -1,4 +1,57 @@
 	   <body>
+   <?php 
+   // Handle quick set switching
+   if (isset($_GET["switch_set"])) {
+       $new_setid = $_GET["switch_set"];
+       
+       // Validate setid format
+       if (preg_match('/^[a-zA-Z0-9_-]+$/', $new_setid)) {
+           // Check if the new set exists
+           $new_set_exists = file_exists(__DIR__ . "/sets/set." . $new_setid . ".dat");
+           
+           if (!$new_set_exists && !isset($_GET["confirm_switch"])) {
+               // Prompt to auto-generate
+               $current_card_count = set_exists() ? card_number() : 0;
+               
+               echo '<div class="alert alert-warning">';
+               echo '<strong>⚠️ Set Does Not Exist</strong><br>';
+               echo 'Set "' . htmlspecialchars($new_setid) . '" does not have any cards generated yet.<br><br>';
+               
+               if ($current_card_count > 0) {
+                   echo 'Would you like to automatically generate ' . $current_card_count . ' cards for this new set?<br><br>';
+                   echo '<a href="index.php?action=generate&switch_to_set=' . urlencode($new_setid) . '&auto_cards=' . $current_card_count . '" class="btn btn-primary">✨ Generate ' . $current_card_count . ' Cards</a> ';
+               } else {
+                   echo 'Would you like to generate cards for this new set?<br><br>';
+                   echo '<a href="index.php?action=generate&switch_to_set=' . urlencode($new_setid) . '" class="btn btn-primary">✨ Generate Cards</a> ';
+               }
+               
+               echo '<a href="index.php?action=play" class="btn btn-secondary">Cancel</a>';
+               echo '</div>';
+           } else {
+               // Update setid in config file
+               if (file_exists("config/settings.php")) {
+                   $filearray = file("config/settings.php");
+                   $fp = fopen("config/settings.php", "w");
+                   if ($fp) {
+                       foreach ($filearray as $line) {
+                           $line = preg_replace("/^(\\\$setid=').*?';/", "$1" . preg_quote($new_setid, '/') . "';", $line);
+                           fwrite($fp, $line);
+                       }
+                       fclose($fp);
+                       
+                       // Redirect to play page with new set
+                       header("Location: index.php?action=play");
+                       exit;
+                   }
+               }
+           }
+       } else {
+           echo '<div class="alert alert-error">Failed to switch set. Invalid set ID format.</div>';
+       }
+   }
+   ?>
+
+
 	   <?php if (isset($_POST["submit"])) {
 	   			
 	   			//pull in data from the form post
@@ -29,7 +82,63 @@
 		   		if (isset($_POST["virtualbingoform"])) $virtualbingoform = $_POST["virtualbingoform"]; else $virtualbingoform ="";
 		   		if (isset($_POST["virtualbingo_max_requestform"])) $virtualbingo_max_requestform = $_POST["virtualbingo_max_requestform"]; else $virtualbingo_max_requestform ="12";
 
-				// Winning patterns are now managed via the Winning Patterns page (patterns.php)
+		   
+   // Check if Virtual Bingo is being disabled and handle confirmation
+   include_once("include/virtual_cards.php");
+   
+   $virtualbingo_changing = ($virtualbingo != $virtualbingoform);
+   $virtualbingo_being_disabled = ($virtualbingo == 'on' && $virtualbingoform == '');
+   
+   if ($virtualbingo_being_disabled && has_virtual_stacks()) {
+   // Check if confirmation was provided
+   if (!isset($_POST["confirm_disable_vb"])) {
+   // Show confirmation prompt
+   echo '<div class="alert alert-warning">';
+   echo '<strong>⚠️ Warning: Virtual Bingo URLs Exist</strong><br>';
+   echo 'There are existing Virtual Bingo card URLs that have been generated. ';
+   echo 'Disabling Virtual Bingo will delete all these URLs.<br><br>';
+   echo '<form method="post" action="index.php?action=config' . ((isset($_GET['numberinplay']))?('&numberinplay='.$_GET['numberinplay']):'') . '">';
+   
+   // Re-include all form values as hidden fields
+   echo '<input type="hidden" name="setidform" value="'.htmlspecialchars($setidform).'">';
+   echo '<input type="hidden" name="pagetitleform" value="'.htmlspecialchars($pagetitleform).'">';
+   echo '<input type="hidden" name="viewheaderform" value="'.htmlspecialchars($viewheaderform).'">';
+   echo '<input type="hidden" name="viewfooterform" value="'.htmlspecialchars($viewfooterform).'">';
+   echo '<input type="hidden" name="printheaderform" value="'.htmlspecialchars($printheaderform).'">';
+   echo '<input type="hidden" name="printfooterform" value="'.htmlspecialchars($printfooterform).'">';
+   echo '<input type="hidden" name="drawmodeform" value="'.htmlspecialchars($drawmodeform).'">';
+   echo '<input type="hidden" name="namefileform" value="'.htmlspecialchars($namefileform).'">';
+   echo '<input type="hidden" name="printrulesform" value="'.htmlspecialchars($printrulesform).'">';
+   echo '<input type="hidden" name="fourperpageform" value="'.htmlspecialchars($fourperpageform).'">';
+   echo '<input type="hidden" name="headerfontcolorform" value="'.htmlspecialchars($headerfontcolorform).'">';
+   echo '<input type="hidden" name="headerbgcolorform" value="'.htmlspecialchars($headerbgcolorform).'">';
+   echo '<input type="hidden" name="mainfontcolorform" value="'.htmlspecialchars($mainfontcolorform).'">';
+   echo '<input type="hidden" name="mainbgcolorform" value="'.htmlspecialchars($mainbgcolorform).'">';
+   echo '<input type="hidden" name="selectedfontcolorform" value="'.htmlspecialchars($selectedfontcolorform).'">';
+   echo '<input type="hidden" name="selectedbgcolorform" value="'.htmlspecialchars($selectedbgcolorform).'">';
+   echo '<input type="hidden" name="bordercolorform" value="'.htmlspecialchars($bordercolorform).'">';
+   echo '<input type="hidden" name="virtualbingoform" value="">'; // Disabling
+   echo '<input type="hidden" name="virtualbingo_max_requestform" value="'.htmlspecialchars($virtualbingo_max_requestform).'">';
+   echo '<input type="hidden" name="confirm_disable_vb" value="1">';
+   
+   echo '<button type="submit" name="submit" class="btn btn-warning">⚠️ Yes, Disable Virtual Bingo and Delete URLs</button> ';
+   echo '<a href="index.php?action=config' . ((isset($_GET['numberinplay']))?('&numberinplay='.$_GET['numberinplay']):'') . '" class="btn btn-secondary">Cancel</a>';
+   echo '</form>';
+   echo '</div>';
+   
+   // Don't proceed with saving
+   exit;
+   } else {
+   // Confirmed - delete the stacks
+   delete_all_virtual_stacks();
+   }
+   } else if ($virtualbingo_being_disabled && !has_virtual_stacks()) {
+   // No stacks, just proceed
+   // No action needed
+   }
+
+
+		// Winning patterns are now managed via the Winning Patterns page (patterns.php)
 	   		          
 				// Magic quotes were removed in PHP 5.4, no longer needed
 	   		          
@@ -46,39 +155,95 @@
 						//There will be only one replacement completed, but
 						//preg_replace will return the original line in any other cases.
 						
-						$line = preg_replace("/(setid=').*'/","$1".$setidform."'",$line);
-						$line = preg_replace("/(pagetitleconfig=').*'/","$1".$pagetitleform."'",$line);
+							$line = preg_replace("/^(\\$setid=').*?';/","$1".preg_quote($setidform, '/')."';",$line);
+							$line = preg_replace("/^(\\$pagetitleconfig=').*?';/","$1".preg_quote($pagetitleform, '/')."';",$line);
 						
-						// Winning patterns are now managed via the Winning Patterns page (patterns.php)
+				   
+   // Check if Virtual Bingo is being disabled and handle confirmation
+   include_once("include/virtual_cards.php");
+   
+   $virtualbingo_changing = ($virtualbingo != $virtualbingoform);
+   $virtualbingo_being_disabled = ($virtualbingo == 'on' && $virtualbingoform == '');
+   
+   if ($virtualbingo_being_disabled && has_virtual_stacks()) {
+   // Check if confirmation was provided
+   if (!isset($_POST["confirm_disable_vb"])) {
+   // Show confirmation prompt
+   echo '<div class="alert alert-warning">';
+   echo '<strong>⚠️ Warning: Virtual Bingo URLs Exist</strong><br>';
+   echo 'There are existing Virtual Bingo card URLs that have been generated. ';
+   echo 'Disabling Virtual Bingo will delete all these URLs.<br><br>';
+   echo '<form method="post" action="index.php?action=config' . ((isset($_GET['numberinplay']))?('&numberinplay='.$_GET['numberinplay']):'') . '">';
+   
+   // Re-include all form values as hidden fields
+   echo '<input type="hidden" name="setidform" value="'.htmlspecialchars($setidform).'">';
+   echo '<input type="hidden" name="pagetitleform" value="'.htmlspecialchars($pagetitleform).'">';
+   echo '<input type="hidden" name="viewheaderform" value="'.htmlspecialchars($viewheaderform).'">';
+   echo '<input type="hidden" name="viewfooterform" value="'.htmlspecialchars($viewfooterform).'">';
+   echo '<input type="hidden" name="printheaderform" value="'.htmlspecialchars($printheaderform).'">';
+   echo '<input type="hidden" name="printfooterform" value="'.htmlspecialchars($printfooterform).'">';
+   echo '<input type="hidden" name="drawmodeform" value="'.htmlspecialchars($drawmodeform).'">';
+   echo '<input type="hidden" name="namefileform" value="'.htmlspecialchars($namefileform).'">';
+   echo '<input type="hidden" name="printrulesform" value="'.htmlspecialchars($printrulesform).'">';
+   echo '<input type="hidden" name="fourperpageform" value="'.htmlspecialchars($fourperpageform).'">';
+   echo '<input type="hidden" name="headerfontcolorform" value="'.htmlspecialchars($headerfontcolorform).'">';
+   echo '<input type="hidden" name="headerbgcolorform" value="'.htmlspecialchars($headerbgcolorform).'">';
+   echo '<input type="hidden" name="mainfontcolorform" value="'.htmlspecialchars($mainfontcolorform).'">';
+   echo '<input type="hidden" name="mainbgcolorform" value="'.htmlspecialchars($mainbgcolorform).'">';
+   echo '<input type="hidden" name="selectedfontcolorform" value="'.htmlspecialchars($selectedfontcolorform).'">';
+   echo '<input type="hidden" name="selectedbgcolorform" value="'.htmlspecialchars($selectedbgcolorform).'">';
+   echo '<input type="hidden" name="bordercolorform" value="'.htmlspecialchars($bordercolorform).'">';
+   echo '<input type="hidden" name="virtualbingoform" value="">'; // Disabling
+   echo '<input type="hidden" name="virtualbingo_max_requestform" value="'.htmlspecialchars($virtualbingo_max_requestform).'">';
+   echo '<input type="hidden" name="confirm_disable_vb" value="1">';
+   
+   echo '<button type="submit" name="submit" class="btn btn-warning">⚠️ Yes, Disable Virtual Bingo and Delete URLs</button> ';
+   echo '<a href="index.php?action=config' . ((isset($_GET['numberinplay']))?('&numberinplay='.$_GET['numberinplay']):'') . '" class="btn btn-secondary">Cancel</a>';
+   echo '</form>';
+   echo '</div>';
+   
+   // Don't proceed with saving
+   exit;
+   } else {
+   // Confirmed - delete the stacks
+   delete_all_virtual_stacks();
+   }
+   } else if ($virtualbingo_being_disabled && !has_virtual_stacks()) {
+   // No stacks, just proceed
+   // No action needed
+   }
+
+
+		// Winning patterns are now managed via the Winning Patterns page (patterns.php)
 						
 						//misc settings
 						
-						$line = preg_replace("/(namefile=').*;/","$1".$namefileform."';",$line);
-						$line = preg_replace("/(printrules=').*;/","$1".$printrulesform."';",$line);
-						$line = preg_replace("/(fourperpage=').*;/","$1".$fourperpageform."';",$line);
+							$line = preg_replace("/^(\\$namefile=').*?';/","$1".preg_quote($namefileform, '/')."';",$line);
+							$line = preg_replace("/^(\\$printrules=').*?';/","$1".preg_quote($printrulesform, '/')."';",$line);
+							$line = preg_replace("/^(\\$fourperpage=').*?';/","$1".preg_quote($fourperpageform, '/')."';",$line);
 						
 						//headers and footers
 						
-						$line = preg_replace("/(viewheader=').*;/","$1".$viewheaderform."';",$line);
-						$line = preg_replace("/(viewfooter=').*;/","$1".$viewfooterform."';",$line);
-						$line = preg_replace("/(printheader=').*;/","$1".$printheaderform."';",$line);
-						$line = preg_replace("/(printfooter=').*;/","$1".$printfooterform."';",$line);
-						$line = preg_replace("/(drawmode=').*'/","$1".$drawmodeform."'",$line);
+							$line = preg_replace("/^(\\$viewheader=').*?';/","$1".preg_quote($viewheaderform, '/')."';",$line);
+							$line = preg_replace("/^(\\$viewfooter=').*?';/","$1".preg_quote($viewfooterform, '/')."';",$line);
+							$line = preg_replace("/^(\\$printheader=').*?';/","$1".preg_quote($printheaderform, '/')."';",$line);
+							$line = preg_replace("/^(\\$printfooter=').*?';/","$1".preg_quote($printfooterform, '/')."';",$line);
+							$line = preg_replace("/^(\\$drawmode=').*?';/","$1".preg_quote($drawmodeform, '/')."';",$line);
 						
 						//colours
-						$line = preg_replace("/(headerfontcolor=').*;/","$1".$headerfontcolorform."';",$line);
-						$line = preg_replace("/(headerbgcolor=').*;/","$1".$headerbgcolorform."';",$line);
-						$line = preg_replace("/(mainfontcolor=').*;/","$1".$mainfontcolorform."';",$line);
-						$line = preg_replace("/(mainbgcolor=').*;/","$1".$mainbgcolorform."';",$line);
-						$line = preg_replace("/(selectedfontcolor=').*'/","$1".$selectedfontcolorform."'",$line);
-						$line = preg_replace("/(selectedbgcolor=').*'/","$1".$selectedbgcolorform."'",$line);
-						$line = preg_replace("/(bordercolor=').*'/","$1".$bordercolorform."'",$line);
+							$line = preg_replace("/^(\\$headerfontcolor=').*?';/","$1".preg_quote($headerfontcolorform, '/')."';",$line);
+							$line = preg_replace("/^(\\$headerbgcolor=').*?';/","$1".preg_quote($headerbgcolorform, '/')."';",$line);
+							$line = preg_replace("/^(\\$mainfontcolor=').*?';/","$1".preg_quote($mainfontcolorform, '/')."';",$line);
+							$line = preg_replace("/^(\\$mainbgcolor=').*?';/","$1".preg_quote($mainbgcolorform, '/')."';",$line);
+							$line = preg_replace("/^(\\$selectedfontcolor=').*?';/","$1".preg_quote($selectedfontcolorform, '/')."';",$line);
+							$line = preg_replace("/^(\\$selectedbgcolor=').*?';/","$1".preg_quote($selectedbgcolorform, '/')."';",$line);
+							$line = preg_replace("/^(\\$bordercolor=').*?';/","$1".preg_quote($bordercolorform, '/')."';",$line);
 						
 						//virtual bingo settings
-						$line = preg_replace("/(virtualbingo=').*;/","$1".$virtualbingoform."';",$line);
-						$line = preg_replace("/(virtualbingo_max_request=').*;/","$1".$virtualbingo_max_requestform."';",$line);
+							$line = preg_replace("/^(\\$virtualbingo=').*?';/","$1".preg_quote($virtualbingoform, '/')."';",$line);
+							$line = preg_replace("/^(\\$virtualbingo_max_request=').*?';/","$1".preg_quote($virtualbingo_max_requestform, '/')."';",$line);
 																	
-						fwrite($fp, trim($line)."\n");
+							fwrite($fp, $line);
 					}
 					fclose($fp);
 					if (isset($_POST["pagetitleform"])) $pagetitle=$_POST["pagetitleform"];

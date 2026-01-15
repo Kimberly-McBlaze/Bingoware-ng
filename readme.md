@@ -191,6 +191,36 @@ Once enabled, a **Virtual Bingo** menu item appears in the main menu.
 
 ## 🗂️ Changelog
 
+- ### [2.6.2] - 2026-01-15
+- **Critical Bug Fixes:**
+  - Fixed settings.php parse error when saving any configuration changes via the web UI
+    - Root cause: Greedy regex patterns were matching across lines and corrupting variable assignments
+    - Solution: Updated all regex patterns to use non-greedy matching (`.*?`) and anchor to line start (`^`)
+    - Added proper escaping for special regex characters using `preg_quote()`
+    - Removed problematic `trim()` call that was causing newline issues
+    - All settings now save correctly without corrupting the PHP configuration file
+  - Fixed Virtual Bingo disable workflow to prevent data loss
+    - Added confirmation dialog when disabling Virtual Bingo if generated card stack URLs exist
+    - Automatically deletes all virtual card stacks when user confirms disabling Virtual Bingo
+    - No confirmation needed if no URLs have been generated
+    - Added `delete_all_virtual_stacks()` and `has_virtual_stacks()` helper functions
+
+- **Flashboard Improvements:**
+  - Flashboard now displays the current card set ID in the header
+  - Pattern description is now shown below pattern name when available
+  - Enhanced pattern display to show both name and description for better clarity
+
+- **Quality of Life Improvements:**
+  - Added quick set switcher on Play Bingo page
+    - Dropdown selector shows all available card sets with card counts
+    - Seamlessly switch between different card sets during gameplay
+    - Confirmation prompt prevents accidental set changes
+  - Auto-generate prompt when switching to non-existent set
+    - Detects when switching to a set that has no cards
+    - Offers to auto-generate same number of cards as current set
+    - One-click card generation for new sets
+  - Added utility functions `get_available_sets()` and `get_set_card_count()` for set management
+
 - ### [2.6.1] - 2026-01-15
 - **Virtual Bingo Improvements:**
   - Added back-to-menu navigation button on Virtual Bingo page

@@ -215,7 +215,31 @@
   function updatePattern() {
     const element = document.getElementById('current-pattern');
     if (!element) return;
-    element.textContent = state.currentPattern;
+    
+    // Handle both string and object pattern formats
+    if (typeof state.currentPattern === 'string') {
+      element.textContent = state.currentPattern;
+    } else if (typeof state.currentPattern === 'object' && state.currentPattern !== null) {
+      const name = state.currentPattern.name || 'No pattern selected';
+      const desc = state.currentPattern.description || '';
+      
+      if (desc && desc.length > 0) {
+        element.innerHTML = `<strong>${escapeHtml(name)}</strong><br><span style="font-size: 0.85em; opacity: 0.9;">${escapeHtml(desc)}</span>`;
+      } else {
+        element.textContent = name;
+      }
+    } else {
+      element.textContent = 'No pattern selected';
+    }
+  }
+  
+  /**
+   * Escape HTML to prevent XSS
+   */
+  function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
   }
 
   /**

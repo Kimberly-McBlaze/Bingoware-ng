@@ -33,14 +33,14 @@ $virtual_card_lookup = array_flip($virtual_card_numbers);
    echo "<br>".$printfooter;
    
    if ($fourperpage=='on') {
-   $i+=3; //step through
+   $i+=3; //step through next 3 cards (4 cards total per page)
    }
    
    $printed_count++;
    
 //if not last card then print page break instructions.
+// Only add page break if there are more non-virtual cards to print
 if ($i < ($numcards-1)) {
-// Check if there are more non-virtual cards remaining
 $has_more = false;
 for ($check = $i + 1; $check < $numcards; $check++) {
 if (!$exclude_virtual || !isset($virtual_card_lookup[$check])) {

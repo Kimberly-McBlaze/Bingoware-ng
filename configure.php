@@ -33,21 +33,41 @@
                echo '<a href="index.php?action=play" class="btn btn-secondary">Cancel</a>';
                echo '</div>';
            } else {
-               // Update setid in config file
+               // Update setid in config file using safe write approach
                if (file_exists("config/settings.php")) {
                    $filearray = file("config/settings.php");
-                   $fp = fopen("config/settings.php", "w");
-                   if ($fp) {
+                   if ($filearray !== false) {
+                       $new_content = "";
                        foreach ($filearray as $line) {
-                           $line = preg_replace("/^(\\\$setid=').*?';/", "$1" . preg_quote($new_setid, '/') . "';", $line);
-                           fwrite($fp, $line);
+                           if (preg_match("/^(\\\$setid=').*?';/", $line)) {
+                               $line = "\$setid='" . addslashes($new_setid) . "';\n";
+                           }
+                           $new_content .= $line;
                        }
-                       fclose($fp);
                        
-                       // Redirect to play page with new set
-                       header("Location: index.php?action=play");
-                       exit;
+                       // Validate and write atomically
+                       if (!empty($new_content) && preg_match('/^<\?php/', $new_content) && strlen($new_content) > 100) {
+                           $temp_file = "config/settings.php.tmp";
+                           $fp = fopen($temp_file, "w");
+                           if ($fp && flock($fp, LOCK_EX)) {
+                               fwrite($fp, $new_content);
+                               flock($fp, LOCK_UN);
+                               fclose($fp);
+                               
+                               if (rename($temp_file, "config/settings.php")) {
+                                   // Redirect to play page with new set
+                                   header("Location: index.php?action=play");
+                                   exit;
+                               } else {
+                                   @unlink($temp_file);
+                               }
+                           } else if ($fp) {
+                               fclose($fp);
+                               @unlink($temp_file);
+                           }
+                       }
                    }
+                   echo '<div class="alert alert-error">Failed to update set ID in configuration.</div>';
                }
            }
        } else {

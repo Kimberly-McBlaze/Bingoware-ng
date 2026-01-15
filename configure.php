@@ -24,6 +24,12 @@
 		   		if (isset($_POST["bordercolorform"])) $bordercolorform = $_POST["bordercolorform"]; else $bordercolorform ="";
 		   		
 		   		//echo "debug: ".$headerfontcolorform."<br>";
+		   		
+		   		// Virtual Bingo settings
+		   		if (isset($_POST["virtualbingoform"])) $virtualbingoform = $_POST["virtualbingoform"]; else $virtualbingoform ="";
+		   		if (isset($_POST["virtualbingo_password_enabledform"])) $virtualbingo_password_enabledform = $_POST["virtualbingo_password_enabledform"]; else $virtualbingo_password_enabledform ="";
+		   		if (isset($_POST["virtualbingo_passwordform"])) $virtualbingo_passwordform = $_POST["virtualbingo_passwordform"]; else $virtualbingo_passwordform ="";
+		   		if (isset($_POST["virtualbingo_max_requestform"])) $virtualbingo_max_requestform = $_POST["virtualbingo_max_requestform"]; else $virtualbingo_max_requestform ="10";
 
 				// Winning patterns are now managed via the Winning Patterns page (patterns.php)
 	   		          
@@ -69,6 +75,18 @@
 						$line = preg_replace("/(selectedfontcolor=').*'/","$1".$selectedfontcolorform."'",$line);
 						$line = preg_replace("/(selectedbgcolor=').*'/","$1".$selectedbgcolorform."'",$line);
 						$line = preg_replace("/(bordercolor=').*'/","$1".$bordercolorform."'",$line);
+						
+						//virtual bingo settings
+						$line = preg_replace("/(virtualbingo=').*;/","$1".$virtualbingoform."';",$line);
+						$line = preg_replace("/(virtualbingo_password_enabled=').*;/","$1".$virtualbingo_password_enabledform."';",$line);
+						// Only update password if a new one is provided
+						if (!empty($virtualbingo_passwordform)) {
+							$hashed_password = password_hash($virtualbingo_passwordform, PASSWORD_DEFAULT);
+							// Escape dollar signs in the hash to prevent them being interpreted as backreferences in preg_replace
+							$escaped_hash = str_replace('$', '\\$', $hashed_password);
+							$line = preg_replace("/(virtualbingo_password=').*;/","$1".$escaped_hash."';",$line);
+						}
+						$line = preg_replace("/(virtualbingo_max_request=').*;/","$1".$virtualbingo_max_requestform."';",$line);
 																	
 						fwrite($fp, trim($line)."\n");
 					}
@@ -241,6 +259,44 @@
 	   	    <p style="margin-top: 1rem; font-size: 0.875rem; color: var(--text-muted);">
 	   	      <a href="javascript:explain('Border colour')" class="help-icon">Note about border colors</a>
 	   	    </p>
+	   	  </div>
+	   	</div>
+	   	
+	   	<div class="card mb-3">
+	   	  <div class="card-header">
+	   	    <h3 class="card-title">
+	   	      🌐 Virtual Bingo Mode
+	   	    </h3>
+	   	    <p style="font-size: 0.875rem; color: var(--text-muted); margin-top: 0.5rem;">Enable remote play with shareable card links</p>
+	   	  </div>
+	   	  <div class="card-body">
+	   	    <div class="checkbox-group">
+	   	      <label class="checkbox-option">
+	   	        <input type="checkbox" name="virtualbingoform" <?= ($virtualbingo=="on")?"checked":""; ?>>
+	   	        <span>Enable Virtual Bingo Mode</span>
+	   	      </label>
+	   	    </div>
+	   	    
+	   	    <div style="margin-top: 1.5rem; padding: 1rem; background: var(--card-bg); border-radius: 8px;">
+	   	      <h4 style="margin: 0 0 1rem 0; font-size: 1rem;">Password Protection</h4>
+	   	      <div class="checkbox-group">
+	   	        <label class="checkbox-option">
+	   	          <input type="checkbox" name="virtualbingo_password_enabledform" <?= ($virtualbingo_password_enabled=="on")?"checked":""; ?>>
+	   	          <span>Require Password to Request Cards</span>
+	   	        </label>
+	   	      </div>
+	   	      <div class="form-group" style="margin-top: 1rem;">
+	   	        <label class="form-label">Virtual Bingo Password:</label>
+	   	        <input type="password" name="virtualbingo_passwordform" placeholder="Leave blank to keep current password" class="form-input" style="max-width: 300px;">
+	   	        <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.5rem;">Password is securely hashed before storage</p>
+	   	      </div>
+	   	    </div>
+	   	    
+	   	    <div class="form-group" style="margin-top: 1.5rem;">
+	   	      <label class="form-label">Maximum Cards Per Request:</label>
+	   	      <input type="number" name="virtualbingo_max_requestform" value="<?= isset($virtualbingo_max_request) ? $virtualbingo_max_request : '10'; ?>" min="1" max="100" class="form-input" style="max-width: 150px;">
+	   	      <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.5rem;">Limits abuse by restricting cards per request (1-100)</p>
+	   	    </div>
 	   	  </div>
 	   	</div>
 		

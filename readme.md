@@ -15,6 +15,9 @@ This project updates the original codebase for **PHP 8.2+** while preserving its
 - 🎯 **NEW:** Full CRUD for custom winning patterns (add, edit, delete)
 - 🧩 Support for multiple winning patterns
 - 🆔 Multiple independent card sets via Set IDs
+- 🌐 **NEW:** Virtual Bingo Mode for remote play
+- 🔗 Generate shareable card links for players
+- 📱 Interactive cards with click-to-mark functionality
 - 🌐 Works in all modern browsers
 
 ---
@@ -135,6 +138,53 @@ Only those cards will be checked for winners.
 - **Manual:** Enter numbers manually (for physical draws)
 
 Both modes fully support winner detection.
+
+---
+
+### Virtual Bingo Mode 🌐
+
+**Virtual Bingo Mode** enables remote play by allowing players to request and receive shareable links to individual bingo cards that work on any device.
+
+#### Enabling Virtual Bingo
+
+1. Go to **Configure** menu
+2. Enable the **Virtual Bingo Mode** checkbox
+3. (Optional) Enable **Password Protection** and set a password
+4. (Optional) Adjust **Maximum Cards Per Request** (default: 10)
+5. Save configuration
+
+Once enabled, a **Virtual Bingo** menu item appears in the main menu.
+
+#### How It Works
+
+1. **Request Cards**: Players visit the Virtual Bingo page and request the number of cards they need
+2. **Get Links**: Each card gets a unique, shareable link that works without the password
+3. **Share Links**: Distribute links via email, chat, or any communication method
+4. **Interactive Play**: Players click/tap squares on their cards to mark them during play
+5. **Persistent Marks**: Marks are saved in the browser and restored when reopening the card
+6. **Print Support**: Cards can be printed directly from the browser
+
+#### Password Protection
+
+When password protection is enabled:
+- Players must enter the password to **request** cards
+- Once cards are generated, individual card links work **without** the password
+- Card links use secure unguessable tokens for access
+- Password is securely hashed before storage
+
+#### Use Cases
+
+- **Video conferencing**: Share card links with remote participants during video calls
+- **Radio bingo**: Players follow along remotely while listening to number calls
+- **Hybrid events**: Mix in-person and remote players seamlessly
+- **Email distribution**: Send personalized card links to participants ahead of time
+
+#### Security Features
+
+- Unique unguessable tokens (32-character hex) for each card
+- Optional password protection for card request page
+- Configurable limits on cards per request to prevent abuse
+- Secure password hashing using PHP's `password_hash()`
 
 ---
 ## 🗂️ Known Issues

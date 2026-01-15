@@ -15,7 +15,7 @@ include_once (__DIR__ . "/../include/constants.php");
 * variabe below will behave as if there was no set generated.  Changing the setid back
 * to the original will force the program to reopen the previous card set.
 */
-$setid='B';
+$setid='C';
 
 /* Pagetitle
 * The pagetitle displayed on the top of the browser window can be changed as well.
@@ -99,7 +99,7 @@ $fourperpage='';
 * You should ensure to close your HTML tags so you do not disrupt the display
 * of the cards.
 */
-$viewheader='<center><b><font size=\\\"+4\\\">B I N G O</font></b></center>';
+$viewheader='<center><b><font size=\\\\\\\"+4\\\\\\\">B I N G O</font></b></center>';
 
 /* View footer
 * This variable may contain HTML and will be printed at the bottom of each
@@ -107,7 +107,7 @@ $viewheader='<center><b><font size=\\\"+4\\\">B I N G O</font></b></center>';
 * You should ensure to close your HTML tags so you do not disrupt the display
 * of the cards.
 */
-$viewfooter='<center><b>Created with Bingoware-ng</b><br><br><a href=\\\"javascript:window.close();\\\">close window</a></center>';
+$viewfooter='<center><b>Created with Bingoware-ng</b><br><br><a href=\\\\\\\"javascript:window.close();\\\\\\\">close window</a></center>';
 
 
 /* Print header
@@ -116,7 +116,7 @@ $viewfooter='<center><b>Created with Bingoware-ng</b><br><br><a href=\\\"javascr
 * You should ensure to close your HTML tags so you do not disrupt the display
 * of the cards.
 */
-$printheader='<center><b><font size=\\\"+6\\\">Bingo Card</font></b></center>';
+$printheader='<center><b><font size=\\\\\\\"+6\\\\\\\">Bingo Card</font></b></center>';
 
 
 /* Print footer
@@ -125,7 +125,7 @@ $printheader='<center><b><font size=\\\"+6\\\">Bingo Card</font></b></center>';
 * You should ensure to close your HTML tags so you do not disrupt the display
 * of the cards.
 */
-$printfooter='<center><b><font size=\\\"-1\\\">Created with Bingoware-ng</font></b></center>';
+$printfooter='<center><b><font size=\\\\\\\"-1\\\\\\\">Created with Bingoware-ng</font></b></center>';
 
 
 /* color settings

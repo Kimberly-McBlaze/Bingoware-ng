@@ -29,30 +29,28 @@ if (isset($_SESSION['virtual_card_links']) && !empty($_SESSION['virtual_card_lin
     $success = true;
 }
 
-// Handle form submission
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    if (true) {
-        // Validate card count
-        $card_count = filter_input(INPUT_POST, 'card_count', FILTER_VALIDATE_INT);
-        $max_request = (int)($virtualbingo_max_request ?? 10);
+// Handle form submission for card generation
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && !isset($_POST['clear_cards'])) {
+    // Validate card count
+    $card_count = filter_input(INPUT_POST, 'card_count', FILTER_VALIDATE_INT);
+    $max_request = (int)($virtualbingo_max_request ?? 10);
+    
+    if ($card_count === false || $card_count < 1) {
+        $error = 'Please enter a valid number of cards (minimum 1).';
+    } elseif ($card_count > $max_request) {
+        $error = "Maximum $max_request cards allowed per request.";
+    } else {
+        // Generate card tokens and store mappings
+        include_once("include/virtual_cards.php");
+        $result = generate_virtual_cards($card_count);
         
-        if ($card_count === false || $card_count < 1) {
-            $error = 'Please enter a valid number of cards (minimum 1).';
-        } elseif ($card_count > $max_request) {
-            $error = "Maximum $max_request cards allowed per request.";
+        if ($result['success']) {
+            $success = true;
+            $card_links = $result['cards'];
+            // Store in session
+            $_SESSION['virtual_card_links'] = $card_links;
         } else {
-            // Generate card tokens and store mappings
-            include_once("include/virtual_cards.php");
-            $result = generate_virtual_cards($card_count);
-            
-            if ($result['success']) {
-                $success = true;
-                $card_links = $result['cards'];
-                // Store in session
-                $_SESSION['virtual_card_links'] = $card_links;
-            } else {
-                $error = $result['error'] ?? 'Failed to generate cards. Please ensure a card set exists.';
-            }
+            $error = $result['error'] ?? 'Failed to generate cards. Please ensure a card set exists.';
         }
     }
 }

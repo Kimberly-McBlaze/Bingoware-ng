@@ -21,17 +21,6 @@
 	   
 	   <form name="random" method="post" action="index.php?action=play&numberinplay=<?= $numberinplay;?>" onSubmit="return validate_number(<?= $maxColumnNumber; ?>)">
 	   
-	   <?php
-	   // Expose pattern information for flashboard
-	   $enabled_patterns = get_enabled_patterns();
-	   $pattern_names = array();
-	   if (is_array($enabled_patterns)) {
-	       $pattern_names = array_map(function($p) { return $p['name']; }, $enabled_patterns);
-	   }
-	   $pattern_json = json_encode($pattern_names);
-	   ?>
-	   <div id="game-state-data" data-patterns='<?= htmlspecialchars($pattern_json, ENT_QUOTES, 'UTF-8'); ?>' style="display: none;"></div>
-	   
 	   <div style="display: grid; grid-template-columns: 350px 1fr; gap: 2rem; margin-bottom: 2rem;">
 	     <div>
 	       <div class="card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; text-align: center; padding: 2rem; margin-bottom: 1.5rem;">
@@ -46,8 +35,39 @@
 	   		if (isset($_POST["gimme"]) && $drawmode=="manual") submit_number($_POST["enterednumber"],$numberinplay);
 	   		
 	   		if (isset($_GET["restart"])) restart();
+	   		
+	   		// After form processing, expose current game state for flashboard
+	   		// This ensures data-draws contains up-to-date information
 	   		$draws=load_draws();
 	   		$drawsCount = ($draws !== null) ? count($draws) : 0;
+	   		
+	   		// Expose pattern information for flashboard
+	   		$enabled_patterns = get_enabled_patterns();
+	   		$pattern_names = array();
+	   		if (is_array($enabled_patterns)) {
+	   		    $pattern_names = array_map(function($p) { return $p['name']; }, $enabled_patterns);
+	   		}
+	   		$pattern_json = json_encode($pattern_names);
+	   		
+	   		// Expose draws data for flashboard - stable source of truth
+	   		$draws_json = json_encode($draws !== null ? $draws : []);
+	   		
+	   		// Expose latest drawn number for flashboard blinking/highlighting
+	   		$latest_number = load_last_draw();
+	   		$latest_json = json_encode($latest_number);
+	   		
+	   		// Build game state data attributes for flashboard
+	   		$patterns_attr = htmlspecialchars($pattern_json, ENT_QUOTES, 'UTF-8');
+	   		$draws_attr = htmlspecialchars($draws_json, ENT_QUOTES, 'UTF-8');
+	   		$latest_attr = htmlspecialchars($latest_json, ENT_QUOTES, 'UTF-8');
+	   		?>
+	   		<div id="game-state-data" 
+	   		     data-patterns='<?= $patterns_attr; ?>' 
+	   		     data-draws='<?= $draws_attr; ?>' 
+	   		     data-latest='<?= $latest_attr; ?>' 
+	   		     style="display: none;">
+	   		</div>
+	   		<?php
 	   		
 	   		if ($drawmode=="manual" && ($drawsCount<$maxNumber)) {
 	   			echo '<div style="margin: 1rem 0;"><label style="display: block; margin-bottom: 0.5rem;">Enter a number:</label>';
@@ -106,8 +126,7 @@
 	             Numbers drawn so far (<?= $drawsCount; ?> of <?= $maxNumber; ?>):
 	           </p>
 	           <?php
-	           // Modern draws table
-	           $draws = load_draws();
+	           // Modern draws table - $draws already loaded after form processing
 	           echo '<div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 0.5rem;">';
 	           if ($draws != null) {
 	             $number = count($draws);

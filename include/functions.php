@@ -189,6 +189,7 @@ function random_number($numberinplay) {
 	}
 	$draws[$total]=$num;
 	save_draws($draws);
+	save_last_draw($num);  // Track most recent draw for flashboard
 
 	mark_cards($col,$num);
 	check_bingo($numberinplay);
@@ -223,6 +224,7 @@ function submit_number($number,$numberinplay) {
 
 		$draws[$total]=$convert;
 		save_draws($draws);
+		save_last_draw($convert);  // Track most recent draw for flashboard
 
 		mark_cards(array_search(strtoupper(substr($number,0,1)),$bingoletters),$convert);
 		check_bingo($numberinplay);
@@ -303,7 +305,8 @@ function restart() { //erases winners, draws, and clears all cards but keeps num
 	$files_to_remove = [
 		"data/old_winners.".$setid.".dat",
 		"data/new_winners.".$setid.".dat",
-		"data/draws.".$setid.".dat"
+		"data/draws.".$setid.".dat",
+		"data/lastdraw.".$setid.".dat"  // Also remove last draw tracking
 	];
 	
 	foreach ($files_to_remove as $file) {
@@ -526,6 +529,37 @@ function save_draws(&$draws) {
 	fwrite($fp, serialize($draws));
 	fclose($fp);
 	return true;
+}
+
+/** save_last_draw()
+ * This function saves the most recently drawn number to a separate file
+ * Used by flashboard to identify which number should be blinking
+ */
+function save_last_draw($number) {
+	global $setid;
+	
+	$fp = fopen("data/lastdraw.".$setid.".dat","w");
+	if (!$fp) {
+		error_log("Failed to open data/lastdraw.".$setid.".dat for writing");
+		return false;
+	}
+	
+	fwrite($fp, (string)$number);
+	fclose($fp);
+	return true;
+}
+
+/** load_last_draw()
+ * This function loads the most recently drawn number
+ * Returns null if no number has been drawn yet
+ */
+function load_last_draw() {
+	global $setid;
+	if (file_exists("data/lastdraw.".$setid.".dat")){
+		$content = file_get_contents("data/lastdraw.".$setid.".dat");
+		return ($content !== false && $content !== '') ? (int)trim($content) : null;
+	}
+	return null;
 }
 
 /** load_old_winners()

@@ -63,7 +63,7 @@
    */
   function getCurrentState() {
     const draws = extractDrawsFromPage();
-    const latestNumber = draws.length > 0 ? draws[draws.length - 1] : null;
+    const latestNumber = extractLatestNumberFromPage();
     const pattern = extractPatternFromPage();
 
     return {
@@ -75,26 +75,52 @@
 
   /**
    * Extract drawn numbers from the page
+   * Reads from stable data-draws attribute instead of scraping DOM styles
    */
   function extractDrawsFromPage() {
-    const draws = [];
-    
-    // Look for draw display elements in the numbers drawn section
-    // These are styled with the gradient background in the play page
-    const drawContainer = document.querySelector('div[style*="grid-template-columns: repeat(5, 1fr)"]');
-    if (drawContainer) {
-      const drawElements = drawContainer.querySelectorAll('div[style*="background: linear-gradient"]');
-      drawElements.forEach(el => {
-        const text = el.textContent.trim();
-        // Extract number from text like "B12"
-        const match = text.match(/[BINGO](\d+)/);
-        if (match) {
-          draws.push(parseInt(match[1]));
+    // Read draws from data attribute - stable source of truth
+    const gameStateData = document.getElementById('game-state-data');
+    if (gameStateData) {
+      const drawsAttr = gameStateData.getAttribute('data-draws');
+      if (drawsAttr) {
+        try {
+          const draws = JSON.parse(drawsAttr);
+          if (Array.isArray(draws)) {
+            // Ensure all values are integers
+            return draws.map(num => parseInt(num, 10)).filter(num => !isNaN(num));
+          }
+        } catch (e) {
+          console.error('Error parsing draws:', e);
         }
-      });
+      }
     }
+    
+    // Fallback: return empty array if no data found
+    return [];
+  }
 
-    return draws;
+  /**
+   * Extract the latest drawn number from the page
+   * Reads from stable data-latest attribute
+   */
+  function extractLatestNumberFromPage() {
+    const gameStateData = document.getElementById('game-state-data');
+    if (gameStateData) {
+      const latestAttr = gameStateData.getAttribute('data-latest');
+      if (latestAttr) {
+        try {
+          const latest = JSON.parse(latestAttr);
+          if (latest !== null && latest !== undefined) {
+            return parseInt(latest, 10);
+          }
+        } catch (e) {
+          console.error('Error parsing latest number:', e);
+        }
+      }
+    }
+    
+    // Fallback: return null if no data found
+    return null;
   }
 
   /**

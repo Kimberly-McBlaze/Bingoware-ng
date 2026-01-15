@@ -191,6 +191,15 @@ Once enabled, a **Virtual Bingo** menu item appears in the main menu.
 
 ## 🗂️ Changelog
 
+- ### [2.6.3.2] - 2026-01-15
+- **View Cards Improvements:**
+  - Added option to exclude virtual-player cards from "Show All Cards (for printing)" output
+  - New checkbox in View Cards section: "Exclude virtual-player cards from print output"
+  - When enabled, cards assigned to Virtual Bingo URLs are filtered out, preventing accidental printing for in-person players
+  - Helps keep virtual-player cards separate from physical cards used in-person
+  - Filter only appears when Virtual Bingo is enabled and card stacks have been generated
+  - Backward compatible: default behavior shows all cards (same as before)
+
 - ### [2.6.3.1] - 2026-01-15
 - **Virtual Bingo Improvements:**
   - Added delete button for individual card stacks in Virtual Bingo administrator page

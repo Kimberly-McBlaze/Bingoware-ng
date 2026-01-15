@@ -335,4 +335,15 @@ function delete_virtual_stack($stack_id) {
     
     return ['success' => true];
 }
+
+/**
+ * Get all virtual card numbers (0-indexed) for the current set
+ * Used to filter out virtual-assigned cards from print output
+ * 
+ * @return array List of card numbers (0-indexed) that are assigned to virtual stacks
+ */
+function get_all_virtual_card_numbers() {
+    $stacks = load_virtual_card_stacks();
+    return get_allocated_card_numbers_from_stacks($stacks);
+}
 ?>

@@ -328,7 +328,7 @@ body {
     <div class="stack-header">
         <h1 class="stack-title">🎱 Virtual Bingo Card Stack</h1>
         <div class="stack-subtitle">
-            <?= count($cards) ?> card(s) in this stack
+            <?= htmlspecialchars(count($cards)) ?> card(s) in this stack
         </div>
     </div>
     

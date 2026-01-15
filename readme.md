@@ -15,6 +15,9 @@ This project updates the original codebase for **PHP 8.2+** while preserving its
 - 🎯 **NEW:** Full CRUD for custom winning patterns (add, edit, delete)
 - 🧩 Support for multiple winning patterns
 - 🆔 Multiple independent card sets via Set IDs
+- 🌐 **NEW:** Virtual Bingo Mode for remote play
+- 🔗 Generate shareable card links for players
+- 📱 Interactive cards with click-to-mark functionality
 - 🌐 Works in all modern browsers
 
 ---
@@ -137,13 +140,122 @@ Only those cards will be checked for winners.
 Both modes fully support winner detection.
 
 ---
+
+### Virtual Bingo Mode 🌐
+
+**Virtual Bingo Mode** enables remote play by allowing administrators to generate and share URLs containing stacks of bingo cards that work on any device.
+
+#### Enabling Virtual Bingo
+
+1. Go to **Configure** menu
+2. Enable the **Virtual Bingo Mode** checkbox
+3. Adjust **Maximum Cards Per Request** (default: 12)
+4. Save configuration
+
+Once enabled, a **Virtual Bingo** menu item appears in the main menu.
+
+#### How It Works
+
+1. **Generate Card Stacks**: Administrator visits the Virtual Bingo page and generates a stack of cards (1-12 cards per stack)
+2. **Get Shareable URL**: Each generation creates one URL containing all the cards in that stack
+3. **Share URL**: Distribute the stack URL to players via email, chat, or any communication method
+4. **Interactive Play**: Players open the URL to view all cards in the stack and can click/tap squares to mark them during play
+5. **Persistent Marks**: Marks are saved in the browser and restored when reopening the stack
+6. **Print Support**: Cards can be printed up to 4 cards per page for physical use
+
+#### Key Features
+
+- **Administrator Control**: Only administrators generate card stack URLs
+- **Multiple Cards per URL**: Generate 1-12 cards in a single shareable URL
+- **State Retention**: Previously generated stack URLs remain visible when returning to the Virtual Bingo page
+- **Navigation**: Easy back-to-menu navigation from the Virtual Bingo page
+- **Print Layout**: Optimized printing with up to 4 cards per printed page
+
+#### Use Cases
+
+- **Video conferencing**: Share stack URLs with remote participants during video calls
+- **Radio bingo**: Players follow along remotely while listening to number calls
+- **Hybrid events**: Mix in-person and remote players seamlessly
+- **Email distribution**: Send stack URLs to participants ahead of time
+
+#### Security Features
+
+- Unique unguessable stack IDs (32-character hex) for each stack
+- Configurable limits on cards per stack to prevent abuse
+- Secure token-based access without exposing card numbers
+
+---
 ## 🗂️ Known Issues
 - None at this time! The flashboard synchronization issues have been resolved in v2.5.3.
 
 
 ## 🗂️ Changelog
 
-### v2.5.3 - January 15, 2026
+- ### [2.6.3.1] - 2026-01-15
+- **Virtual Bingo Improvements:**
+  - Added delete button for individual card stacks in Virtual Bingo administrator page
+  - Each previously generated stack now has a "Delete" button with confirmation prompt
+  - Deleted stacks are removed immediately from the UI with smooth animation
+  - New API endpoint `/api/virtual_stacks.php` to handle stack deletion
+  - Added `delete_virtual_stack()` function in `include/virtual_cards.php` for backend deletion
+  - Includes UX safeguards: button disables during deletion, error handling for failures
+  - Page auto-refreshes when last stack is deleted to update the UI
+
+- ### [2.6.3] - 2026-01-15
+- **Critical Bug Fixes:**
+  - Fixed `preg_match()` warnings when saving configuration settings via the Configure page
+    - Root cause: Using regex patterns with `preg_match()` for line matching was fragile and could cause "Unknown modifier" errors with certain settings values containing special regex characters
+    - Solution: Replaced all `preg_match()` calls with safe `str_starts_with()` string prefix checks
+    - This eliminates any possibility of regex delimiter or modifier errors when processing settings
+    - Values are still properly escaped using `addslashes()` when written to config/settings.php
+    - All settings (headers, footers, colors, virtual bingo, etc.) now save reliably without warnings
+  - Settings file remains valid PHP and preserves all comments and unrelated lines
+
+- ### [2.6.2] - 2026-01-15
+- **Critical Bug Fixes:**
+  - Fixed settings.php parse error when saving any configuration changes via the web UI
+    - Root cause: Greedy regex patterns were matching across lines and corrupting variable assignments
+    - Solution: Updated all regex patterns to use non-greedy matching (`.*?`) and anchor to line start (`^`)
+    - Added proper escaping for special regex characters using `preg_quote()`
+    - Removed problematic `trim()` call that was causing newline issues
+    - All settings now save correctly without corrupting the PHP configuration file
+  - Fixed Virtual Bingo disable workflow to prevent data loss
+    - Added confirmation dialog when disabling Virtual Bingo if generated card stack URLs exist
+    - Automatically deletes all virtual card stacks when user confirms disabling Virtual Bingo
+    - No confirmation needed if no URLs have been generated
+    - Added `delete_all_virtual_stacks()` and `has_virtual_stacks()` helper functions
+
+- **Flashboard Improvements:**
+  - Flashboard now displays the current card set ID in the header
+  - Pattern description is now shown below pattern name when available
+  - Enhanced pattern display to show both name and description for better clarity
+
+- **Quality of Life Improvements:**
+  - Added quick set switcher on Play Bingo page
+    - Dropdown selector shows all available card sets with card counts
+    - Seamlessly switch between different card sets during gameplay
+    - Confirmation prompt prevents accidental set changes
+  - Auto-generate prompt when switching to non-existent set
+    - Detects when switching to a set that has no cards
+    - Offers to auto-generate same number of cards as current set
+    - One-click card generation for new sets
+  - Added utility functions `get_available_sets()` and `get_set_card_count()` for set management
+
+- ### [2.6.1] - 2026-01-15
+- **Virtual Bingo Improvements:**
+  - Added back-to-menu navigation button on Virtual Bingo page
+  - Implemented state retention for generated card stacks - previously generated URLs now persist when navigating away and returning
+  - Removed password protection entirely - Virtual Bingo is now open for administrators to generate card URLs
+  - Redesigned card generation to create **stacked card URLs** - multiple cards (1-12) are now grouped into a single shareable URL
+  - Changed to **administrator-generated URLs** - clarified that administrators generate and share URLs with players
+  - Added print support with optimized layout for **up to 4 cards per printed page**
+  - Made maximum cards per stack **configurable** with new default of **12 cards** (adjustable from 1-100)
+  - All marks on cards in a stack are preserved in browser localStorage and restored on page reload
+
+- ### [2.6] - 2026-01-15
+- Added Virtual Bingo Support: enables remote play by allowing players to request and receive shareable links to individual bingo cards that work on any device.
+
+- ### v2.5.3 - January 15, 2026
 - **Bug Fixes:**
   - Fixed flashboard synchronization issues where the latest number and "Current Number" display would not reliably update
     - Root cause: Bridge script used brittle DOM scraping with fragile inline-style selectors (e.g., matching `grid-template-columns` and `linear-gradient` style strings) that could intermittently fail or return incomplete/stale draws
@@ -373,6 +485,8 @@ have multiple sets of Bingo cards that do not overwrite one another
 ## 📄 License
 
 Open-source. See license file or original project for details.
+
+
 
 
 

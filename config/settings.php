@@ -142,4 +142,17 @@ $selectedfontcolor='#FF0000';
 $selectedbgcolor='#FFFF66';
 $bordercolor='#000000';
 
+/* Virtual Bingo Mode
+* Enable or disable virtual bingo support for remote play.
+* When enabled, players can request cards via a public web page and receive
+* shareable links to their individual cards.
+*/
+$virtualbingo='on';
+
+/* Virtual Bingo Max Cards Per Request
+* Limit the number of cards a player can request at once to prevent abuse.
+* Default: 12 cards
+*/
+$virtualbingo_max_request='12';
+
 ?>

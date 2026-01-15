@@ -1,4 +1,82 @@
 	   <body>
+   <?php
+   // Include virtual cards functions at the start
+   if (file_exists("include/virtual_cards.php")) {
+       include_once("include/virtual_cards.php");
+   }
+   
+   // Handle quick set switching
+   if (isset($_GET["switch_set"])) {
+       $new_setid = $_GET["switch_set"];
+       
+       // Validate setid format
+       if (preg_match('/^[a-zA-Z0-9_-]+$/', $new_setid)) {
+           // Check if the new set exists
+           $new_set_exists = file_exists(__DIR__ . "/sets/set." . $new_setid . ".dat");
+           
+           if (!$new_set_exists && !isset($_GET["confirm_switch"])) {
+               // Prompt to auto-generate
+               $current_card_count = set_exists() ? card_number() : 0;
+               
+               echo '<div class="alert alert-warning">';
+               echo '<strong>⚠️ Set Does Not Exist</strong><br>';
+               echo 'Set "' . htmlspecialchars($new_setid) . '" does not have any cards generated yet.<br><br>';
+               
+               if ($current_card_count > 0) {
+                   echo 'Would you like to automatically generate ' . $current_card_count . ' cards for this new set?<br><br>';
+                   echo '<a href="index.php?action=generate&switch_to_set=' . urlencode($new_setid) . '&auto_cards=' . $current_card_count . '" class="btn btn-primary">✨ Generate ' . $current_card_count . ' Cards</a> ';
+               } else {
+                   echo 'Would you like to generate cards for this new set?<br><br>';
+                   echo '<a href="index.php?action=generate&switch_to_set=' . urlencode($new_setid) . '" class="btn btn-primary">✨ Generate Cards</a> ';
+               }
+               
+               echo '<a href="index.php?action=play" class="btn btn-secondary">Cancel</a>';
+               echo '</div>';
+           } else {
+               // Update setid in config file using safe write approach
+               if (file_exists("config/settings.php")) {
+                   $filearray = file("config/settings.php");
+                   if ($filearray !== false) {
+                       $new_content = "";
+                       foreach ($filearray as $line) {
+                           if (str_starts_with($line, "\$setid='")) {
+                               $line = "\$setid='" . addslashes($new_setid) . "';\n";
+                           }
+                           $new_content .= $line;
+                       }
+                       
+                       // Validate and write atomically
+                       if (!empty($new_content) && preg_match('/^<\?php/', $new_content) && strlen($new_content) > 100) {
+                           $temp_file = "config/settings.php.tmp";
+                           $fp = fopen($temp_file, "w");
+                           if ($fp && flock($fp, LOCK_EX)) {
+                               fwrite($fp, $new_content);
+                               flock($fp, LOCK_UN);
+                               fclose($fp);
+                               
+                               if (rename($temp_file, "config/settings.php")) {
+                                   // Redirect to play page with new set
+                                   header("Location: index.php?action=play");
+                                   exit;
+                               } else {
+                                   @unlink($temp_file);
+                               }
+                           } else if ($fp) {
+                               fclose($fp);
+                               @unlink($temp_file);
+                           }
+                       }
+                   }
+                   echo '<div class="alert alert-error">Failed to update set ID in configuration.</div>';
+               }
+           }
+       } else {
+           echo '<div class="alert alert-error">Failed to switch set. Invalid set ID format.</div>';
+       }
+   }
+   ?>
+
+
 	   <?php if (isset($_POST["submit"])) {
 	   			
 	   			//pull in data from the form post
@@ -24,58 +102,206 @@
 		   		if (isset($_POST["bordercolorform"])) $bordercolorform = $_POST["bordercolorform"]; else $bordercolorform ="";
 		   		
 		   		//echo "debug: ".$headerfontcolorform."<br>";
+		   		
+		   		// Virtual Bingo settings
+		   		if (isset($_POST["virtualbingoform"])) $virtualbingoform = $_POST["virtualbingoform"]; else $virtualbingoform ="";
+		   		if (isset($_POST["virtualbingo_max_requestform"])) $virtualbingo_max_requestform = $_POST["virtualbingo_max_requestform"]; else $virtualbingo_max_requestform ="12";
 
-				// Winning patterns are now managed via the Winning Patterns page (patterns.php)
+		   
+   // Check if Virtual Bingo is being disabled and handle confirmation
+   $virtualbingo_changing = ($virtualbingo != $virtualbingoform);
+   $virtualbingo_being_disabled = ($virtualbingo == 'on' && $virtualbingoform == '');
+   
+   if ($virtualbingo_being_disabled && function_exists('has_virtual_stacks') && has_virtual_stacks()) {
+   // Check if confirmation was provided
+   if (!isset($_POST["confirm_disable_vb"])) {
+   // Show confirmation prompt
+   echo '<div class="alert alert-warning">';
+   echo '<strong>⚠️ Warning: Virtual Bingo URLs Exist</strong><br>';
+   echo 'There are existing Virtual Bingo card URLs that have been generated. ';
+   echo 'Disabling Virtual Bingo will delete all these URLs.<br><br>';
+   echo '<form method="post" action="index.php?action=config' . ((isset($_GET['numberinplay']))?('&numberinplay='.$_GET['numberinplay']):'') . '">';
+   
+   // Re-include all form values as hidden fields
+   echo '<input type="hidden" name="setidform" value="'.htmlspecialchars($setidform).'">';
+   echo '<input type="hidden" name="pagetitleform" value="'.htmlspecialchars($pagetitleform).'">';
+   echo '<input type="hidden" name="viewheaderform" value="'.htmlspecialchars($viewheaderform).'">';
+   echo '<input type="hidden" name="viewfooterform" value="'.htmlspecialchars($viewfooterform).'">';
+   echo '<input type="hidden" name="printheaderform" value="'.htmlspecialchars($printheaderform).'">';
+   echo '<input type="hidden" name="printfooterform" value="'.htmlspecialchars($printfooterform).'">';
+   echo '<input type="hidden" name="drawmodeform" value="'.htmlspecialchars($drawmodeform).'">';
+   echo '<input type="hidden" name="namefileform" value="'.htmlspecialchars($namefileform).'">';
+   echo '<input type="hidden" name="printrulesform" value="'.htmlspecialchars($printrulesform).'">';
+   echo '<input type="hidden" name="fourperpageform" value="'.htmlspecialchars($fourperpageform).'">';
+   echo '<input type="hidden" name="headerfontcolorform" value="'.htmlspecialchars($headerfontcolorform).'">';
+   echo '<input type="hidden" name="headerbgcolorform" value="'.htmlspecialchars($headerbgcolorform).'">';
+   echo '<input type="hidden" name="mainfontcolorform" value="'.htmlspecialchars($mainfontcolorform).'">';
+   echo '<input type="hidden" name="mainbgcolorform" value="'.htmlspecialchars($mainbgcolorform).'">';
+   echo '<input type="hidden" name="selectedfontcolorform" value="'.htmlspecialchars($selectedfontcolorform).'">';
+   echo '<input type="hidden" name="selectedbgcolorform" value="'.htmlspecialchars($selectedbgcolorform).'">';
+   echo '<input type="hidden" name="bordercolorform" value="'.htmlspecialchars($bordercolorform).'">';
+   echo '<input type="hidden" name="virtualbingoform" value="">'; // Disabling
+   echo '<input type="hidden" name="virtualbingo_max_requestform" value="'.htmlspecialchars($virtualbingo_max_requestform).'">';
+   echo '<input type="hidden" name="confirm_disable_vb" value="1">';
+   
+   echo '<button type="submit" name="submit" class="btn btn-warning">⚠️ Yes, Disable Virtual Bingo and Delete URLs</button> ';
+   echo '<a href="index.php?action=config' . ((isset($_GET['numberinplay']))?('&numberinplay='.$_GET['numberinplay']):'') . '" class="btn btn-secondary">Cancel</a>';
+   echo '</form>';
+   echo '</div>';
+   
+   // Don't proceed with saving
+   exit;
+   } else {
+   // Confirmed - delete the stacks
+   if (function_exists('delete_all_virtual_stacks')) {
+       delete_all_virtual_stacks();
+   }
+   }
+   } else if ($virtualbingo_being_disabled && (!function_exists('has_virtual_stacks') || !has_virtual_stacks())) {
+   // No stacks, just proceed
+   // No action needed
+   }
+
+
+		// Winning patterns are now managed via the Winning Patterns page (patterns.php)
 	   		          
 				// Magic quotes were removed in PHP 5.4, no longer needed
 	   		          
 	   		if (file_exists("config/settings.php")){
 					$filearray=file("config/settings.php");
-					$fp = fopen("config/settings.php","w");
-					if (!$fp) {
-						error_log("Failed to open config/settings.php for writing");
-						echo '<div class="alert alert-error">Failed to save configuration. Check file permissions.</div>';
+					if ($filearray === false) {
+						error_log("Failed to read config/settings.php");
+						echo '<div class="alert alert-error">Failed to read configuration file.</div>';
 					} else {
+					
+					// Build new content in memory first
+					$new_content = "";
 	
 					foreach ($filearray as $line_num => $line) {
 						//sequence all replacements.
 						//There will be only one replacement completed, but
-						//preg_replace will return the original line in any other cases.
+						//the check will ensure the original line is kept in any other cases.
 						
-						$line = preg_replace("/(setid=').*'/","$1".$setidform."'",$line);
-						$line = preg_replace("/(pagetitleconfig=').*'/","$1".$pagetitleform."'",$line);
-						
-						// Winning patterns are now managed via the Winning Patterns page (patterns.php)
-						
+						// Use safe string prefix matching instead of regex to avoid preg_match warnings
+						// This prevents issues with special regex characters in settings values
+						if (str_starts_with($line, "\$setid='")) {
+							$line = "\$setid='" . addslashes($setidform) . "';\n";
+						}
+						elseif (str_starts_with($line, "\$pagetitleconfig='")) {
+							$line = "\$pagetitleconfig='" . addslashes($pagetitleform) . "';\n";
+						}
+					
 						//misc settings
-						
-						$line = preg_replace("/(namefile=').*;/","$1".$namefileform."';",$line);
-						$line = preg_replace("/(printrules=').*;/","$1".$printrulesform."';",$line);
-						$line = preg_replace("/(fourperpage=').*;/","$1".$fourperpageform."';",$line);
-						
-						//headers and footers
-						
-						$line = preg_replace("/(viewheader=').*;/","$1".$viewheaderform."';",$line);
-						$line = preg_replace("/(viewfooter=').*;/","$1".$viewfooterform."';",$line);
-						$line = preg_replace("/(printheader=').*;/","$1".$printheaderform."';",$line);
-						$line = preg_replace("/(printfooter=').*;/","$1".$printfooterform."';",$line);
-						$line = preg_replace("/(drawmode=').*'/","$1".$drawmodeform."'",$line);
-						
+						elseif (str_starts_with($line, "\$namefile='")) {
+							$line = "\$namefile='" . addslashes($namefileform) . "';\n";
+						}
+						elseif (str_starts_with($line, "\$printrules='")) {
+							$line = "\$printrules='" . addslashes($printrulesform) . "';\n";
+						}
+						elseif (str_starts_with($line, "\$fourperpage='")) {
+							$line = "\$fourperpage='" . addslashes($fourperpageform) . "';\n";
+						}
+					
+						//headers and footers - these can contain HTML, need proper escaping
+						elseif (str_starts_with($line, "\$viewheader='")) {
+							$line = "\$viewheader='" . addslashes($viewheaderform) . "';\n";
+						}
+						elseif (str_starts_with($line, "\$viewfooter='")) {
+							$line = "\$viewfooter='" . addslashes($viewfooterform) . "';\n";
+						}
+						elseif (str_starts_with($line, "\$printheader='")) {
+							$line = "\$printheader='" . addslashes($printheaderform) . "';\n";
+						}
+						elseif (str_starts_with($line, "\$printfooter='")) {
+							$line = "\$printfooter='" . addslashes($printfooterform) . "';\n";
+						}
+						elseif (str_starts_with($line, "\$drawmode='")) {
+							$line = "\$drawmode='" . addslashes($drawmodeform) . "';\n";
+						}
+					
 						//colours
-						$line = preg_replace("/(headerfontcolor=').*;/","$1".$headerfontcolorform."';",$line);
-						$line = preg_replace("/(headerbgcolor=').*;/","$1".$headerbgcolorform."';",$line);
-						$line = preg_replace("/(mainfontcolor=').*;/","$1".$mainfontcolorform."';",$line);
-						$line = preg_replace("/(mainbgcolor=').*;/","$1".$mainbgcolorform."';",$line);
-						$line = preg_replace("/(selectedfontcolor=').*'/","$1".$selectedfontcolorform."'",$line);
-						$line = preg_replace("/(selectedbgcolor=').*'/","$1".$selectedbgcolorform."'",$line);
-						$line = preg_replace("/(bordercolor=').*'/","$1".$bordercolorform."'",$line);
-																	
-						fwrite($fp, trim($line)."\n");
+						elseif (str_starts_with($line, "\$headerfontcolor='")) {
+							$line = "\$headerfontcolor='" . addslashes($headerfontcolorform) . "';\n";
+						}
+						elseif (str_starts_with($line, "\$headerbgcolor='")) {
+							$line = "\$headerbgcolor='" . addslashes($headerbgcolorform) . "';\n";
+						}
+						elseif (str_starts_with($line, "\$mainfontcolor='")) {
+							$line = "\$mainfontcolor='" . addslashes($mainfontcolorform) . "';\n";
+						}
+						elseif (str_starts_with($line, "\$mainbgcolor='")) {
+							$line = "\$mainbgcolor='" . addslashes($mainbgcolorform) . "';\n";
+						}
+						elseif (str_starts_with($line, "\$selectedfontcolor='")) {
+							$line = "\$selectedfontcolor='" . addslashes($selectedfontcolorform) . "';\n";
+						}
+						elseif (str_starts_with($line, "\$selectedbgcolor='")) {
+							$line = "\$selectedbgcolor='" . addslashes($selectedbgcolorform) . "';\n";
+						}
+						elseif (str_starts_with($line, "\$bordercolor='")) {
+							$line = "\$bordercolor='" . addslashes($bordercolorform) . "';\n";
+						}
+					
+						//virtual bingo settings
+						elseif (str_starts_with($line, "\$virtualbingo='")) {
+							$line = "\$virtualbingo='" . addslashes($virtualbingoform) . "';\n";
+						}
+						elseif (str_starts_with($line, "\$virtualbingo_max_request='")) {
+							$line = "\$virtualbingo_max_request='" . addslashes($virtualbingo_max_requestform) . "';\n";
+						}
+																
+						$new_content .= $line;
 					}
-					fclose($fp);
-					if (isset($_POST["pagetitleform"])) $pagetitle=$_POST["pagetitleform"];
-					restart();
-					echo '<div class="alert alert-success"><strong>✅ Configuration Accepted!</strong><br>Your settings have been saved successfully.</div>';
+					
+					// Validate generated content before writing
+					if (empty($new_content)) {
+						error_log("Generated settings content is empty");
+						echo '<div class="alert alert-error">Failed to generate configuration. Content is empty.</div>';
+					} else if (!preg_match('/^<\?php/', $new_content)) {
+						error_log("Generated settings content does not start with <?php");
+						echo '<div class="alert alert-error">Failed to generate valid configuration.</div>';
+					} else if (strlen($new_content) < 100) {
+						error_log("Generated settings content is suspiciously short: " . strlen($new_content) . " bytes");
+						echo '<div class="alert alert-error">Failed to generate configuration. Content is too short.</div>';
+					} else {
+						// Write to temporary file first, then atomically rename
+						$temp_file = "config/settings.php.tmp";
+						$fp = fopen($temp_file, "w");
+						if (!$fp) {
+							error_log("Failed to open temporary file for writing: " . $temp_file);
+							echo '<div class="alert alert-error">Failed to save configuration. Check file permissions.</div>';
+						} else {
+							// Use file locking for safe write
+							if (flock($fp, LOCK_EX)) {
+								$write_result = fwrite($fp, $new_content);
+								flock($fp, LOCK_UN);
+								fclose($fp);
+								
+								if ($write_result === false) {
+									error_log("Failed to write to temporary settings file");
+									echo '<div class="alert alert-error">Failed to write configuration.</div>';
+									@unlink($temp_file);
+								} else {
+									// Atomically replace the original file
+									if (!rename($temp_file, "config/settings.php")) {
+										error_log("Failed to rename temporary settings file");
+										echo '<div class="alert alert-error">Failed to save configuration.</div>';
+										@unlink($temp_file);
+									} else {
+										// Success!
+										if (isset($_POST["pagetitleform"])) $pagetitle=$_POST["pagetitleform"];
+										restart();
+										echo '<div class="alert alert-success"><strong>✅ Configuration Accepted!</strong><br>Your settings have been saved successfully.</div>';
+									}
+								}
+							} else {
+								error_log("Failed to lock temporary settings file");
+								fclose($fp);
+								@unlink($temp_file);
+								echo '<div class="alert alert-error">Failed to lock configuration file.</div>';
+							}
+						}
+					}
 					}
 				} else {
 					echo '<div class="alert alert-error"><strong>❌ Configuration not Accepted!</strong><br>Unable to save settings. Please check file permissions.</div>';
@@ -241,6 +467,29 @@
 	   	    <p style="margin-top: 1rem; font-size: 0.875rem; color: var(--text-muted);">
 	   	      <a href="javascript:explain('Border colour')" class="help-icon">Note about border colors</a>
 	   	    </p>
+	   	  </div>
+	   	</div>
+	   	
+	   	<div class="card mb-3">
+	   	  <div class="card-header">
+	   	    <h3 class="card-title">
+	   	      🌐 Virtual Bingo Mode
+	   	    </h3>
+	   	    <p style="font-size: 0.875rem; color: var(--text-muted); margin-top: 0.5rem;">Enable remote play with shareable card links</p>
+	   	  </div>
+	   	  <div class="card-body">
+	   	    <div class="checkbox-group">
+	   	      <label class="checkbox-option">
+	   	        <input type="checkbox" name="virtualbingoform" <?= ($virtualbingo=="on")?"checked":""; ?>>
+	   	        <span>Enable Virtual Bingo Mode</span>
+	   	      </label>
+	   	    </div>
+	   	    
+	   	    <div class="form-group" style="margin-top: 1.5rem;">
+	   	      <label class="form-label">Maximum Cards Per Request:</label>
+	   	      <input type="number" name="virtualbingo_max_requestform" value="<?= isset($virtualbingo_max_request) ? $virtualbingo_max_request : '12'; ?>" min="1" max="100" class="form-input" style="max-width: 150px;">
+	   	      <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.5rem;">Limits abuse by restricting cards per request (1-100, default: 12)</p>
+	   	    </div>
 	   	  </div>
 	   	</div>
 		

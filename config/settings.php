@@ -99,7 +99,7 @@ $fourperpage='';
 * You should ensure to close your HTML tags so you do not disrupt the display
 * of the cards.
 */
-$viewheader='<center><b><font size=\"+4\">B/I/N/G/O - Test / Slashes</font></b></center>';
+$viewheader='<center><b><font size="+4">B I N G O</font></b></center>';
 
 /* View footer
 * This variable may contain HTML and will be printed at the bottom of each
@@ -107,7 +107,7 @@ $viewheader='<center><b><font size=\"+4\">B/I/N/G/O - Test / Slashes</font></b><
 * You should ensure to close your HTML tags so you do not disrupt the display
 * of the cards.
 */
-$viewfooter='<div>Footer (with) [brackets] {braces} .+*?$ regex chars</div>';
+$viewfooter='<center><b>Created with Bingoware-ng</b><br><br><a href="javascript:window.close();">close window</a></center>';
 
 
 /* Print header
@@ -116,7 +116,7 @@ $viewfooter='<div>Footer (with) [brackets] {braces} .+*?$ regex chars</div>';
 * You should ensure to close your HTML tags so you do not disrupt the display
 * of the cards.
 */
-$printheader='<center><b><font size=\"+6\">Bingo Card</font></b></center>';
+$printheader='<center><b><font size="+6">Bingo Card</font></b></center>';
 
 
 /* Print footer
@@ -125,7 +125,7 @@ $printheader='<center><b><font size=\"+6\">Bingo Card</font></b></center>';
 * You should ensure to close your HTML tags so you do not disrupt the display
 * of the cards.
 */
-$printfooter='<center><b><font size=\"-1\">Created with Bingoware-ng</font></b></center>';
+$printfooter='<center><b><font size="-1">Created with Bingoware-ng</font></b></center>';
 
 
 /* color settings

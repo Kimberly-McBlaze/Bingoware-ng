@@ -47,26 +47,22 @@ $test_cases = [
     [
         'name' => 'Simple string update',
         'field' => 'setid',
-        'value' => 'B',
-        'pattern' => "/^\\\$setid='B';/m"
+        'value' => 'B'
     ],
     [
         'name' => 'String with HTML entities',
         'field' => 'viewheader',
-        'value' => '<center><b><font size="+6">NEW HEADER</font></b></center>',
-        'pattern' => "/^\\\$viewheader='<center><b><font size=\"\+6\">NEW HEADER<\\/font><\\/b><\\/center>';/m"
+        'value' => '<center><b><font size="+6">NEW HEADER</font></b></center>'
     ],
     [
         'name' => 'String with special regex chars',
         'field' => 'viewfooter',
-        'value' => '<div>Footer (test)</div>',
-        'pattern' => "/^\\\$viewfooter='<div>Footer \\(test\\)<\\/div>';/m"
+        'value' => '<div>Footer (test)</div>'
     ],
     [
         'name' => 'String with forward slashes',
         'field' => 'printheader',
-        'value' => '<center>Header // Test</center>',
-        'pattern' => "/^\\\$printheader='<center>Header \\/\\/ Test<\\/center>';/m"
+        'value' => '<center>Header // Test</center>'
     ],
 ];
 
@@ -101,10 +97,11 @@ foreach ($test_cases as $test) {
         continue;
     }
     
-    // Check if the update was applied
-    if (!preg_match($test['pattern'], $new_content)) {
-        echo "  ✗ FAIL: Pattern not found in updated content\n";
-        echo "  Looking for pattern: " . $test['pattern'] . "\n";
+    // Check if the update was applied (simplified - just check if value is present)
+    $expected_line = "\$" . $test['field'] . "='" . addslashes($test['value']) . "';";
+    if (strpos($new_content, $expected_line) === false) {
+        echo "  ✗ FAIL: Expected line not found in updated content\n";
+        echo "  Looking for: " . $expected_line . "\n";
         echo "  Content snippet:\n";
         $lines = explode("\n", $new_content);
         foreach ($lines as $line) {

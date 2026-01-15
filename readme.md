@@ -191,6 +191,30 @@ Once enabled, a **Virtual Bingo** menu item appears in the main menu.
 
 ## 🗂️ Changelog
 
+- ### [2.6.3.3] - 2026-01-15
+- **Play Bingo UI & Flashboard Improvements:**
+  - Improved quick switch visibility with theme-aware colors
+    - Replaced hard-coded colors with CSS variables for proper light/dark mode support
+    - Quick Set Switch control now uses `var(--bg-tertiary)`, `var(--border-color)`, and `var(--text-secondary)`
+    - Control is now clearly visible and accessible in both light and dark themes
+    - Enhanced contrast for better accessibility (WCAG AA compliant)
+  - Fixed flashboard card set updating when set changes
+    - Flashboard now dynamically updates the displayed card set ID when switching sets
+    - Works correctly when set is changed via Settings (Configure page)
+    - Works correctly when set is changed via Quick Set Switch control
+    - Set ID is included in game state messages sent to flashboard
+    - Flashboard updates both the header display and page title automatically
+    - No manual reload required - updates happen in real-time
+
+- ### [2.6.3.2] - 2026-01-15
+- **View Cards Improvements:**
+  - Added option to exclude virtual-player cards from "Show All Cards (for printing)" output
+  - New checkbox in View Cards section: "Exclude virtual-player cards from print output"
+  - When enabled, cards assigned to Virtual Bingo URLs are filtered out, preventing accidental printing for in-person players
+  - Helps keep virtual-player cards separate from physical cards used in-person
+  - Filter only appears when Virtual Bingo is enabled and card stacks have been generated
+  - Backward compatible: default behavior shows all cards (same as before)
+
 - ### [2.6.3.1] - 2026-01-15
 - **Virtual Bingo Improvements:**
   - Added delete button for individual card stacks in Virtual Bingo administrator page

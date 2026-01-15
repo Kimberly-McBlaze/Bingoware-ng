@@ -63,7 +63,7 @@
    */
   function getCurrentState() {
     const draws = extractDrawsFromPage();
-    const latestNumber = draws.length > 0 ? draws[draws.length - 1] : null;
+    const latestNumber = extractLatestNumberFromPage();
     const pattern = extractPatternFromPage();
 
     return {
@@ -97,6 +97,30 @@
     
     // Fallback: return empty array if no data found
     return [];
+  }
+
+  /**
+   * Extract the latest drawn number from the page
+   * Reads from stable data-latest attribute
+   */
+  function extractLatestNumberFromPage() {
+    const gameStateData = document.getElementById('game-state-data');
+    if (gameStateData) {
+      const latestAttr = gameStateData.getAttribute('data-latest');
+      if (latestAttr) {
+        try {
+          const latest = JSON.parse(latestAttr);
+          if (latest !== null && latest !== undefined) {
+            return parseInt(latest, 10);
+          }
+        } catch (e) {
+          console.error('Error parsing latest number:', e);
+        }
+      }
+    }
+    
+    // Fallback: return null if no data found
+    return null;
   }
 
   /**

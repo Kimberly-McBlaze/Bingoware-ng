@@ -51,8 +51,12 @@
 	   		
 	   		// Expose draws data for flashboard - stable source of truth
 	   		$draws_json = json_encode($draws !== null ? $draws : []);
+	   		
+	   		// Expose latest drawn number for flashboard blinking/highlighting
+	   		$latest_number = load_last_draw();
+	   		$latest_json = json_encode($latest_number);
 	   		?>
-	   		<div id="game-state-data" data-patterns='<?= htmlspecialchars($pattern_json, ENT_QUOTES, 'UTF-8'); ?>' data-draws='<?= htmlspecialchars($draws_json, ENT_QUOTES, 'UTF-8'); ?>' style="display: none;"></div>
+	   		<div id="game-state-data" data-patterns='<?= htmlspecialchars($pattern_json, ENT_QUOTES, 'UTF-8'); ?>' data-draws='<?= htmlspecialchars($draws_json, ENT_QUOTES, 'UTF-8'); ?>' data-latest='<?= htmlspecialchars($latest_json, ENT_QUOTES, 'UTF-8'); ?>' style="display: none;"></div>
 	   		<?php
 	   		
 	   		if ($drawmode=="manual" && ($drawsCount<$maxNumber)) {

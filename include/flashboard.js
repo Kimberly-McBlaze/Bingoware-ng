@@ -9,16 +9,17 @@
   // State management
   let state = {
     draws: [],
+    latestNumber: null,  // Track the most recently drawn number separately
     currentPattern: 'No pattern selected',
     maxNumber: 75
   };
 
   /**
-   * Get the latest drawn number from the draws array
-   * This ensures latestNumber is always derived from the single source of truth
+   * Get the latest drawn number
+   * Returns the explicitly tracked latest number from state
    */
   function getLatestNumber() {
-    return state.draws.length > 0 ? state.draws[state.draws.length - 1] : null;
+    return state.latestNumber;
   }
 
   /**
@@ -142,7 +143,9 @@
     if (data.draws) {
       state.draws = data.draws;
     }
-    // latestNumber is now derived from draws, no need to set it separately
+    if (data.latestNumber !== undefined) {
+      state.latestNumber = data.latestNumber;
+    }
     updateDisplay();
   }
 
@@ -161,7 +164,7 @@
    */
   function handleRestart() {
     state.draws = [];
-    // latestNumber is now derived from draws, no need to reset it separately
+    state.latestNumber = null;
     updateDisplay();
   }
 
@@ -172,7 +175,9 @@
     if (data.draws) {
       state.draws = data.draws;
     }
-    // latestNumber is now derived from draws, no need to set it separately
+    if (data.latestNumber !== undefined) {
+      state.latestNumber = data.latestNumber;
+    }
     if (data.pattern) {
       state.currentPattern = data.pattern;
     }

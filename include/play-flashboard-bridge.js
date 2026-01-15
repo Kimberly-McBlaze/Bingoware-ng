@@ -75,26 +75,28 @@
 
   /**
    * Extract drawn numbers from the page
+   * Reads from stable data-draws attribute instead of scraping DOM styles
    */
   function extractDrawsFromPage() {
-    const draws = [];
-    
-    // Look for draw display elements in the numbers drawn section
-    // These are styled with the gradient background in the play page
-    const drawContainer = document.querySelector('div[style*="grid-template-columns: repeat(5, 1fr)"]');
-    if (drawContainer) {
-      const drawElements = drawContainer.querySelectorAll('div[style*="background: linear-gradient"]');
-      drawElements.forEach(el => {
-        const text = el.textContent.trim();
-        // Extract number from text like "B12"
-        const match = text.match(/[BINGO](\d+)/);
-        if (match) {
-          draws.push(parseInt(match[1]));
+    // Read draws from data attribute - stable source of truth
+    const gameStateData = document.getElementById('game-state-data');
+    if (gameStateData) {
+      const drawsAttr = gameStateData.getAttribute('data-draws');
+      if (drawsAttr) {
+        try {
+          const draws = JSON.parse(drawsAttr);
+          if (Array.isArray(draws)) {
+            // Ensure all values are integers
+            return draws.map(num => parseInt(num, 10)).filter(num => !isNaN(num));
+          }
+        } catch (e) {
+          console.error('Error parsing draws:', e);
         }
-      });
+      }
     }
-
-    return draws;
+    
+    // Fallback: return empty array if no data found
+    return [];
   }
 
   /**

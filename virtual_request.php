@@ -76,7 +76,7 @@ include("header.php");
       <div style="margin-bottom: 1rem;">
         <strong style="display: block; margin-bottom: 0.5rem;">Cards in this stack:</strong>
         <div style="font-family: monospace; color: var(--text-muted);">
-          <?= implode(', ', $stack_data['card_ids']) ?>
+          <?= htmlspecialchars(implode(', ', $stack_data['card_ids'])) ?>
         </div>
       </div>
       
@@ -219,7 +219,7 @@ function copyUrlFallback(input) {
             Stack <?= ($idx + 1) ?> - <?= $stack['count'] ?> card(s)
           </strong>
           <div style="font-family: monospace; font-size: 0.875rem; color: var(--text-muted); margin-bottom: 0.5rem;">
-            Cards: <?= implode(', ', array_slice($stack['card_ids'], 0, 5)) ?><?= count($stack['card_ids']) > 5 ? '...' : '' ?>
+            Cards: <?= htmlspecialchars(implode(', ', array_slice($stack['card_ids'], 0, 5))) ?><?= count($stack['card_ids']) > 5 ? '...' : '' ?>
           </div>
         </div>
         <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">

@@ -5,15 +5,6 @@
  */
 
 /**
- * Generate a secure random token for card access
- * 
- * @return string 32-character hexadecimal token
- */
-function generate_card_token() {
-    return bin2hex(random_bytes(16));
-}
-
-/**
  * Generate a stack ID for grouping multiple cards
  * 
  * @return string 32-character hexadecimal stack ID

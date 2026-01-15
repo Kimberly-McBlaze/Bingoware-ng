@@ -345,7 +345,7 @@ body {
         <?php foreach ($cards as $card_info): ?>
         <div class="card-wrapper">
             <div class="card-id-label">Card: <?= htmlspecialchars($card_info['id']) ?></div>
-            <table class="bingo-table" data-card-number="<?= $card_info['number'] ?>">
+            <table class="bingo-table" data-card-number="<?= htmlspecialchars($card_info['number']) ?>">
                 <thead>
                     <tr>
                         <?php foreach ($bingoletters as $letter): ?>
@@ -362,16 +362,16 @@ body {
                             $is_free = ($number === "Free");
                             $cell_id = "cell-{$card_info['number']}-{$col}-{$row}";
                             ?>
-                            <td id="<?= $cell_id ?>" 
-                                data-card="<?= $card_info['number'] ?>"
-                                data-col="<?= $col ?>" 
-                                data-row="<?= $row ?>"
+                            <td id="<?= htmlspecialchars($cell_id) ?>" 
+                                data-card="<?= htmlspecialchars($card_info['number']) ?>"
+                                data-col="<?= htmlspecialchars($col) ?>" 
+                                data-row="<?= htmlspecialchars($row) ?>"
                                 <?= $is_free ? 'class="free-square marked"' : '' ?>
                                 onclick="<?= $is_free ? '' : 'toggleCell(this)' ?>">
                                 <?php if ($is_free): ?>
                                     <img src="images/star.gif" alt="Free">
                                 <?php else: ?>
-                                    <?= $number ?>
+                                    <?= htmlspecialchars($number) ?>
                                 <?php endif; ?>
                             </td>
                         <?php endfor; ?>

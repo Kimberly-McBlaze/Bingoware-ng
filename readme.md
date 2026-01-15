@@ -193,7 +193,10 @@ When password protection is enabled:
 
 ## 🗂️ Changelog
 
-### v2.5.3 - January 15, 2026
+### [2.6] - 2026-01-15
+- Added Virtual Bingo Support: enables remote play by allowing players to request and receive shareable links to individual bingo cards that work on any device.
+
+- ### v2.5.3 - January 15, 2026
 - **Bug Fixes:**
   - Fixed flashboard synchronization issues where the latest number and "Current Number" display would not reliably update
     - Root cause: Bridge script used brittle DOM scraping with fragile inline-style selectors (e.g., matching `grid-template-columns` and `linear-gradient` style strings) that could intermittently fail or return incomplete/stale draws
@@ -423,6 +426,7 @@ have multiple sets of Bingo cards that do not overwrite one another
 ## 📄 License
 
 Open-source. See license file or original project for details.
+
 
 
 

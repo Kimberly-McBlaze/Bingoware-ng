@@ -162,6 +162,115 @@
    // No action needed
    }
 
+   // Check if switching to an empty set
+   $setid_changing = ($setid != $setidform);
+   
+   if ($setid_changing && preg_match('/^[a-zA-Z0-9_-]+$/', $setidform)) {
+       // Check if the new set exists
+       $new_set_file = __DIR__ . "/sets/set." . $setidform . ".dat";
+       $new_set_exists = file_exists($new_set_file);
+       
+       if (!$new_set_exists && !isset($_POST["confirm_empty_set"])) {
+           // Get current set card count
+           $current_card_count = set_exists() ? card_number() : 0;
+           
+           // Show prompt to auto-generate
+           echo '<div class="alert alert-warning">';
+           echo '<strong>⚠️ Switching to Empty Set</strong><br>';
+           echo 'Set "' . htmlspecialchars($setidform) . '" does not have any cards generated yet.<br><br>';
+           
+           if ($current_card_count > 0) {
+               echo 'Would you like to automatically generate ' . $current_card_count . ' cards for this new set?<br><br>';
+               echo '<form method="post" action="index.php?action=config' . ((isset($_GET['numberinplay']))?('&numberinplay='.$_GET['numberinplay']):'') . '">';
+               
+               // Re-include all form values as hidden fields
+               echo '<input type="hidden" name="setidform" value="'.htmlspecialchars($setidform).'">';
+               echo '<input type="hidden" name="pagetitleform" value="'.htmlspecialchars($pagetitleform).'">';
+               echo '<input type="hidden" name="viewheaderform" value="'.htmlspecialchars($viewheaderform).'">';
+               echo '<input type="hidden" name="viewfooterform" value="'.htmlspecialchars($viewfooterform).'">';
+               echo '<input type="hidden" name="printheaderform" value="'.htmlspecialchars($printheaderform).'">';
+               echo '<input type="hidden" name="printfooterform" value="'.htmlspecialchars($printfooterform).'">';
+               echo '<input type="hidden" name="drawmodeform" value="'.htmlspecialchars($drawmodeform).'">';
+               echo '<input type="hidden" name="namefileform" value="'.htmlspecialchars($namefileform).'">';
+               echo '<input type="hidden" name="printrulesform" value="'.htmlspecialchars($printrulesform).'">';
+               echo '<input type="hidden" name="fourperpageform" value="'.htmlspecialchars($fourperpageform).'">';
+               echo '<input type="hidden" name="headerfontcolorform" value="'.htmlspecialchars($headerfontcolorform).'">';
+               echo '<input type="hidden" name="headerbgcolorform" value="'.htmlspecialchars($headerbgcolorform).'">';
+               echo '<input type="hidden" name="mainfontcolorform" value="'.htmlspecialchars($mainfontcolorform).'">';
+               echo '<input type="hidden" name="mainbgcolorform" value="'.htmlspecialchars($mainbgcolorform).'">';
+               echo '<input type="hidden" name="selectedfontcolorform" value="'.htmlspecialchars($selectedfontcolorform).'">';
+               echo '<input type="hidden" name="selectedbgcolorform" value="'.htmlspecialchars($selectedbgcolorform).'">';
+               echo '<input type="hidden" name="bordercolorform" value="'.htmlspecialchars($bordercolorform).'">';
+               echo '<input type="hidden" name="virtualbingoform" value="'.htmlspecialchars($virtualbingoform).'">';
+               echo '<input type="hidden" name="virtualbingo_max_requestform" value="'.htmlspecialchars($virtualbingo_max_requestform).'">';
+               echo '<input type="hidden" name="auto_generate_cards" value="'.$current_card_count.'">';
+               echo '<input type="hidden" name="confirm_empty_set" value="1">';
+               
+               echo '<button type="submit" name="submit" class="btn btn-primary">✨ Yes, Generate ' . $current_card_count . ' Cards</button> ';
+               echo '</form>';
+               echo '<form method="post" action="index.php?action=config' . ((isset($_GET['numberinplay']))?('&numberinplay='.$_GET['numberinplay']):'') . '" style="display: inline;">';
+               
+               // Same hidden fields for "Continue without generating"
+               echo '<input type="hidden" name="setidform" value="'.htmlspecialchars($setidform).'">';
+               echo '<input type="hidden" name="pagetitleform" value="'.htmlspecialchars($pagetitleform).'">';
+               echo '<input type="hidden" name="viewheaderform" value="'.htmlspecialchars($viewheaderform).'">';
+               echo '<input type="hidden" name="viewfooterform" value="'.htmlspecialchars($viewfooterform).'">';
+               echo '<input type="hidden" name="printheaderform" value="'.htmlspecialchars($printheaderform).'">';
+               echo '<input type="hidden" name="printfooterform" value="'.htmlspecialchars($printfooterform).'">';
+               echo '<input type="hidden" name="drawmodeform" value="'.htmlspecialchars($drawmodeform).'">';
+               echo '<input type="hidden" name="namefileform" value="'.htmlspecialchars($namefileform).'">';
+               echo '<input type="hidden" name="printrulesform" value="'.htmlspecialchars($printrulesform).'">';
+               echo '<input type="hidden" name="fourperpageform" value="'.htmlspecialchars($fourperpageform).'">';
+               echo '<input type="hidden" name="headerfontcolorform" value="'.htmlspecialchars($headerfontcolorform).'">';
+               echo '<input type="hidden" name="headerbgcolorform" value="'.htmlspecialchars($headerbgcolorform).'">';
+               echo '<input type="hidden" name="mainfontcolorform" value="'.htmlspecialchars($mainfontcolorform).'">';
+               echo '<input type="hidden" name="mainbgcolorform" value="'.htmlspecialchars($mainbgcolorform).'">';
+               echo '<input type="hidden" name="selectedfontcolorform" value="'.htmlspecialchars($selectedfontcolorform).'">';
+               echo '<input type="hidden" name="selectedbgcolorform" value="'.htmlspecialchars($selectedbgcolorform).'">';
+               echo '<input type="hidden" name="bordercolorform" value="'.htmlspecialchars($bordercolorform).'">';
+               echo '<input type="hidden" name="virtualbingoform" value="'.htmlspecialchars($virtualbingoform).'">';
+               echo '<input type="hidden" name="virtualbingo_max_requestform" value="'.htmlspecialchars($virtualbingo_max_requestform).'">';
+               echo '<input type="hidden" name="confirm_empty_set" value="1">';
+               
+               echo '<button type="submit" name="submit" class="btn btn-secondary">Continue Without Generating</button>';
+               echo '</form>';
+           } else {
+               echo 'You can generate cards for this set later from the Generate Cards page.<br><br>';
+               echo '<form method="post" action="index.php?action=config' . ((isset($_GET['numberinplay']))?('&numberinplay='.$_GET['numberinplay']):'') . '">';
+               
+               // Same hidden fields
+               echo '<input type="hidden" name="setidform" value="'.htmlspecialchars($setidform).'">';
+               echo '<input type="hidden" name="pagetitleform" value="'.htmlspecialchars($pagetitleform).'">';
+               echo '<input type="hidden" name="viewheaderform" value="'.htmlspecialchars($viewheaderform).'">';
+               echo '<input type="hidden" name="viewfooterform" value="'.htmlspecialchars($viewfooterform).'">';
+               echo '<input type="hidden" name="printheaderform" value="'.htmlspecialchars($printheaderform).'">';
+               echo '<input type="hidden" name="printfooterform" value="'.htmlspecialchars($printfooterform).'">';
+               echo '<input type="hidden" name="drawmodeform" value="'.htmlspecialchars($drawmodeform).'">';
+               echo '<input type="hidden" name="namefileform" value="'.htmlspecialchars($namefileform).'">';
+               echo '<input type="hidden" name="printrulesform" value="'.htmlspecialchars($printrulesform).'">';
+               echo '<input type="hidden" name="fourperpageform" value="'.htmlspecialchars($fourperpageform).'">';
+               echo '<input type="hidden" name="headerfontcolorform" value="'.htmlspecialchars($headerfontcolorform).'">';
+               echo '<input type="hidden" name="headerbgcolorform" value="'.htmlspecialchars($headerbgcolorform).'">';
+               echo '<input type="hidden" name="mainfontcolorform" value="'.htmlspecialchars($mainfontcolorform).'">';
+               echo '<input type="hidden" name="mainbgcolorform" value="'.htmlspecialchars($mainbgcolorform).'">';
+               echo '<input type="hidden" name="selectedfontcolorform" value="'.htmlspecialchars($selectedfontcolorform).'">';
+               echo '<input type="hidden" name="selectedbgcolorform" value="'.htmlspecialchars($selectedbgcolorform).'">';
+               echo '<input type="hidden" name="bordercolorform" value="'.htmlspecialchars($bordercolorform).'">';
+               echo '<input type="hidden" name="virtualbingoform" value="'.htmlspecialchars($virtualbingoform).'">';
+               echo '<input type="hidden" name="virtualbingo_max_requestform" value="'.htmlspecialchars($virtualbingo_max_requestform).'">';
+               echo '<input type="hidden" name="confirm_empty_set" value="1">';
+               
+               echo '<button type="submit" name="submit" class="btn btn-primary">Continue</button> ';
+               echo '</form>';
+           }
+           
+           echo '<a href="index.php?action=config' . ((isset($_GET['numberinplay']))?('&numberinplay='.$_GET['numberinplay']):'') . '" class="btn btn-secondary">Cancel</a>';
+           echo '</div>';
+           
+           // Don't proceed with saving
+           exit;
+       }
+   }
 
 		// Winning patterns are now managed via the Winning Patterns page (patterns.php)
 	   		          
@@ -290,8 +399,35 @@
 									} else {
 										// Success!
 										if (isset($_POST["pagetitleform"])) $pagetitle=$_POST["pagetitleform"];
-										restart();
-										echo '<div class="alert alert-success"><strong>✅ Configuration Accepted!</strong><br>Your settings have been saved successfully.</div>';
+										
+										// Check if we need to auto-generate cards
+										if (isset($_POST["auto_generate_cards"]) && is_numeric($_POST["auto_generate_cards"])) {
+											$cards_to_generate = intval($_POST["auto_generate_cards"]);
+											if ($cards_to_generate > 0 && $cards_to_generate <= $MAX_LIMIT) {
+												// Reload config to get new setid
+												include("config/settings.php");
+												
+												// Get current free square setting (use center square as default)
+												$freesquare_mode = 1; // Default: center square
+												
+												// Generate the cards
+												$result = generate_cards($cards_to_generate, $freesquare_mode);
+												
+												if ($result) {
+													echo '<div class="alert alert-success"><strong>✅ Configuration Accepted!</strong><br>Your settings have been saved successfully.<br><br>';
+													echo '<strong>✨ Cards Generated!</strong><br>' . $cards_to_generate . ' cards have been automatically generated for set "' . htmlspecialchars($setid) . '".</div>';
+												} else {
+													echo '<div class="alert alert-warning"><strong>✅ Configuration Accepted!</strong><br>Your settings have been saved successfully.<br><br>';
+													echo '<strong>⚠️ Card Generation Failed</strong><br>Unable to generate cards automatically. Please use the Generate Cards page.</div>';
+												}
+											} else {
+												restart();
+												echo '<div class="alert alert-success"><strong>✅ Configuration Accepted!</strong><br>Your settings have been saved successfully.</div>';
+											}
+										} else {
+											restart();
+											echo '<div class="alert alert-success"><strong>✅ Configuration Accepted!</strong><br>Your settings have been saved successfully.</div>';
+										}
 									}
 								}
 							} else {

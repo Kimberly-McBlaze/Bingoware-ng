@@ -1,3 +1,35 @@
+	   <?php
+	   // Get available sets for quick switcher
+	   $available_sets = get_available_sets();
+	   ?>
+	   
+	   <?php if (count($available_sets) > 1): ?>
+	   <div class="card mb-3" style="background: #f8f9fa; border: 1px solid #dee2e6;">
+	     <div class="card-body" style="padding: 1rem; display: flex; align-items: center; gap: 1rem;">
+	       <label style="margin: 0; font-weight: 600; white-space: nowrap;">Quick Set Switch:</label>
+	       <select id="set-switcher" class="form-input" style="max-width: 200px; flex-shrink: 0;" onchange="switchSet(this.value)">
+	         <?php foreach ($available_sets as $sid): ?>
+	           <option value="<?= htmlspecialchars($sid); ?>" <?= ($sid == $setid) ? 'selected' : ''; ?>>
+	             Set <?= htmlspecialchars($sid); ?> (<?= get_set_card_count($sid); ?> cards)
+	           </option>
+	         <?php endforeach; ?>
+	       </select>
+	       <span style="color: #6c757d; font-size: 0.875rem;">Current: <strong><?= htmlspecialchars($setid); ?></strong></span>
+	     </div>
+	   </div>
+	   <script>
+	   function switchSet(newSetId) {
+	     if (confirm('Switch to Set ' + newSetId + '? This will reload the page and any unsaved game progress will be lost.')) {
+	       // Update the setid in config and reload
+	       window.location.href = 'index.php?action=config&switch_set=' + encodeURIComponent(newSetId);
+	     } else {
+	       // Reset dropdown to current set
+	       document.getElementById('set-switcher').value = '<?= htmlspecialchars($setid); ?>';
+	     }
+	   }
+	   </script>
+	   <?php endif; ?>
+	   
 	   <div class="content-header">
 	     <h2 class="content-title">🎮 Play Bingo</h2>
 	     <p class="content-subtitle">Draw numbers and track winning cards</p>

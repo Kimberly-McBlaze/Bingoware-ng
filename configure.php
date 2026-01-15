@@ -1,4 +1,57 @@
 	   <body>
+   <?php 
+   // Handle quick set switching
+   if (isset($_GET["switch_set"])) {
+       $new_setid = $_GET["switch_set"];
+       
+       // Validate setid format
+       if (preg_match('/^[a-zA-Z0-9_-]+$/', $new_setid)) {
+           // Check if the new set exists
+           $new_set_exists = file_exists(__DIR__ . "/sets/set." . $new_setid . ".dat");
+           
+           if (!$new_set_exists && !isset($_GET["confirm_switch"])) {
+               // Prompt to auto-generate
+               $current_card_count = set_exists() ? card_number() : 0;
+               
+               echo '<div class="alert alert-warning">';
+               echo '<strong>⚠️ Set Does Not Exist</strong><br>';
+               echo 'Set "' . htmlspecialchars($new_setid) . '" does not have any cards generated yet.<br><br>';
+               
+               if ($current_card_count > 0) {
+                   echo 'Would you like to automatically generate ' . $current_card_count . ' cards for this new set?<br><br>';
+                   echo '<a href="index.php?action=generate&switch_to_set=' . urlencode($new_setid) . '&auto_cards=' . $current_card_count . '" class="btn btn-primary">✨ Generate ' . $current_card_count . ' Cards</a> ';
+               } else {
+                   echo 'Would you like to generate cards for this new set?<br><br>';
+                   echo '<a href="index.php?action=generate&switch_to_set=' . urlencode($new_setid) . '" class="btn btn-primary">✨ Generate Cards</a> ';
+               }
+               
+               echo '<a href="index.php?action=play" class="btn btn-secondary">Cancel</a>';
+               echo '</div>';
+           } else {
+               // Update setid in config file
+               if (file_exists("config/settings.php")) {
+                   $filearray = file("config/settings.php");
+                   $fp = fopen("config/settings.php", "w");
+                   if ($fp) {
+                       foreach ($filearray as $line) {
+                           $line = preg_replace("/^(\\\$setid=').*?';/", "$1" . preg_quote($new_setid, '/') . "';", $line);
+                           fwrite($fp, $line);
+                       }
+                       fclose($fp);
+                       
+                       // Redirect to play page with new set
+                       header("Location: index.php?action=play");
+                       exit;
+                   }
+               }
+           }
+       } else {
+           echo '<div class="alert alert-error">Failed to switch set. Invalid set ID format.</div>';
+       }
+   }
+   ?>
+
+
 	   <?php if (isset($_POST["submit"])) {
 	   			
 	   			//pull in data from the form post

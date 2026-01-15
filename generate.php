@@ -1,3 +1,44 @@
+   
+   <?php 
+   // Handle switching to a new set and auto-generating cards
+   if (isset($_GET["switch_to_set"])) {
+       $new_setid = $_GET["switch_to_set"];
+       
+       // Validate setid format
+       if (preg_match('/^[a-zA-Z0-9_-]+$/', $new_setid)) {
+           // Update setid in config file first
+           if (file_exists("config/settings.php")) {
+               $filearray = file("config/settings.php");
+               $fp = fopen("config/settings.php", "w");
+               if ($fp) {
+                   foreach ($filearray as $line) {
+                       $line = preg_replace("/^(\\\$setid=').*?';/", "$1" . preg_quote($new_setid, '/') . "';", $line);
+                       fwrite($fp, $line);
+                   }
+                   fclose($fp);
+                   
+                   // Reload to get new setid
+                   include("config/settings.php");
+                   
+                   // If auto_cards is set, pre-fill the form
+                   if (isset($_GET["auto_cards"])) {
+                       $auto_card_count = intval($_GET["auto_cards"]);
+                       if ($auto_card_count > 0 && $auto_card_count <= $MAX_LIMIT) {
+                           // Auto-generate immediately
+                           restart();
+                           generate_cards($auto_card_count, 1); // Use center free square as default
+                           echo '<div class="alert alert-success"><strong>✅ Set Switched!</strong><br>Switched to Set ' . htmlspecialchars($setid) . ' and generated ' . $auto_card_count . ' cards!</div>';
+                           echo '<div style="margin-top: 1rem;"><a href="index.php?action=play" class="btn btn-primary">▶️ Start Playing</a></div>';
+                           // Don't show the form
+                           return;
+                       }
+                   }
+               }
+           }
+       }
+   }
+   
+
 	   
 	   <?php 
 	   $numcard = filter_input(INPUT_POST, 'numcard', FILTER_VALIDATE_INT);

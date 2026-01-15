@@ -43,11 +43,16 @@
 	   		
 	   		// Expose pattern information for flashboard
 	   		$enabled_patterns = get_enabled_patterns();
-	   		$pattern_names = array();
+	   		$pattern_info = array();
 	   		if (is_array($enabled_patterns)) {
-	   		    $pattern_names = array_map(function($p) { return $p['name']; }, $enabled_patterns);
+	   		    $pattern_info = array_map(function($p) { 
+	   		        return array(
+	   		            'name' => $p['name'],
+	   		            'description' => isset($p['description']) ? $p['description'] : ''
+	   		        );
+	   		    }, $enabled_patterns);
 	   		}
-	   		$pattern_json = json_encode($pattern_names);
+	   		$pattern_json = json_encode($pattern_info);
 	   		
 	   		// Expose draws data for flashboard - stable source of truth
 	   		$draws_json = json_encode($draws !== null ? $draws : []);

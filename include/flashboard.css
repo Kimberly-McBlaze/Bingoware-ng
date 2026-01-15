@@ -166,3 +166,12 @@ body.flashboard {
     font-size: 1.5rem;
   }
 }
+
+/* Set ID Display */
+.set-id-display {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #6B46C1;
+  margin-top: 0.5rem;
+  text-align: center;
+}

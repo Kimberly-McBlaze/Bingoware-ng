@@ -22,6 +22,7 @@ include "config/settings.php";
 <div class="flashboard-container">
   <header class="flashboard-header">
     <h1 class="flashboard-title">🎱 BINGO FLASHBOARD</h1>
+    <div class="set-id-display">Card Set: <?= htmlspecialchars($setid); ?></div>
   </header>
 
   <div class="flashboard-info">

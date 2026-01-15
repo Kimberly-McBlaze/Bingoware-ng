@@ -20,7 +20,6 @@ if (!$card_data) {
 }
 
 // Load the card set for the stored setid
-$saved_setid = $setid;
 $setid = $card_data['setid'];
 $card_number = $card_data['card_number'];
 
@@ -300,7 +299,7 @@ body {
 
 <script>
 // Use token as unique identifier for localStorage
-const CARD_TOKEN = <?= json_encode($token) ?>;
+const CARD_TOKEN = <?= json_encode($token, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) ?>;
 const STORAGE_KEY = 'bingo_marks_' + CARD_TOKEN;
 
 // Load marks from localStorage on page load

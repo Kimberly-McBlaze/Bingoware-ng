@@ -131,6 +131,12 @@ function get_allocated_card_numbers($mappings) {
 function load_virtual_card_mappings() {
     global $setid;
     
+    // Validate setid to prevent path traversal
+    if (!preg_match('/^[a-zA-Z0-9_-]+$/', $setid)) {
+        error_log("Invalid setid for virtual card mappings: $setid");
+        return [];
+    }
+    
     // Ensure data directory exists
     if (!file_exists("data")) {
         mkdir("data", 0755, true);
@@ -165,6 +171,12 @@ function load_virtual_card_mappings() {
  */
 function save_virtual_card_mappings($mappings) {
     global $setid;
+    
+    // Validate setid to prevent path traversal
+    if (!preg_match('/^[a-zA-Z0-9_-]+$/', $setid)) {
+        error_log("Invalid setid for virtual card mappings: $setid");
+        return false;
+    }
     
     // Ensure data directory exists
     if (!file_exists("data")) {

@@ -82,7 +82,7 @@
 						// Only update password if a new one is provided
 						if (!empty($virtualbingo_passwordform)) {
 							$hashed_password = password_hash($virtualbingo_passwordform, PASSWORD_DEFAULT);
-							// Escape dollar signs in the hash to prevent interpolation issues
+							// Escape dollar signs in the hash to prevent them being interpreted as backreferences in preg_replace
 							$escaped_hash = str_replace('$', '\\$', $hashed_password);
 							$line = preg_replace("/(virtualbingo_password=').*;/","$1".$escaped_hash."';",$line);
 						}

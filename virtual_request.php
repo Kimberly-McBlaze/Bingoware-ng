@@ -116,6 +116,27 @@ include("header.php");
 <script>
 function copyLink(idx) {
     const input = document.getElementById('link-' + idx);
+    
+    // Try modern Clipboard API first
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(input.value).then(() => {
+            const btn = event.target;
+            const originalText = btn.textContent;
+            btn.textContent = '✅ Copied!';
+            setTimeout(() => {
+                btn.textContent = originalText;
+            }, 2000);
+        }).catch(err => {
+            // Fallback to older method
+            copyLinkFallback(input);
+        });
+    } else {
+        // Fallback for older browsers
+        copyLinkFallback(input);
+    }
+}
+
+function copyLinkFallback(input) {
     input.select();
     input.setSelectionRange(0, 99999); // For mobile devices
     

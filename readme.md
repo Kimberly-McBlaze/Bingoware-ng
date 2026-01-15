@@ -191,6 +191,22 @@ Once enabled, a **Virtual Bingo** menu item appears in the main menu.
 
 ## 🗂️ Changelog
 
+- ### [2.6.4] - 2026-01-15
+- **New Features:**
+  - Added update checker notification system
+    - Automatically checks for new versions (once per 24 hours)
+    - Non-intrusive notification with option to view release or dismiss
+    - Uses localStorage to track dismissed updates
+    - Handles network errors gracefully without bothering users
+  - Auto-generate cards prompt when switching to empty set
+    - Detects when switching from a set with cards to a set without cards
+    - Prompts user to automatically generate same number of cards
+    - Provides option to decline and continue without generating
+- **Bug Fixes:**
+  - Fixed winning patterns default state - only "Normal" pattern is now enabled by default
+    - Previously both "Normal" and "Four Corners" were enabled, causing confusion
+    - All other patterns now correctly default to disabled state
+
 - ### [2.6.3.3] - 2026-01-15
 - **Play Bingo UI & Flashboard Improvements:**
   - Improved quick switch visibility with theme-aware colors

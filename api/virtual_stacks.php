@@ -21,12 +21,7 @@ $method = $_SERVER['REQUEST_METHOD'];
 if ($method === 'POST' && isset($_POST['delete_stack_id'])) {
     $stack_id = $_POST['delete_stack_id'];
     
-    // Validate stack ID format
-    if (!preg_match('/^[a-f0-9]{32}$/', $stack_id)) {
-        echo json_encode(['success' => false, 'error' => 'Invalid stack ID']);
-        exit;
-    }
-    
+    // Function handles all validation
     $result = delete_virtual_stack($stack_id);
     echo json_encode($result);
     exit;

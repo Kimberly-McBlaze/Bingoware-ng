@@ -73,9 +73,9 @@ foreach ($test_cases as $test) {
     $filearray = file($test_settings);
     $new_content = "";
     
-    // Apply the update logic (same as in configure.php)
+    // Apply the update logic (same as in configure.php - now using str_starts_with)
     foreach ($filearray as $line) {
-        if (preg_match("/^(\\$" . preg_quote($test['field']) . "=').*?';/", $line)) {
+        if (str_starts_with($line, "\$" . $test['field'] . "='")) {
             $line = "\$" . $test['field'] . "='" . addslashes($test['value']) . "';\n";
         }
         $new_content .= $line;
@@ -153,22 +153,20 @@ foreach ($test_cases as $test) {
     }
 }
 
-// Test that preg_quote doesn't cause issues in replacement string
-echo "\n\nTest: Verify preg_quote issue is fixed\n";
+// Test that str_starts_with is safe and efficient
+echo "\n\nTest: Verify str_starts_with approach is safer than regex\n";
 $problematic_value = '<center><b><font size="+4">B I N G O</font></b></center>';
-$escaped_for_regex = preg_quote($problematic_value, '/');
 echo "  Original value: " . $problematic_value . "\n";
-echo "  preg_quote result: " . $escaped_for_regex . "\n";
 
-// The OLD buggy way (causes warnings):
-// $line = preg_replace("/^(\\$viewheader=').*?';/", "$1" . $escaped_for_regex . "';", $line);
-// This would try to use $escaped_for_regex as part of the regex pattern, causing warnings
+// The OLD buggy way (causes warnings with certain values):
+// $line = preg_replace("/^(\\$viewheader=').*?';/", "$1" . $value . "';", $line);
+// or even: preg_match("/^(\\$viewheader=').*?';/", $line) with regex special chars
 
-// The NEW correct way:
-// $line = "\$viewheader='" . addslashes($problematic_value) . "';\n";
+// The NEW safe way:
+// if (str_starts_with($line, "\$viewheader='"))
 $correct_result = "\$viewheader='" . addslashes($problematic_value) . "';\n";
 echo "  Correct result: " . trim($correct_result) . "\n";
-echo "  ✓ PASS: Using direct string construction instead of preg_replace\n";
+echo "  ✓ PASS: Using str_starts_with() with direct string construction is safe and efficient\n";
 
 // Cleanup
 unlink($test_settings);

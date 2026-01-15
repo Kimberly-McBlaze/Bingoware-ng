@@ -39,7 +39,7 @@
                    if ($filearray !== false) {
                        $new_content = "";
                        foreach ($filearray as $line) {
-                           if (preg_match("/^(\\\$setid=').*?';/", $line)) {
+                           if (str_starts_with($line, "\$setid='")) {
                                $line = "\$setid='" . addslashes($new_setid) . "';\n";
                            }
                            $new_content .= $line;
@@ -182,71 +182,71 @@
 						//There will be only one replacement completed, but
 						//the check will ensure the original line is kept in any other cases.
 						
-						// Use simple string replacements for plain text substitutions
-						// Pattern matching is done with regex, but replacement values need proper escaping
-						if (preg_match("/^(\\$setid=').*?';/", $line)) {
+						// Use safe string prefix matching instead of regex to avoid preg_match warnings
+						// This prevents issues with special regex characters in settings values
+						if (str_starts_with($line, "\$setid='")) {
 							$line = "\$setid='" . addslashes($setidform) . "';\n";
 						}
-						if (preg_match("/^(\\$pagetitleconfig=').*?';/", $line)) {
+						elseif (str_starts_with($line, "\$pagetitleconfig='")) {
 							$line = "\$pagetitleconfig='" . addslashes($pagetitleform) . "';\n";
 						}
 					
 						//misc settings
-						if (preg_match("/^(\\$namefile=').*?';/", $line)) {
+						elseif (str_starts_with($line, "\$namefile='")) {
 							$line = "\$namefile='" . addslashes($namefileform) . "';\n";
 						}
-						if (preg_match("/^(\\$printrules=').*?';/", $line)) {
+						elseif (str_starts_with($line, "\$printrules='")) {
 							$line = "\$printrules='" . addslashes($printrulesform) . "';\n";
 						}
-						if (preg_match("/^(\\$fourperpage=').*?';/", $line)) {
+						elseif (str_starts_with($line, "\$fourperpage='")) {
 							$line = "\$fourperpage='" . addslashes($fourperpageform) . "';\n";
 						}
 					
 						//headers and footers - these can contain HTML, need proper escaping
-						if (preg_match("/^(\\$viewheader=').*?';/", $line)) {
+						elseif (str_starts_with($line, "\$viewheader='")) {
 							$line = "\$viewheader='" . addslashes($viewheaderform) . "';\n";
 						}
-						if (preg_match("/^(\\$viewfooter=').*?';/", $line)) {
+						elseif (str_starts_with($line, "\$viewfooter='")) {
 							$line = "\$viewfooter='" . addslashes($viewfooterform) . "';\n";
 						}
-						if (preg_match("/^(\\$printheader=').*?';/", $line)) {
+						elseif (str_starts_with($line, "\$printheader='")) {
 							$line = "\$printheader='" . addslashes($printheaderform) . "';\n";
 						}
-						if (preg_match("/^(\\$printfooter=').*?';/", $line)) {
+						elseif (str_starts_with($line, "\$printfooter='")) {
 							$line = "\$printfooter='" . addslashes($printfooterform) . "';\n";
 						}
-						if (preg_match("/^(\\$drawmode=').*?';/", $line)) {
+						elseif (str_starts_with($line, "\$drawmode='")) {
 							$line = "\$drawmode='" . addslashes($drawmodeform) . "';\n";
 						}
 					
 						//colours
-						if (preg_match("/^(\\$headerfontcolor=').*?';/", $line)) {
+						elseif (str_starts_with($line, "\$headerfontcolor='")) {
 							$line = "\$headerfontcolor='" . addslashes($headerfontcolorform) . "';\n";
 						}
-						if (preg_match("/^(\\$headerbgcolor=').*?';/", $line)) {
+						elseif (str_starts_with($line, "\$headerbgcolor='")) {
 							$line = "\$headerbgcolor='" . addslashes($headerbgcolorform) . "';\n";
 						}
-						if (preg_match("/^(\\$mainfontcolor=').*?';/", $line)) {
+						elseif (str_starts_with($line, "\$mainfontcolor='")) {
 							$line = "\$mainfontcolor='" . addslashes($mainfontcolorform) . "';\n";
 						}
-						if (preg_match("/^(\\$mainbgcolor=').*?';/", $line)) {
+						elseif (str_starts_with($line, "\$mainbgcolor='")) {
 							$line = "\$mainbgcolor='" . addslashes($mainbgcolorform) . "';\n";
 						}
-						if (preg_match("/^(\\$selectedfontcolor=').*?';/", $line)) {
+						elseif (str_starts_with($line, "\$selectedfontcolor='")) {
 							$line = "\$selectedfontcolor='" . addslashes($selectedfontcolorform) . "';\n";
 						}
-						if (preg_match("/^(\\$selectedbgcolor=').*?';/", $line)) {
+						elseif (str_starts_with($line, "\$selectedbgcolor='")) {
 							$line = "\$selectedbgcolor='" . addslashes($selectedbgcolorform) . "';\n";
 						}
-						if (preg_match("/^(\\$bordercolor=').*?';/", $line)) {
+						elseif (str_starts_with($line, "\$bordercolor='")) {
 							$line = "\$bordercolor='" . addslashes($bordercolorform) . "';\n";
 						}
 					
 						//virtual bingo settings
-						if (preg_match("/^(\\$virtualbingo=').*?';/", $line)) {
+						elseif (str_starts_with($line, "\$virtualbingo='")) {
 							$line = "\$virtualbingo='" . addslashes($virtualbingoform) . "';\n";
 						}
-						if (preg_match("/^(\\$virtualbingo_max_request=').*?';/", $line)) {
+						elseif (str_starts_with($line, "\$virtualbingo_max_request='")) {
 							$line = "\$virtualbingo_max_request='" . addslashes($virtualbingo_max_requestform) . "';\n";
 						}
 																

@@ -143,48 +143,46 @@ Both modes fully support winner detection.
 
 ### Virtual Bingo Mode 🌐
 
-**Virtual Bingo Mode** enables remote play by allowing players to request and receive shareable links to individual bingo cards that work on any device.
+**Virtual Bingo Mode** enables remote play by allowing administrators to generate and share URLs containing stacks of bingo cards that work on any device.
 
 #### Enabling Virtual Bingo
 
 1. Go to **Configure** menu
 2. Enable the **Virtual Bingo Mode** checkbox
-3. (Optional) Enable **Password Protection** and set a password
-4. (Optional) Adjust **Maximum Cards Per Request** (default: 10)
-5. Save configuration
+3. Adjust **Maximum Cards Per Request** (default: 12)
+4. Save configuration
 
 Once enabled, a **Virtual Bingo** menu item appears in the main menu.
 
 #### How It Works
 
-1. **Request Cards**: Players visit the Virtual Bingo page and request the number of cards they need
-2. **Get Links**: Each card gets a unique, shareable link that works without the password
-3. **Share Links**: Distribute links via email, chat, or any communication method
-4. **Interactive Play**: Players click/tap squares on their cards to mark them during play
-5. **Persistent Marks**: Marks are saved in the browser and restored when reopening the card
-6. **Print Support**: Cards can be printed directly from the browser
+1. **Generate Card Stacks**: Administrator visits the Virtual Bingo page and generates a stack of cards (1-12 cards per stack)
+2. **Get Shareable URL**: Each generation creates one URL containing all the cards in that stack
+3. **Share URL**: Distribute the stack URL to players via email, chat, or any communication method
+4. **Interactive Play**: Players open the URL to view all cards in the stack and can click/tap squares to mark them during play
+5. **Persistent Marks**: Marks are saved in the browser and restored when reopening the stack
+6. **Print Support**: Cards can be printed up to 4 cards per page for physical use
 
-#### Password Protection
+#### Key Features
 
-When password protection is enabled:
-- Players must enter the password to **request** cards
-- Once cards are generated, individual card links work **without** the password
-- Card links use secure unguessable tokens for access
-- Password is securely hashed before storage
+- **Administrator Control**: Only administrators generate card stack URLs
+- **Multiple Cards per URL**: Generate 1-12 cards in a single shareable URL
+- **State Retention**: Previously generated stack URLs remain visible when returning to the Virtual Bingo page
+- **Navigation**: Easy back-to-menu navigation from the Virtual Bingo page
+- **Print Layout**: Optimized printing with up to 4 cards per printed page
 
 #### Use Cases
 
-- **Video conferencing**: Share card links with remote participants during video calls
+- **Video conferencing**: Share stack URLs with remote participants during video calls
 - **Radio bingo**: Players follow along remotely while listening to number calls
 - **Hybrid events**: Mix in-person and remote players seamlessly
-- **Email distribution**: Send personalized card links to participants ahead of time
+- **Email distribution**: Send stack URLs to participants ahead of time
 
 #### Security Features
 
-- Unique unguessable tokens (32-character hex) for each card
-- Optional password protection for card request page
-- Configurable limits on cards per request to prevent abuse
-- Secure password hashing using PHP's `password_hash()`
+- Unique unguessable stack IDs (32-character hex) for each stack
+- Configurable limits on cards per stack to prevent abuse
+- Secure token-based access without exposing card numbers
 
 ---
 ## 🗂️ Known Issues
@@ -192,6 +190,17 @@ When password protection is enabled:
 
 
 ## 🗂️ Changelog
+
+- ### [2.6.1] - 2026-01-15
+- **Virtual Bingo Improvements:**
+  - Added back-to-menu navigation button on Virtual Bingo page
+  - Implemented state retention for generated card stacks - previously generated URLs now persist when navigating away and returning
+  - Removed password protection entirely - Virtual Bingo is now open for administrators to generate card URLs
+  - Redesigned card generation to create **stacked card URLs** - multiple cards (1-12) are now grouped into a single shareable URL
+  - Changed to **administrator-generated URLs** - clarified that administrators generate and share URLs with players
+  - Added print support with optimized layout for **up to 4 cards per printed page**
+  - Made maximum cards per stack **configurable** with new default of **12 cards** (adjustable from 1-100)
+  - All marks on cards in a stack are preserved in browser localStorage and restored on page reload
 
 - ### [2.6] - 2026-01-15
 - Added Virtual Bingo Support: enables remote play by allowing players to request and receive shareable links to individual bingo cards that work on any device.

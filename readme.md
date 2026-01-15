@@ -193,7 +193,7 @@ When password protection is enabled:
 
 ## 🗂️ Changelog
 
-### [2.6] - 2026-01-15
+- ### [2.6] - 2026-01-15
 - Added Virtual Bingo Support: enables remote play by allowing players to request and receive shareable links to individual bingo cards that work on any device.
 
 - ### v2.5.3 - January 15, 2026
@@ -426,6 +426,7 @@ have multiple sets of Bingo cards that do not overwrite one another
 ## 📄 License
 
 Open-source. See license file or original project for details.
+
 
 
 

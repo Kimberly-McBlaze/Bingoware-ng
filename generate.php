@@ -40,7 +40,6 @@
    
 
 	   
-	   <?php 
 	   $numcard = filter_input(INPUT_POST, 'numcard', FILTER_VALIDATE_INT);
 	   if (isset($_POST["submit"]) && $numcard !== false && $numcard !== null && ($numcard>=1) && ($numcard<=$MAX_LIMIT)) {
 	   		restart(); //clears winners and draws

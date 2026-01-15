@@ -817,9 +817,6 @@ function display_interactive_card($cardnumber) {
 	return $hiddenstring;
 }
 
-
-
-?>
 /** get_available_sets()
 * This function returns a list of available set IDs
 * by scanning the sets directory for set.*.dat files
@@ -863,3 +860,5 @@ function get_set_card_count($targetSetid) {
     
     return $count;
 }
+
+?>

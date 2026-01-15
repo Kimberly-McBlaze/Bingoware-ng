@@ -404,13 +404,14 @@
 										if (isset($_POST["auto_generate_cards"]) && is_numeric($_POST["auto_generate_cards"])) {
 											$cards_to_generate = intval($_POST["auto_generate_cards"]);
 											if ($cards_to_generate > 0 && $cards_to_generate <= $MAX_LIMIT) {
-												// Reload config to get new setid
-												include("config/settings.php");
+												// Clear old variables and reload config to get new setid
+												unset($setid, $pagetitleconfig, $pagetitle);
+												include(__DIR__ . "/config/settings.php");
 												
 												// Get current free square setting (use center square as default)
 												$freesquare_mode = 1; // Default: center square
 												
-												// Generate the cards
+												// Generate the cards for the new set
 												$result = generate_cards($cards_to_generate, $freesquare_mode);
 												
 												if ($result) {

@@ -114,16 +114,16 @@ body {
     max-width: 600px;
     margin: 0 auto 20px auto;
     border-collapse: collapse;
-    border: 3px solid <?= $bordercolor ?>;
+    border: 3px solid <?= htmlspecialchars($bordercolor) ?>;
 }
 
 .bingo-table th {
-    background: <?= $headerbgcolor ?>;
-    color: <?= $headerfontcolor ?>;
+    background: <?= htmlspecialchars($headerbgcolor) ?>;
+    color: <?= htmlspecialchars($headerfontcolor) ?>;
     font-size: 36px;
     font-weight: bold;
     padding: 15px;
-    border: 2px solid <?= $bordercolor ?>;
+    border: 2px solid <?= htmlspecialchars($bordercolor) ?>;
 }
 
 .bingo-table td {
@@ -132,9 +132,9 @@ body {
     text-align: center;
     vertical-align: middle;
     font-size: 28px;
-    border: 2px solid <?= $bordercolor ?>;
-    background: <?= $mainbgcolor ?>;
-    color: <?= $mainfontcolor ?>;
+    border: 2px solid <?= htmlspecialchars($bordercolor) ?>;
+    background: <?= htmlspecialchars($mainbgcolor) ?>;
+    color: <?= htmlspecialchars($mainfontcolor) ?>;
     cursor: pointer;
     user-select: none;
     transition: all 0.2s;
@@ -145,12 +145,12 @@ body {
 }
 
 .bingo-table td.marked {
-    background: <?= $selectedbgcolor ?> !important;
-    color: <?= $selectedfontcolor ?> !important;
+    background: <?= htmlspecialchars($selectedbgcolor) ?> !important;
+    color: <?= htmlspecialchars($selectedfontcolor) ?> !important;
 }
 
 .bingo-table td.free-square {
-    background: <?= $selectedbgcolor ?>;
+    background: <?= htmlspecialchars($selectedbgcolor) ?>;
     cursor: default;
 }
 

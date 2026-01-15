@@ -4,9 +4,9 @@
 	   ?>
 	   
 	   <?php if (count($available_sets) > 1): ?>
-	   <div class="card mb-3" style="background: #f8f9fa; border: 1px solid #dee2e6;">
+	   <div class="card mb-3" style="background: var(--bg-tertiary); border: 2px solid var(--border-color);">
 	     <div class="card-body" style="padding: 1rem; display: flex; align-items: center; gap: 1rem;">
-	       <label style="margin: 0; font-weight: 600; white-space: nowrap;">Quick Set Switch:</label>
+	       <label style="margin: 0; font-weight: 600; white-space: nowrap; color: var(--text-primary);">Quick Set Switch:</label>
 	       <select id="set-switcher" class="form-input" style="max-width: 200px; flex-shrink: 0;" onchange="switchSet(this.value)">
 	         <?php foreach ($available_sets as $sid): ?>
 	           <option value="<?= htmlspecialchars($sid); ?>" <?= ($sid == $setid) ? 'selected' : ''; ?>>
@@ -14,7 +14,7 @@
 	           </option>
 	         <?php endforeach; ?>
 	       </select>
-	       <span style="color: #6c757d; font-size: 0.875rem;">Current: <strong><?= htmlspecialchars($setid); ?></strong></span>
+	       <span style="color: var(--text-secondary); font-size: 0.875rem;">Current: <strong style="color: var(--text-primary);"><?= htmlspecialchars($setid); ?></strong></span>
 	     </div>
 	   </div>
 	   <script>

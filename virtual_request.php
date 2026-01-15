@@ -9,38 +9,32 @@ if ($virtualbingo !== 'on') {
 
 $error = '';
 $success = false;
-$card_links = [];
+$stack_data = null;
+
+// Load previously generated stacks
+include_once("include/virtual_cards.php");
+$all_existing_stacks = get_all_virtual_stacks_for_display();
 
 // Handle form submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Validate password if required
-    if ($virtualbingo_password_enabled === 'on') {
-        $submitted_password = $_POST['password'] ?? '';
-        if (empty($virtualbingo_password) || !password_verify($submitted_password, $virtualbingo_password)) {
-            $error = 'Invalid password. Please try again.';
-        }
-    }
+    // Validate card count
+    $card_count = filter_input(INPUT_POST, 'card_count', FILTER_VALIDATE_INT);
+    $max_request = (int)($virtualbingo_max_request ?? 12);
     
-    if (empty($error)) {
-        // Validate card count
-        $card_count = filter_input(INPUT_POST, 'card_count', FILTER_VALIDATE_INT);
-        $max_request = (int)($virtualbingo_max_request ?? 10);
+    if ($card_count === false || $card_count < 1) {
+        $error = 'Please enter a valid number of cards (minimum 1).';
+    } elseif ($card_count > $max_request) {
+        $error = "Maximum $max_request cards allowed per request.";
+    } else {
+        // Generate card stack
+        include_once("include/virtual_cards.php");
+        $result = generate_virtual_cards($card_count);
         
-        if ($card_count === false || $card_count < 1) {
-            $error = 'Please enter a valid number of cards (minimum 1).';
-        } elseif ($card_count > $max_request) {
-            $error = "Maximum $max_request cards allowed per request.";
+        if ($result['success']) {
+            $success = true;
+            $stack_data = $result;
         } else {
-            // Generate card tokens and store mappings
-            include_once("include/virtual_cards.php");
-            $result = generate_virtual_cards($card_count);
-            
-            if ($result['success']) {
-                $success = true;
-                $card_links = $result['cards'];
-            } else {
-                $error = $result['error'] ?? 'Failed to generate cards. Please ensure a card set exists.';
-            }
+            $error = $result['error'] ?? 'Failed to generate cards. Please ensure a card set exists.';
         }
     }
 }
@@ -49,8 +43,13 @@ include("header.php");
 ?>
 
 <div class="content-header">
-  <h2 class="content-title">🌐 Request Virtual Bingo Cards</h2>
-  <p class="content-subtitle">Get shareable links for remote play</p>
+  <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 0.5rem;">
+    <a href="index.php" class="btn btn-secondary" style="text-decoration: none;">
+      ← Back to Menu
+    </a>
+  </div>
+  <h2 class="content-title">🌐 Virtual Bingo - Administrator</h2>
+  <p class="content-subtitle">Generate shareable card URLs for remote players</p>
 </div>
 
 <?php if ($error): ?>
@@ -61,61 +60,63 @@ include("header.php");
 
 <?php if ($success): ?>
 <div class="alert alert-success">
-  <strong>✅ Success!</strong> Your cards have been generated.
+  <strong>✅ Success!</strong> Your card stack has been generated.
 </div>
 
 <div class="card mb-3">
   <div class="card-header">
-    <h3 class="card-title">📋 Your Virtual Bingo Cards (<?= count($card_links) ?>)</h3>
+    <h3 class="card-title">📦 Your Virtual Bingo Card Stack (<?= $stack_data['count'] ?> cards)</h3>
   </div>
   <div class="card-body">
     <p style="margin-bottom: 1rem; color: var(--text-muted);">
-      Share these links with players. Each link opens an interactive card that can be marked during play.
+      Share this URL with players. It contains <?= $stack_data['count'] ?> card(s) that can be viewed interactively or printed.
     </p>
     
-    <div style="display: flex; flex-direction: column; gap: 1rem;">
-      <?php foreach ($card_links as $idx => $card): ?>
-      <div style="border: 1px solid var(--border-color); border-radius: 8px; padding: 1rem; background: var(--card-bg);">
-        <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
-          <div style="flex: 1; min-width: 200px;">
-            <strong style="display: block; margin-bottom: 0.5rem;">Card <?= ($idx + 1) ?> - <?= htmlspecialchars($card['card_id']) ?></strong>
-            <input type="text" 
-                   value="<?= htmlspecialchars($card['url']) ?>" 
-                   readonly 
-                   id="link-<?= $idx ?>"
-                   style="width: 100%; padding: 0.5rem; font-family: monospace; font-size: 0.875rem; border: 1px solid var(--border-color); border-radius: 4px; background: var(--bg-color);">
-          </div>
-          <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
-            <button onclick="copyLink(<?= $idx ?>)" class="btn btn-secondary btn-sm">
-              📋 Copy
-            </button>
-            <a href="<?= htmlspecialchars($card['url']) ?>" target="_blank" class="btn btn-primary btn-sm">
-              🔗 Open
-            </a>
-          </div>
+    <div style="border: 1px solid var(--border-color); border-radius: 8px; padding: 1rem; background: var(--card-bg);">
+      <div style="margin-bottom: 1rem;">
+        <strong style="display: block; margin-bottom: 0.5rem;">Cards in this stack:</strong>
+        <div style="font-family: monospace; color: var(--text-muted);">
+          <?= htmlspecialchars(implode(', ', $stack_data['card_ids'])) ?>
         </div>
       </div>
-      <?php endforeach; ?>
+      
+      <div style="margin-bottom: 0.5rem;">
+        <strong style="display: block; margin-bottom: 0.5rem;">Shareable Stack URL:</strong>
+        <input type="text" 
+               value="<?= htmlspecialchars($stack_data['stack_url']) ?>" 
+               readonly 
+               id="stack-url"
+               style="width: 100%; padding: 0.5rem; font-family: monospace; font-size: 0.875rem; border: 1px solid var(--border-color); border-radius: 4px; background: var(--bg-color);">
+      </div>
+      
+      <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 1rem;">
+        <button onclick="copyStackUrl()" class="btn btn-secondary btn-sm">
+          📋 Copy URL
+        </button>
+        <a href="<?= htmlspecialchars($stack_data['stack_url']) ?>" target="_blank" class="btn btn-primary btn-sm">
+          🔗 Open Stack
+        </a>
+      </div>
     </div>
     
     <div style="margin-top: 1.5rem; padding: 1rem; background: var(--bg-color); border-radius: 8px;">
       <p style="margin: 0; font-size: 0.875rem; color: var(--text-muted);">
-        <strong>💡 Tip:</strong> Players can click squares on their cards to mark them during play. 
-        Marks are saved automatically in their browser.
+        <strong>💡 Tip:</strong> Players can view all cards in the stack, click squares to mark them during play, 
+        and print up to 4 cards per page. Marks are saved automatically in their browser.
       </p>
     </div>
     
     <div style="margin-top: 1rem;">
       <a href="virtual_request.php" class="btn btn-primary">
-        ➕ Request More Cards
+        ➕ Generate More Cards
       </a>
     </div>
   </div>
 </div>
 
 <script>
-function copyLink(idx) {
-    const input = document.getElementById('link-' + idx);
+function copyStackUrl() {
+    const input = document.getElementById('stack-url');
     
     // Try modern Clipboard API first
     if (navigator.clipboard && navigator.clipboard.writeText) {
@@ -128,15 +129,15 @@ function copyLink(idx) {
             }, 2000);
         }).catch(err => {
             // Fallback to older method
-            copyLinkFallback(input);
+            copyUrlFallback(input);
         });
     } else {
         // Fallback for older browsers
-        copyLinkFallback(input);
+        copyUrlFallback(input);
     }
 }
 
-function copyLinkFallback(input) {
+function copyUrlFallback(input) {
     input.select();
     input.setSelectionRange(0, 99999); // For mobile devices
     
@@ -149,7 +150,7 @@ function copyLinkFallback(input) {
             btn.textContent = originalText;
         }, 2000);
     } catch (err) {
-        alert('Failed to copy link. Please copy manually.');
+        alert('Failed to copy URL. Please copy manually.');
     }
 }
 </script>
@@ -160,33 +161,18 @@ function copyLinkFallback(input) {
   <div class="card-body">
     <form method="POST" action="virtual_request.php" class="modern-form">
       
-      <?php if ($virtualbingo_password_enabled === 'on'): ?>
-      <div class="form-group">
-        <label class="form-label">Password:</label>
-        <input type="password" 
-               name="password" 
-               required 
-               class="form-input" 
-               style="max-width: 300px;"
-               placeholder="Enter password">
-        <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.5rem;">
-          Password required by administrator
-        </p>
-      </div>
-      <?php endif; ?>
-      
       <div class="form-group">
         <label class="form-label">Number of Cards:</label>
         <input type="number" 
                name="card_count" 
                min="1" 
-               max="<?= (int)($virtualbingo_max_request ?? 10) ?>" 
+               max="<?= (int)($virtualbingo_max_request ?? 12) ?>" 
                value="1" 
                required 
                class="form-input" 
                style="max-width: 150px;">
         <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.5rem;">
-          Maximum: <?= (int)($virtualbingo_max_request ?? 10) ?> cards per request
+          Maximum: <?= (int)($virtualbingo_max_request ?? 12) ?> cards per request
         </p>
       </div>
       
@@ -213,6 +199,92 @@ function copyLinkFallback(input) {
   </div>
 </div>
 
+<?php endif; ?>
+
+<?php if (!empty($all_existing_stacks)): ?>
+<div class="card" style="margin-top: 1.5rem;">
+  <div class="card-header">
+    <h3 class="card-title">📚 Previously Generated Card Stacks (<?= count($all_existing_stacks) ?>)</h3>
+  </div>
+  <div class="card-body">
+    <p style="margin-bottom: 1rem; color: var(--text-muted);">
+      All previously generated virtual bingo card stacks for Set ID: <strong><?= htmlspecialchars($setid) ?></strong>
+    </p>
+    
+    <div style="display: flex; flex-direction: column; gap: 1rem;">
+      <?php foreach ($all_existing_stacks as $idx => $stack): ?>
+      <div style="border: 1px solid var(--border-color); border-radius: 8px; padding: 1rem; background: var(--card-bg);">
+        <div style="margin-bottom: 0.5rem;">
+          <strong style="display: block; margin-bottom: 0.5rem;">
+            Stack <?= ($idx + 1) ?> - <?= $stack['count'] ?> card(s)
+          </strong>
+          <div style="font-family: monospace; font-size: 0.875rem; color: var(--text-muted); margin-bottom: 0.5rem;">
+            Cards: <?= htmlspecialchars(implode(', ', array_slice($stack['card_ids'], 0, 5))) ?><?= count($stack['card_ids']) > 5 ? '...' : '' ?>
+          </div>
+        </div>
+        <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
+          <div style="flex: 1; min-width: 200px;">
+            <input type="text" 
+                   value="<?= htmlspecialchars($stack['url']) ?>" 
+                   readonly 
+                   id="existing-stack-<?= $idx ?>"
+                   style="width: 100%; padding: 0.5rem; font-family: monospace; font-size: 0.875rem; border: 1px solid var(--border-color); border-radius: 4px; background: var(--bg-color);">
+          </div>
+          <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+            <button onclick="copyExistingStack(<?= $idx ?>)" class="btn btn-secondary btn-sm">
+              📋 Copy
+            </button>
+            <a href="<?= htmlspecialchars($stack['url']) ?>" target="_blank" class="btn btn-primary btn-sm">
+              🔗 Open
+            </a>
+          </div>
+        </div>
+      </div>
+      <?php endforeach; ?>
+    </div>
+  </div>
+</div>
+
+<script>
+function copyExistingStack(idx) {
+    const input = document.getElementById('existing-stack-' + idx);
+    
+    // Try modern Clipboard API first
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(input.value).then(() => {
+            const btn = event.target;
+            const originalText = btn.textContent;
+            btn.textContent = '✅ Copied!';
+            setTimeout(() => {
+                btn.textContent = originalText;
+            }, 2000);
+        }).catch(err => {
+            // Fallback to older method
+            copyStackFallback(input);
+        });
+    } else {
+        // Fallback for older browsers
+        copyStackFallback(input);
+    }
+}
+
+function copyStackFallback(input) {
+    input.select();
+    input.setSelectionRange(0, 99999); // For mobile devices
+    
+    try {
+        document.execCommand('copy');
+        const btn = event.target;
+        const originalText = btn.textContent;
+        btn.textContent = '✅ Copied!';
+        setTimeout(() => {
+            btn.textContent = originalText;
+        }, 2000);
+    } catch (err) {
+        alert('Failed to copy URL. Please copy manually.');
+    }
+}
+</script>
 <?php endif; ?>
 
 <?php include("footer.php"); ?>

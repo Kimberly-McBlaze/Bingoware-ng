@@ -11,7 +11,8 @@
     draws: [],
     latestNumber: null,  // Track the most recently drawn number separately
     currentPattern: 'No pattern selected',
-    maxNumber: 75
+    maxNumber: 75,
+    setid: ''  // Track the current set ID
   };
 
   /**
@@ -146,6 +147,9 @@
     if (data.latestNumber !== undefined) {
       state.latestNumber = data.latestNumber;
     }
+    if (data.setid !== undefined) {
+      state.setid = data.setid;
+    }
     updateDisplay();
   }
 
@@ -181,6 +185,9 @@
     if (data.pattern) {
       state.currentPattern = data.pattern;
     }
+    if (data.setid !== undefined) {
+      state.setid = data.setid;
+    }
     updateDisplay();
   }
 
@@ -190,6 +197,7 @@
   function updateDisplay() {
     updateCurrentNumber();
     updatePattern();
+    updateSetId();
     updateBoard();
   }
 
@@ -230,6 +238,24 @@
       }
     } else {
       element.textContent = 'No pattern selected';
+    }
+  }
+
+  /**
+   * Update the set ID display
+   */
+  function updateSetId() {
+    // Update the set ID in the header
+    const setIdElements = document.querySelectorAll('.set-id-display');
+    setIdElements.forEach(element => {
+      if (state.setid) {
+        element.textContent = 'Card Set: ' + state.setid;
+      }
+    });
+    
+    // Also update the page title
+    if (state.setid) {
+      document.title = 'Bingo Flashboard - ' + state.setid;
     }
   }
   

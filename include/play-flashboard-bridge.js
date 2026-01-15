@@ -65,12 +65,29 @@
     const draws = extractDrawsFromPage();
     const latestNumber = extractLatestNumberFromPage();
     const pattern = extractPatternFromPage();
+    const setid = extractSetIdFromPage();
 
     return {
       draws: draws,
       latestNumber: latestNumber,
-      pattern: pattern
+      pattern: pattern,
+      setid: setid
     };
+  }
+
+  /**
+   * Extract set ID from the page
+   */
+  function extractSetIdFromPage() {
+    const gameStateData = document.getElementById('game-state-data');
+    if (gameStateData) {
+      const setidAttr = gameStateData.getAttribute('data-setid');
+      if (setidAttr) {
+        return setidAttr;
+      }
+    }
+    // Fallback: return empty string if no data found
+    return '';
   }
 
   /**

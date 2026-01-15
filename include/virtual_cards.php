@@ -14,10 +14,19 @@ function generate_card_token() {
 }
 
 /**
- * Generate virtual cards and return shareable links
+ * Generate a stack ID for grouping multiple cards
  * 
- * @param int $count Number of cards to generate
- * @return array Result with 'success', 'cards' or 'error'
+ * @return string 32-character hexadecimal stack ID
+ */
+function generate_stack_id() {
+    return bin2hex(random_bytes(16));
+}
+
+/**
+ * Generate virtual cards as a stack and return shareable URL
+ * 
+ * @param int $count Number of cards to generate in this stack
+ * @return array Result with 'success', 'stack_id', 'stack_url', 'card_ids' or 'error'
  */
 function generate_virtual_cards($count) {
     global $setid;
@@ -32,8 +41,16 @@ function generate_virtual_cards($count) {
         return ['success' => false, 'error' => 'Card set is empty.'];
     }
     
-    // Load existing virtual card mappings
-    $mappings = load_virtual_card_mappings();
+    // Generate unique stack ID
+    $stack_id = generate_stack_id();
+    
+    // Load existing stacks
+    $stacks = load_virtual_card_stacks();
+    
+    // Ensure stack ID is unique
+    while (isset($stacks[$stack_id])) {
+        $stack_id = generate_stack_id();
+    }
     
     // Determine base URL
     $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http';
@@ -44,8 +61,9 @@ function generate_virtual_cards($count) {
         $base_url .= '/';
     }
     
-    $cards = [];
-    $allocated_cards = get_allocated_card_numbers($mappings);
+    $allocated_cards = get_allocated_card_numbers_from_stacks($stacks);
+    $card_numbers = [];
+    $card_ids = [];
     
     for ($i = 0; $i < $count; $i++) {
         // Find an available card number (0-indexed)
@@ -57,35 +75,30 @@ function generate_virtual_cards($count) {
             $allocated_cards[] = $card_number;
         }
         
-        // Generate unique token
-        $token = generate_card_token();
-        while (isset($mappings[$token])) {
-            $token = generate_card_token(); // Regenerate if collision (very unlikely)
-        }
-        
-        // Create mapping
-        $mappings[$token] = [
-            'setid' => $setid,
-            'card_number' => $card_number,
-            'created' => time(),
-        ];
-        
-        // Format card ID for display
+        $card_numbers[] = $card_number;
         $card_id = sprintf("%s%'04d", $setid, $card_number + 1);
-        
-        $cards[] = [
-            'token' => $token,
-            'card_id' => $card_id,
-            'url' => $base_url . 'virtual_card.php?token=' . $token,
-        ];
+        $card_ids[] = $card_id;
     }
     
-    // Save mappings
-    if (!save_virtual_card_mappings($mappings)) {
-        return ['success' => false, 'error' => 'Failed to save card mappings.'];
+    // Create stack entry
+    $stacks[$stack_id] = [
+        'setid' => $setid,
+        'card_numbers' => $card_numbers,
+        'created' => time(),
+    ];
+    
+    // Save stacks
+    if (!save_virtual_card_stacks($stacks)) {
+        return ['success' => false, 'error' => 'Failed to save card stack.'];
     }
     
-    return ['success' => true, 'cards' => $cards];
+    return [
+        'success' => true, 
+        'stack_id' => $stack_id,
+        'stack_url' => $base_url . 'virtual_stack.php?stack=' . $stack_id,
+        'card_ids' => $card_ids,
+        'count' => $count,
+    ];
 }
 
 /**
@@ -105,18 +118,18 @@ function find_available_card($total_cards, $allocated) {
 }
 
 /**
- * Get list of all allocated card numbers from mappings
+ * Get list of all allocated card numbers from stacks
  * 
- * @param array $mappings Virtual card mappings
+ * @param array $stacks Virtual card stacks
  * @return array List of allocated card numbers
  */
-function get_allocated_card_numbers($mappings) {
+function get_allocated_card_numbers_from_stacks($stacks) {
     global $setid;
     $allocated = [];
     
-    foreach ($mappings as $token => $data) {
+    foreach ($stacks as $stack_id => $data) {
         if ($data['setid'] === $setid) {
-            $allocated[] = $data['card_number'];
+            $allocated = array_merge($allocated, $data['card_numbers']);
         }
     }
     
@@ -124,16 +137,16 @@ function get_allocated_card_numbers($mappings) {
 }
 
 /**
- * Load virtual card mappings from storage
+ * Load virtual card stacks from storage
  * 
- * @return array Token => card data mappings
+ * @return array Stack ID => stack data mappings
  */
-function load_virtual_card_mappings() {
+function load_virtual_card_stacks() {
     global $setid;
     
     // Validate setid to prevent path traversal
     if (!preg_match('/^[a-zA-Z0-9_-]+$/', $setid)) {
-        error_log("Invalid setid for virtual card mappings: $setid");
+        error_log("Invalid setid for virtual card stacks: $setid");
         return [];
     }
     
@@ -142,7 +155,7 @@ function load_virtual_card_mappings() {
         mkdir("data", 0755, true);
     }
     
-    $filepath = __DIR__ . "/../data/virtualcards." . $setid . ".dat";
+    $filepath = __DIR__ . "/../data/virtualstacks." . $setid . ".dat";
     
     if (!file_exists($filepath)) {
         return [];
@@ -150,13 +163,13 @@ function load_virtual_card_mappings() {
     
     $contents = file_get_contents($filepath);
     if ($contents === false) {
-        error_log("Failed to read virtual card mappings: $filepath");
+        error_log("Failed to read virtual card stacks: $filepath");
         return [];
     }
     
     $data = unserialize($contents, ['allowed_classes' => false]);
     if ($data === false) {
-        error_log("Failed to unserialize virtual card mappings: $filepath");
+        error_log("Failed to unserialize virtual card stacks: $filepath");
         return [];
     }
     
@@ -164,17 +177,17 @@ function load_virtual_card_mappings() {
 }
 
 /**
- * Save virtual card mappings to storage
+ * Save virtual card stacks to storage
  * 
- * @param array $mappings Token => card data mappings
+ * @param array $stacks Stack ID => stack data mappings
  * @return bool Success status
  */
-function save_virtual_card_mappings($mappings) {
+function save_virtual_card_stacks($stacks) {
     global $setid;
     
     // Validate setid to prevent path traversal
     if (!preg_match('/^[a-zA-Z0-9_-]+$/', $setid)) {
-        error_log("Invalid setid for virtual card mappings: $setid");
+        error_log("Invalid setid for virtual card stacks: $setid");
         return false;
     }
     
@@ -186,12 +199,12 @@ function save_virtual_card_mappings($mappings) {
         }
     }
     
-    $filepath = __DIR__ . "/../data/virtualcards." . $setid . ".dat";
-    $serialized = serialize($mappings);
+    $filepath = __DIR__ . "/../data/virtualstacks." . $setid . ".dat";
+    $serialized = serialize($stacks);
     
     $result = file_put_contents($filepath, $serialized);
     if ($result === false) {
-        error_log("Failed to save virtual card mappings: $filepath");
+        error_log("Failed to save virtual card stacks: $filepath");
         return false;
     }
     
@@ -199,24 +212,69 @@ function save_virtual_card_mappings($mappings) {
 }
 
 /**
- * Get card data from token
+ * Get stack data from stack ID
  * 
- * @param string $token Card access token
- * @return array|null Card data or null if not found
+ * @param string $stack_id Stack identifier
+ * @return array|null Stack data or null if not found
  */
-function get_card_from_token($token) {
-    // Validate token format
-    if (!preg_match('/^[a-f0-9]{32}$/', $token)) {
+function get_stack_from_id($stack_id) {
+    // Validate stack ID format
+    if (!preg_match('/^[a-f0-9]{32}$/', $stack_id)) {
         return null;
     }
     
-    $mappings = load_virtual_card_mappings();
+    $stacks = load_virtual_card_stacks();
     
-    if (!isset($mappings[$token])) {
+    if (!isset($stacks[$stack_id])) {
         return null;
     }
     
-    return $mappings[$token];
+    return $stacks[$stack_id];
+}
+
+/**
+ * Get all virtual card stacks for the current set for display purposes
+ * 
+ * @return array List of stacks with their URLs
+ */
+function get_all_virtual_stacks_for_display() {
+    global $setid;
+    
+    $stacks = load_virtual_card_stacks();
+    $display_stacks = [];
+    
+    // Determine base URL
+    $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http';
+    $host = $_SERVER['HTTP_HOST'];
+    $script_dir = dirname($_SERVER['SCRIPT_NAME']);
+    $base_url = $protocol . '://' . $host . $script_dir;
+    if (substr($base_url, -1) !== '/') {
+        $base_url .= '/';
+    }
+    
+    foreach ($stacks as $stack_id => $data) {
+        if ($data['setid'] === $setid) {
+            $card_ids = [];
+            foreach ($data['card_numbers'] as $card_number) {
+                $card_ids[] = sprintf("%s%'04d", $setid, $card_number + 1);
+            }
+            
+            $display_stacks[] = [
+                'stack_id' => $stack_id,
+                'card_ids' => $card_ids,
+                'count' => count($data['card_numbers']),
+                'url' => $base_url . 'virtual_stack.php?stack=' . $stack_id,
+                'created' => $data['created'],
+            ];
+        }
+    }
+    
+    // Sort by creation time (newest first)
+    usort($display_stacks, function($a, $b) {
+        return $b['created'] - $a['created'];
+    });
+    
+    return $display_stacks;
 }
 
 ?>

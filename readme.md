@@ -191,6 +191,20 @@ Once enabled, a **Virtual Bingo** menu item appears in the main menu.
 
 ## 🗂️ Changelog
 
+- ### [2.6.4.1] - 2026-01-15
+- **Bug Fixes:**
+  - Changed default bingo set from `C` to `A`
+    - New installations and fresh configurations now use Set A by default
+  - Fixed erroneous "Card Generation Failed" error message when switching to empty sets
+    - Previously showed error message even when cards were successfully generated
+    - Now correctly shows success message when generation succeeds
+    - Error message only appears when generation actually fails
+  - Fixed flashboard breaking when `$maxNumber` is not 75
+    - When `$maxNumber` in `constants.php` is set to any value other than 75, the flashboard's 5×15 grid is now disabled
+    - A notification banner explains the grid is disabled and how to restore it (set `$maxNumber = 75`)
+    - The rest of the flashboard (Current Number display, Winning Pattern display) continues to work normally
+    - Full flashboard functionality (including grid) automatically restored when `$maxNumber` is set back to 75
+
 - ### [2.6.4] - 2026-01-15
 - **New Features:**
   - Added update checker notification system

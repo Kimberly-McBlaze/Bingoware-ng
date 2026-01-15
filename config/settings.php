@@ -149,13 +149,6 @@ $bordercolor='#000000';
 */
 $virtualbingo='on';
 
-/* Virtual Bingo Password Protection
-* When enabled, requesting cards requires a password.
-* The password is stored as a hashed value for security.
-*/
-$virtualbingo_password_enabled='on';
-$virtualbingo_password='$2y$10$3LAgN4o86b5sEPSKTDpnSugLrofaafkwEAmBK/lxcZ7gov1S6wG2u';
-
 /* Virtual Bingo Max Cards Per Request
 * Limit the number of cards a player can request at once to prevent abuse.
 * Default: 10 cards

@@ -149,28 +149,19 @@ Both modes fully support winner detection.
 
 1. Go to **Configure** menu
 2. Enable the **Virtual Bingo Mode** checkbox
-3. (Optional) Enable **Password Protection** and set a password
-4. (Optional) Adjust **Maximum Cards Per Request** (default: 10)
-5. Save configuration
+3. Adjust **Maximum Cards Per Request** (default: 10)
+4. Save configuration
 
 Once enabled, a **Virtual Bingo** menu item appears in the main menu.
 
 #### How It Works
 
 1. **Request Cards**: Players visit the Virtual Bingo page and request the number of cards they need
-2. **Get Links**: Each card gets a unique, shareable link that works without the password
+2. **Get Links**: Each card gets a unique, shareable link
 3. **Share Links**: Distribute links via email, chat, or any communication method
 4. **Interactive Play**: Players click/tap squares on their cards to mark them during play
 5. **Persistent Marks**: Marks are saved in the browser and restored when reopening the card
 6. **Print Support**: Cards can be printed directly from the browser
-
-#### Password Protection
-
-When password protection is enabled:
-- Players must enter the password to **request** cards
-- Once cards are generated, individual card links work **without** the password
-- Card links use secure unguessable tokens for access
-- Password is securely hashed before storage
 
 #### Use Cases
 
@@ -182,9 +173,7 @@ When password protection is enabled:
 #### Security Features
 
 - Unique unguessable tokens (32-character hex) for each card
-- Optional password protection for card request page
 - Configurable limits on cards per request to prevent abuse
-- Secure password hashing using PHP's `password_hash()`
 
 ---
 ## 🗂️ Known Issues

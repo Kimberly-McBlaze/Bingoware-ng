@@ -1,9 +1,21 @@
 <?php 
 include_once("include/bootstrap.php"); 
 
+// Start session for persistence
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
 // Check if Virtual Bingo is enabled
 if ($virtualbingo !== 'on') {
     header('Location: index.php');
+    exit;
+}
+
+// Handle clear cards request
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['clear_cards'])) {
+    unset($_SESSION['virtual_card_links']);
+    header('Location: virtual_request.php');
     exit;
 }
 
@@ -11,17 +23,15 @@ $error = '';
 $success = false;
 $card_links = [];
 
+// Check if we have stored cards in session
+if (isset($_SESSION['virtual_card_links']) && !empty($_SESSION['virtual_card_links'])) {
+    $card_links = $_SESSION['virtual_card_links'];
+    $success = true;
+}
+
 // Handle form submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Validate password if required
-    if ($virtualbingo_password_enabled === 'on') {
-        $submitted_password = $_POST['password'] ?? '';
-        if (empty($virtualbingo_password) || !password_verify($submitted_password, $virtualbingo_password)) {
-            $error = 'Invalid password. Please try again.';
-        }
-    }
-    
-    if (empty($error)) {
+    if (true) {
         // Validate card count
         $card_count = filter_input(INPUT_POST, 'card_count', FILTER_VALIDATE_INT);
         $max_request = (int)($virtualbingo_max_request ?? 10);
@@ -38,6 +48,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if ($result['success']) {
                 $success = true;
                 $card_links = $result['cards'];
+                // Store in session
+                $_SESSION['virtual_card_links'] = $card_links;
             } else {
                 $error = $result['error'] ?? 'Failed to generate cards. Please ensure a card set exists.';
             }
@@ -51,6 +63,11 @@ include("header.php");
 <div class="content-header">
   <h2 class="content-title">🌐 Request Virtual Bingo Cards</h2>
   <p class="content-subtitle">Get shareable links for remote play</p>
+  <div style="margin-top: 1rem;">
+    <a href="index.php" class="btn btn-secondary">
+      ← Back to Main Menu
+    </a>
+  </div>
 </div>
 
 <?php if ($error): ?>
@@ -109,6 +126,12 @@ include("header.php");
       <a href="virtual_request.php" class="btn btn-primary">
         ➕ Request More Cards
       </a>
+      <form method="POST" action="virtual_request.php" style="display: inline; margin-left: 0.5rem;">
+        <input type="hidden" name="clear_cards" value="1">
+        <button type="submit" class="btn btn-danger">
+          🗑️ Clear All Cards
+        </button>
+      </form>
     </div>
   </div>
 </div>
@@ -159,21 +182,6 @@ function copyLinkFallback(input) {
 <div class="card">
   <div class="card-body">
     <form method="POST" action="virtual_request.php" class="modern-form">
-      
-      <?php if ($virtualbingo_password_enabled === 'on'): ?>
-      <div class="form-group">
-        <label class="form-label">Password:</label>
-        <input type="password" 
-               name="password" 
-               required 
-               class="form-input" 
-               style="max-width: 300px;"
-               placeholder="Enter password">
-        <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.5rem;">
-          Password required by administrator
-        </p>
-      </div>
-      <?php endif; ?>
       
       <div class="form-group">
         <label class="form-label">Number of Cards:</label>

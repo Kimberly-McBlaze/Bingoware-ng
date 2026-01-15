@@ -15,7 +15,7 @@ include_once (__DIR__ . "/../include/constants.php");
 * variabe below will behave as if there was no set generated.  Changing the setid back
 * to the original will force the program to reopen the previous card set.
 */
-$setid='TEST';
+$setid='A';
 
 /* Pagetitle
 * The pagetitle displayed on the top of the browser window can be changed as well.

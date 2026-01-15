@@ -3,10 +3,12 @@ include_once("include/virtual_cards.php");
 
 // Check if we should exclude virtual player cards
 $exclude_virtual = filter_input(INPUT_GET, 'exclude_virtual', FILTER_VALIDATE_BOOLEAN);
-$virtual_card_numbers = [];
+$virtual_card_lookup = [];
 
 if ($exclude_virtual) {
 $virtual_card_numbers = get_all_virtual_card_numbers();
+// Convert to lookup array for O(1) access
+$virtual_card_lookup = array_flip($virtual_card_numbers);
 }
 ?>
 <html>
@@ -21,7 +23,7 @@ $virtual_card_numbers = get_all_virtual_card_numbers();
    
    for ($i=0; $i<$numcards; $i++) {
    // Skip this card if it's assigned to a virtual player
-   if ($exclude_virtual && in_array($i, $virtual_card_numbers)) {
+   if ($exclude_virtual && isset($virtual_card_lookup[$i])) {
    continue;
    }
    
@@ -41,7 +43,7 @@ if ($i < ($numcards-1)) {
 // Check if there are more non-virtual cards remaining
 $has_more = false;
 for ($check = $i + 1; $check < $numcards; $check++) {
-if (!$exclude_virtual || !in_array($check, $virtual_card_numbers)) {
+if (!$exclude_virtual || !isset($virtual_card_lookup[$check])) {
 $has_more = true;
 break;
 }

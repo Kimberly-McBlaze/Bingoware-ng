@@ -21,6 +21,12 @@ $query_params = $numberinplay ? '&' . build_query_string(['numberinplay' => $num
       <span class="nav-icon">🎮</span>
       <span>Play Bingo</span>
     </a>
+    <?php if (isset($virtualbingo) && $virtualbingo === 'on'): ?>
+    <a href="virtual_request.php" class="nav-button">
+      <span class="nav-icon">🌐</span>
+      <span>Virtual Bingo</span>
+    </a>
+    <?php endif; ?>
     <a href="patterns.php" class="nav-button">
       <span class="nav-icon">🎯</span>
       <span>Winning Patterns</span>

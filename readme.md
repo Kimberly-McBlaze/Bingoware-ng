@@ -186,7 +186,7 @@ Once enabled, a **Virtual Bingo** menu item appears in the main menu.
 
 ---
 ## 🗂️ Known Issues
-- None at this time! The flashboard synchronization issues have been resolved in v2.5.3.
+- None at this time!
 
 
 ## 🗂️ Changelog
@@ -468,7 +468,7 @@ have multiple sets of Bingo cards that do not overwrite one another
   
 - ✅ **COMPLETED:** External Number Board & Caller Display: Add support for an external bingo number board with a dedicated display showing the currently called number, allowing easy mirroring to a second screen for player viewing—similar to a real-world bingo hall setup.
   
-- Virtual Bingo Support: Adapt the software for seamless use in virtual bingo sessions, enabling easy creation, saving, and sharing of individual bingo cards for remote play via video conferencing, radio, or other remote communication methods.
+- ✅ **COMPLETED:** Virtual Bingo Support: Adapt the software for seamless use in virtual bingo sessions, enabling easy creation, saving, and sharing of individual bingo cards for remote play via video conferencing, radio, or other remote communication methods.
   
 - More to be determined later.
 
@@ -485,6 +485,7 @@ have multiple sets of Bingo cards that do not overwrite one another
 ## 📄 License
 
 Open-source. See license file or original project for details.
+
 
 
 

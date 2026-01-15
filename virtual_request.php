@@ -213,7 +213,7 @@ function copyUrlFallback(input) {
     
     <div style="display: flex; flex-direction: column; gap: 1rem;">
       <?php foreach ($all_existing_stacks as $idx => $stack): ?>
-      <div style="border: 1px solid var(--border-color); border-radius: 8px; padding: 1rem; background: var(--card-bg);">
+      <div style="border: 1px solid var(--border-color); border-radius: 8px; padding: 1rem; background: var(--card-bg);" id="stack-<?= htmlspecialchars($stack['stack_id']) ?>">
         <div style="margin-bottom: 0.5rem;">
           <strong style="display: block; margin-bottom: 0.5rem;">
             Stack <?= ($idx + 1) ?> - <?= $stack['count'] ?> card(s)
@@ -237,6 +237,9 @@ function copyUrlFallback(input) {
             <a href="<?= htmlspecialchars($stack['url']) ?>" target="_blank" class="btn btn-primary btn-sm">
               🔗 Open
             </a>
+            <button onclick="deleteStack('<?= htmlspecialchars($stack['stack_id']) ?>')" class="btn btn-danger btn-sm" id="delete-btn-<?= htmlspecialchars($stack['stack_id']) ?>">
+              🗑️ Delete
+            </button>
           </div>
         </div>
       </div>
@@ -282,6 +285,62 @@ function copyStackFallback(input) {
         }, 2000);
     } catch (err) {
         alert('Failed to copy URL. Please copy manually.');
+    }
+}
+
+async function deleteStack(stackId) {
+    if (!confirm('Are you sure you want to delete this card stack? This action cannot be undone.')) {
+        return;
+    }
+    
+    const deleteBtn = document.getElementById('delete-btn-' + stackId);
+    const stackElement = document.getElementById('stack-' + stackId);
+    
+    if (deleteBtn) {
+        deleteBtn.disabled = true;
+        deleteBtn.textContent = '⏳ Deleting...';
+    }
+    
+    try {
+        const formData = new FormData();
+        formData.append('delete_stack_id', stackId);
+        
+        const response = await fetch('api/virtual_stacks.php', {
+            method: 'POST',
+            body: formData
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            // Remove the stack element from the DOM
+            if (stackElement) {
+                stackElement.style.opacity = '0';
+                stackElement.style.transition = 'opacity 0.3s';
+                setTimeout(() => {
+                    stackElement.remove();
+                    
+                    // Check if there are no more stacks and reload the page
+                    const remainingStacks = document.querySelectorAll('[id^="stack-"]');
+                    if (remainingStacks.length === 0) {
+                        // Reload to hide the "Previously Generated" section
+                        window.location.reload();
+                    }
+                }, 300);
+            }
+        } else {
+            alert('Error deleting stack: ' + (result.error || 'Unknown error'));
+            if (deleteBtn) {
+                deleteBtn.disabled = false;
+                deleteBtn.textContent = '🗑️ Delete';
+            }
+        }
+    } catch (error) {
+        alert('Error deleting stack: ' + error.message);
+        if (deleteBtn) {
+            deleteBtn.disabled = false;
+            deleteBtn.textContent = '🗑️ Delete';
+        }
     }
 }
 </script>

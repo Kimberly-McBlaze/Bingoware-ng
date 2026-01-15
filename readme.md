@@ -191,6 +191,16 @@ Once enabled, a **Virtual Bingo** menu item appears in the main menu.
 
 ## 🗂️ Changelog
 
+- ### [2.6.3.1] - 2026-01-15
+- **Virtual Bingo Improvements:**
+  - Added delete button for individual card stacks in Virtual Bingo administrator page
+  - Each previously generated stack now has a "Delete" button with confirmation prompt
+  - Deleted stacks are removed immediately from the UI with smooth animation
+  - New API endpoint `/api/virtual_stacks.php` to handle stack deletion
+  - Added `delete_virtual_stack()` function in `include/virtual_cards.php` for backend deletion
+  - Includes UX safeguards: button disables during deletion, error handling for failures
+  - Page auto-refreshes when last stack is deleted to update the UI
+
 - ### [2.6.3] - 2026-01-15
 - **Critical Bug Fixes:**
   - Fixed `preg_match()` warnings when saving configuration settings via the Configure page

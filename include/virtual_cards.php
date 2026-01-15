@@ -304,4 +304,35 @@ function has_virtual_stacks() {
     $stacks = load_virtual_card_stacks();
     return !empty($stacks);
 }
+
+/**
+ * Delete a specific virtual card stack by its ID
+ * 
+ * @param string $stack_id Stack identifier to delete
+ * @return array Result with 'success' and optional 'error' message
+ */
+function delete_virtual_stack($stack_id) {
+    // Validate stack ID format
+    if (!preg_match('/^[a-f0-9]{32}$/', $stack_id)) {
+        return ['success' => false, 'error' => 'Invalid stack ID format'];
+    }
+    
+    // Load all stacks
+    $stacks = load_virtual_card_stacks();
+    
+    // Check if stack exists
+    if (!isset($stacks[$stack_id])) {
+        return ['success' => false, 'error' => 'Stack not found'];
+    }
+    
+    // Remove the stack
+    unset($stacks[$stack_id]);
+    
+    // Save updated stacks
+    if (!save_virtual_card_stacks($stacks)) {
+        return ['success' => false, 'error' => 'Failed to save changes'];
+    }
+    
+    return ['success' => true];
+}
 ?>

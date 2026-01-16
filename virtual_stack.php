@@ -19,8 +19,17 @@ if (!$stack_data) {
     exit;
 }
 
-// Load the card set for the stored setid
-$setid = $stack_data['setid'];
+// Get selected set ID from query param or use stack's original set
+$original_setid = $stack_data['setid'];
+$selected_setid = $_GET['setid'] ?? $original_setid;
+
+// Validate selected setid format
+if (!preg_match('/^[a-zA-Z0-9_-]+$/', $selected_setid)) {
+    $selected_setid = $original_setid;
+}
+
+// Load the card set for the selected setid
+$setid = $selected_setid;
 $card_numbers = $stack_data['card_numbers'];
 
 if (!set_exists()) {
@@ -29,11 +38,14 @@ if (!set_exists()) {
       <h2 class="content-title">❌ Card Set Not Found</h2>
     </div>
     <div class="alert alert-error">
-      The card set for these cards no longer exists.
+      The card set "' . htmlspecialchars($setid) . '" does not exist.
     </div>';
     include("footer.php");
     exit;
 }
+
+// Get all available sets for switcher
+$available_sets = get_available_sets();
 
 $set = load_set();
 $cards = [];
@@ -227,6 +239,35 @@ body {
     line-height: 1.6;
 }
 
+.set-switcher-container {
+    text-align: center;
+    margin: 20px 0;
+    padding: 15px;
+    background: #f0f0f0;
+    border-radius: 8px;
+}
+
+.set-switcher-label {
+    display: inline-block;
+    margin-right: 10px;
+    font-weight: bold;
+    color: #333;
+}
+
+.set-switcher-select {
+    padding: 8px 16px;
+    border: 2px solid #2196F3;
+    border-radius: 6px;
+    font-size: 16px;
+    background: white;
+    cursor: pointer;
+    min-width: 150px;
+}
+
+.set-switcher-select:hover {
+    background: #f5f5f5;
+}
+
 /* Print styles */
 @media print {
     body {
@@ -239,7 +280,7 @@ body {
         padding: 0;
     }
     
-    .controls, .info-box, .stack-header {
+    .controls, .info-box, .stack-header, .set-switcher-container {
         display: none !important;
     }
     
@@ -328,9 +369,22 @@ body {
     <div class="stack-header">
         <h1 class="stack-title">🎱 Virtual Bingo Card Stack</h1>
         <div class="stack-subtitle">
-            <?= htmlspecialchars(count($cards)) ?> card(s) in this stack
+            <?= htmlspecialchars(count($cards)) ?> card(s) in this stack - Set: <strong><?= htmlspecialchars($setid) ?></strong>
         </div>
     </div>
+    
+    <?php if (count($available_sets) > 1): ?>
+    <div class="set-switcher-container">
+        <label for="set-switcher" class="set-switcher-label">Switch Card Set:</label>
+        <select id="set-switcher" class="set-switcher-select" onchange="switchSet(this.value)">
+            <?php foreach ($available_sets as $sid): ?>
+                <option value="<?= htmlspecialchars($sid) ?>" <?= ($sid == $setid) ? 'selected' : '' ?>>
+                    Set <?= htmlspecialchars($sid) ?>
+                </option>
+            <?php endforeach; ?>
+        </select>
+    </div>
+    <?php endif; ?>
     
     <div class="controls">
         <button onclick="resetAllMarks()" class="btn btn-danger">🔄 Reset All Marks</button>
@@ -387,7 +441,14 @@ body {
 <script>
 // Use stack ID as unique identifier for localStorage
 const STACK_ID = <?= json_encode($stack_id, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) ?>;
-const STORAGE_KEY = 'bingo_stack_marks_' + STACK_ID;
+const CURRENT_SETID = <?= json_encode($setid, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) ?>;
+const STORAGE_KEY = 'bingo_stack_marks_' + STACK_ID + '_' + CURRENT_SETID;
+
+// Switch to a different set
+function switchSet(newSetId) {
+    const stackId = <?= json_encode($stack_id, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) ?>;
+    window.location.href = 'virtual_stack.php?stack=' + encodeURIComponent(stackId) + '&setid=' + encodeURIComponent(newSetId);
+}
 
 // Load marks from localStorage on page load
 function loadMarks() {

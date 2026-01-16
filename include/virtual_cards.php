@@ -129,24 +129,18 @@ function get_allocated_card_numbers_from_stacks($stacks) {
 
 /**
  * Load virtual card stacks from storage
+ * Multi-set support: stacks are now stored globally, not per-set
  * 
  * @return array Stack ID => stack data mappings
  */
 function load_virtual_card_stacks() {
-    global $setid;
-    
-    // Validate setid to prevent path traversal
-    if (!preg_match('/^[a-zA-Z0-9_-]+$/', $setid)) {
-        error_log("Invalid setid for virtual card stacks: $setid");
-        return [];
-    }
-    
     // Ensure data directory exists
     if (!file_exists("data")) {
         mkdir("data", 0755, true);
     }
     
-    $filepath = __DIR__ . "/../data/virtualstacks." . $setid . ".dat";
+    // Use global storage file for all stacks
+    $filepath = __DIR__ . "/../data/virtualstacks.dat";
     
     if (!file_exists($filepath)) {
         return [];
@@ -169,19 +163,12 @@ function load_virtual_card_stacks() {
 
 /**
  * Save virtual card stacks to storage
+ * Multi-set support: stacks are now stored globally
  * 
  * @param array $stacks Stack ID => stack data mappings
  * @return bool Success status
  */
 function save_virtual_card_stacks($stacks) {
-    global $setid;
-    
-    // Validate setid to prevent path traversal
-    if (!preg_match('/^[a-zA-Z0-9_-]+$/', $setid)) {
-        error_log("Invalid setid for virtual card stacks: $setid");
-        return false;
-    }
-    
     // Ensure data directory exists
     if (!file_exists("data")) {
         if (!mkdir("data", 0755, true)) {
@@ -190,7 +177,8 @@ function save_virtual_card_stacks($stacks) {
         }
     }
     
-    $filepath = __DIR__ . "/../data/virtualstacks." . $setid . ".dat";
+    // Use global storage file
+    $filepath = __DIR__ . "/../data/virtualstacks.dat";
     $serialized = serialize($stacks);
     
     $result = file_put_contents($filepath, $serialized);
@@ -224,7 +212,8 @@ function get_stack_from_id($stack_id) {
 }
 
 /**
- * Get all virtual card stacks for the current set for display purposes
+ * Get all virtual card stacks for display purposes
+ * Multi-set support: shows all stacks, highlighting which ones belong to current set
  * 
  * @return array List of stacks with their URLs
  */
@@ -244,20 +233,23 @@ function get_all_virtual_stacks_for_display() {
     }
     
     foreach ($stacks as $stack_id => $data) {
-        if ($data['setid'] === $setid) {
-            $card_ids = [];
-            foreach ($data['card_numbers'] as $card_number) {
-                $card_ids[] = sprintf("%s%'04d", $setid, $card_number + 1);
-            }
-            
-            $display_stacks[] = [
-                'stack_id' => $stack_id,
-                'card_ids' => $card_ids,
-                'count' => count($data['card_numbers']),
-                'url' => $base_url . 'virtual_stack.php?stack=' . $stack_id,
-                'created' => $data['created'],
-            ];
+        $stack_setid = $data['setid'];
+        $is_current_set = ($stack_setid === $setid);
+        
+        $card_ids = [];
+        foreach ($data['card_numbers'] as $card_number) {
+            $card_ids[] = sprintf("%s%'04d", $stack_setid, $card_number + 1);
         }
+        
+        $display_stacks[] = [
+            'stack_id' => $stack_id,
+            'setid' => $stack_setid,
+            'card_ids' => $card_ids,
+            'count' => count($data['card_numbers']),
+            'url' => $base_url . 'virtual_stack.php?stack=' . $stack_id,
+            'created' => $data['created'],
+            'is_current_set' => $is_current_set,
+        ];
     }
     
     // Sort by creation time (newest first)
@@ -269,20 +261,13 @@ function get_all_virtual_stacks_for_display() {
 }
 
 /**
- * Delete all virtual card stacks for the current set
+ * Delete all virtual card stacks
+ * Multi-set support: deletes all stacks globally
  * 
  * @return bool Success status
  */
 function delete_all_virtual_stacks() {
-    global $setid;
-    
-    // Validate setid to prevent path traversal
-    if (!preg_match('/^[a-zA-Z0-9_-]+$/', $setid)) {
-        error_log("Invalid setid for deleting virtual card stacks: $setid");
-        return false;
-    }
-    
-    $filepath = __DIR__ . "/../data/virtualstacks." . $setid . ".dat";
+    $filepath = __DIR__ . "/../data/virtualstacks.dat";
     
     if (file_exists($filepath)) {
         $result = unlink($filepath);
@@ -296,7 +281,7 @@ function delete_all_virtual_stacks() {
 }
 
 /**
- * Check if there are any virtual card stacks for the current set
+ * Check if there are any virtual card stacks
  * 
  * @return bool True if stacks exist, false otherwise
  */
@@ -345,5 +330,67 @@ function delete_virtual_stack($stack_id) {
 function get_all_virtual_card_numbers() {
     $stacks = load_virtual_card_stacks();
     return get_allocated_card_numbers_from_stacks($stacks);
+}
+
+/**
+ * Migrate old per-set virtual stack files to new global format
+ * This ensures backward compatibility with existing stacks
+ * 
+ * @return bool True if migration was performed, false if not needed or failed
+ */
+function migrate_virtual_stacks_to_global() {
+    $data_dir = __DIR__ . "/../data";
+    $global_file = $data_dir . "/virtualstacks.dat";
+    
+    // If global file already exists, no migration needed
+    if (file_exists($global_file)) {
+        return false;
+    }
+    
+    // Find all old per-set stack files
+    $old_files = glob($data_dir . "/virtualstacks.*.dat");
+    if (empty($old_files)) {
+        return false;
+    }
+    
+    $merged_stacks = [];
+    
+    // Merge all old files into one
+    foreach ($old_files as $old_file) {
+        $contents = file_get_contents($old_file);
+        if ($contents === false) {
+            error_log("Failed to read old stack file during migration: $old_file");
+            continue;
+        }
+        
+        $stacks = unserialize($contents, ['allowed_classes' => false]);
+        if ($stacks === false || !is_array($stacks)) {
+            error_log("Failed to unserialize old stack file during migration: $old_file");
+            continue;
+        }
+        
+        // Merge into global array
+        $merged_stacks = array_merge($merged_stacks, $stacks);
+    }
+    
+    // Save merged stacks to global file
+    if (!empty($merged_stacks)) {
+        $serialized = serialize($merged_stacks);
+        $result = file_put_contents($global_file, $serialized);
+        
+        if ($result !== false) {
+            // Migration successful, clean up old files
+            foreach ($old_files as $old_file) {
+                @unlink($old_file);
+            }
+            error_log("Migrated " . count($merged_stacks) . " virtual stacks from " . count($old_files) . " old files to new global format");
+            return true;
+        } else {
+            error_log("Failed to save merged stacks during migration");
+            return false;
+        }
+    }
+    
+    return false;
 }
 ?>

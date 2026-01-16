@@ -41,7 +41,7 @@ window.BINGO_MAX_NUMBER = <?= $maxNumber; ?>;
   </div>
 
   <?php if ($maxNumber != 75): ?>
-  <div class="alert alert-warning" style="margin: 1rem auto; max-width: 800px; padding: 1rem; background: #fff3cd; border: 1px solid #ffc107; border-radius: 0.5rem; text-align: center;">
+  <div class="alert alert-warning" style="margin: 1rem auto; max-width: 800px; padding: 1rem; background: #fff3cd; border: 1px solid #ffc107; border-radius: 0.5rem; text-align: center; color: #000;">
     <strong>⚠️ 5×15 Grid Disabled</strong><br>
     The bingo board grid is disabled because the maximum number is set to <?= $maxNumber; ?> instead of 75.<br>
     To restore full flashboard functionality including the 5×15 grid, set <code>$maxNumber = 75</code> in <code>include/constants.php</code>.

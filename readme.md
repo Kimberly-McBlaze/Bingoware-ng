@@ -191,6 +191,20 @@ Once enabled, a **Virtual Bingo** menu item appears in the main menu.
 
 ## 🗂️ Changelog
 
+- ### [2.6.4.2] - 2026-01-16
+- **UI Improvements:**
+  - Improved flashboard notification readability when `$maxNumber != 75`
+    - Changed notification text color from white to black for better contrast against yellow background
+    - Yellow background styling preserved, only text color changed
+  - Moved Quick Set Switch button below winner indicator area on Play Bingo page
+    - Winner indicator now appears first in the left column controls
+    - Quick Set Switch button now appears below winner indicator for better layout flow
+    - Improved visual hierarchy and user experience
+- **Bug Fixes:**
+  - Changed default bingo set from `B` to `A`
+    - New installations and fresh configurations now correctly use Set A as the default
+    - Ensures consistency across the application
+
 - ### [2.6.4.1] - 2026-01-15
 - **Bug Fixes:**
   - Changed default bingo set from `C` to `A`

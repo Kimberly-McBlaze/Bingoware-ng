@@ -1,11 +1,12 @@
 {
-  "version": "2.6.5.1",
+  "version": "2.7.0",
   "releaseDate": "2026-01-16",
-  "releaseUrl": "https://github.com/Kimberly-McBlaze/Bingoware-ng/releases/tag/v2.6.5.1",
+  "releaseUrl": "https://github.com/Kimberly-McBlaze/Bingoware-ng/releases/tag/v2.7.0",
   "changes": [
-    "Fixed batch-generated card sets not appearing in UI until manual config change",
-    "Fixed quick set switch dropdown to sort numerically (A-1, A-2, ..., A-10, A-11)",
-    "Added Virtual Bingo multi-set support with set switcher UI",
-    "Virtual Bingo URLs now work across all available sets"
+    "Fixed flashboard winning pattern display when switching patterns",
+    "Added Quick Winning Pattern Switch dropdown on Play Bingo page",
+    "Added comprehensive theme system with custom theme support",
+    "Theme system supports import/export of custom themes",
+    "Included 4 default themes: Light Modern, Dark Modern, Classic Blue, Purple Passion"
   ]
 }

@@ -191,6 +191,32 @@ Once enabled, a **Virtual Bingo** menu item appears in the main menu.
 
 ## 🗂️ Changelog
 
+- ### [2.7.0] - 2026-01-16
+- **Bug Fixes:**
+  - Fixed flashboard winning pattern display when switching patterns
+    - Root cause: `array_map` preserved non-sequential array keys, causing JSON to encode as object instead of array
+    - Solution: Wrapped `array_map` with `array_values()` to reindex the array
+    - Flashboard now correctly receives and displays pattern updates when patterns are switched
+    - Pattern changes in Play Bingo UI now properly trigger pattern updates to the flashboard window
+- **New Features:**
+  - Added Quick Winning Pattern Switch dropdown on Play Bingo page
+    - Located below Quick Set Switch for consistent UI layout
+    - Allows switching to any available winning pattern with one click during gameplay
+    - Automatically disables all other patterns and enables the selected one
+    - Selection persists via existing patterns storage API
+    - Flashboard automatically updates to show the newly enabled pattern after switch
+  - Added comprehensive theme system with custom theme support
+    - New Theme Manager page accessible from main menu
+    - Create, edit, and delete custom themes with full color customization
+    - Import/export themes as JSON files for sharing and backup
+    - Included 4 default themes: Light Modern, Dark Modern, Classic Blue, Purple Passion
+    - Themes apply globally across all pages using CSS variables
+    - Active theme persists across sessions
+    - Theme storage in `data/themes.json` with atomic writes for data safety
+    - API endpoint at `api/themes.php` for CRUD operations and import/export
+    - Color picker UI with hex code input for precise color selection
+    - Real-time theme preview on Theme Manager page
+
 - ### [2.6.5.1] - 2026-01-16
 - **Bug Fixes:**
   - Fixed batch-generated card sets not appearing in UI until manual configuration change

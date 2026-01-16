@@ -70,7 +70,7 @@ function generate_cards($numbercards,$freesquare) {
 		} //column
 	}	//cardnumbber
 
-	save_set($set);
+	return save_set($set);
 }
 
 /** display_card()

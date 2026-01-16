@@ -1,10 +1,10 @@
 {
-  "version": "2.6.4",
+  "version": "2.6.4.1",
   "releaseDate": "2026-01-15",
-  "releaseUrl": "https://github.com/Kimberly-McBlaze/Bingoware-ng/releases/tag/v2.6.4",
+  "releaseUrl": "https://github.com/Kimberly-McBlaze/Bingoware-ng/releases/tag/v2.6.4.1",
   "changes": [
-    "Update checker notification (open repo/dismiss)",
-    "Auto-generate cards prompt when switching to empty set",
-    "Winning patterns default fix (only Normal enabled by default)"
+    "Default bingo set changed from C to A",
+    "Fixed erroneous 'Card Generation Failed' error when cards are successfully generated",
+    "Flashboard 5x15 grid now disabled with notification when maxNumber != 75"
   ]
 }

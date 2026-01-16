@@ -442,6 +442,9 @@ body {
 // Use stack ID as unique identifier for localStorage
 const STACK_ID = <?= json_encode($stack_id, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) ?>;
 const CURRENT_SETID = <?= json_encode($setid, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) ?>;
+// Storage key includes both stack ID and set ID to maintain separate marks per set
+// Note: Stack IDs are 32 hex chars, set IDs are typically short (e.g., "A-1")
+// Total key length is well under browser localStorage limits (~2048+ chars)
 const STORAGE_KEY = 'bingo_stack_marks_' + STACK_ID + '_' + CURRENT_SETID;
 
 // Switch to a different set

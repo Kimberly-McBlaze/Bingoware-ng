@@ -381,7 +381,9 @@ function migrate_virtual_stacks_to_global() {
         if ($result !== false) {
             // Migration successful, clean up old files
             foreach ($old_files as $old_file) {
-                @unlink($old_file);
+                if (!unlink($old_file)) {
+                    error_log("Failed to delete old virtual stack file during migration: $old_file");
+                }
             }
             error_log("Migrated " . count($merged_stacks) . " virtual stacks from " . count($old_files) . " old files to new global format");
             return true;

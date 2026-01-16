@@ -50,12 +50,12 @@
 	   		$enabled_patterns = get_enabled_patterns();
 	   		$pattern_info = array();
 	   		if (is_array($enabled_patterns)) {
-	   		    $pattern_info = array_map(function($p) { 
+	   		    $pattern_info = array_values(array_map(function($p) { 
 	   		        return array(
 	   		            'name' => $p['name'],
 	   		            'description' => isset($p['description']) ? $p['description'] : ''
 	   		        );
-	   		    }, $enabled_patterns);
+	   		    }, $enabled_patterns));
 	   		}
 	   		$pattern_json = json_encode($pattern_info);
 	   		
@@ -148,6 +148,76 @@
 	       }
 	       </script>
 	       <?php endif; ?>
+	       
+	       <!-- Quick Pattern Switch Dropdown -->
+	       <div class="card" style="background: var(--bg-tertiary); border: 2px solid var(--border-color); margin-top: 1rem;">
+	         <div class="card-body" style="padding: 1rem; display: flex; flex-direction: column; align-items: center; gap: 0.75rem;">
+	           <label style="margin: 0; font-weight: 600; color: var(--text-primary); text-align: center;">Quick Winning Pattern Switch:</label>
+	           <select id="pattern-switcher" class="form-input" style="width: 100%; max-width: 250px;" onchange="switchPattern(this.value)">
+	             <?php 
+	             $all_patterns = load_patterns();
+	             $enabled_pattern_ids = array_map(function($p) { return $p['id']; }, $enabled_patterns);
+	             $current_pattern_id = count($enabled_pattern_ids) === 1 ? $enabled_pattern_ids[0] : '';
+	             
+	             foreach ($all_patterns as $pattern): ?>
+	               <option value="<?= htmlspecialchars($pattern['id']); ?>" 
+	                       <?= ($pattern['id'] === $current_pattern_id) ? 'selected' : ''; ?>>
+	                 <?= htmlspecialchars($pattern['name']); ?><?= $pattern['is_default'] ? '' : ' (Custom)'; ?>
+	               </option>
+	             <?php endforeach; ?>
+	           </select>
+	           <span style="color: var(--text-secondary); font-size: 0.875rem; text-align: center;">
+	             Current: <strong style="color: var(--text-primary);" id="current-pattern-display">
+	               <?php 
+	               if (count($enabled_patterns) === 0) {
+	                 echo 'None';
+	               } elseif (count($enabled_patterns) === 1) {
+	                 echo htmlspecialchars(reset($enabled_patterns)['name']);
+	               } else {
+	                 echo count($enabled_patterns) . ' patterns';
+	               }
+	               ?>
+	             </strong>
+	           </span>
+	         </div>
+	       </div>
+	       <script>
+	       async function switchPattern(newPatternId) {
+	         if (!newPatternId) return;
+	         
+	         try {
+	           // Get all patterns to disable them
+	           const allPatterns = <?= json_encode(array_map(function($p) { return $p['id']; }, $all_patterns)); ?>;
+	           
+	           // Disable all patterns, then enable the selected one
+	           let hasError = false;
+	           for (const patternId of allPatterns) {
+	             const formData = new FormData();
+	             formData.set('id', patternId);
+	             formData.set('enabled', patternId === newPatternId ? 'true' : 'false');
+	             
+	             const response = await fetch('api/patterns.php', {
+	               method: 'POST',
+	               body: formData
+	             });
+	             
+	             const data = await response.json();
+	             if (!data.success) {
+	               alert('Error switching pattern: ' + data.error);
+	               hasError = true;
+	               break;
+	             }
+	           }
+	           
+	           if (!hasError) {
+	             // Reload the page to refresh game state
+	             window.location.reload();
+	           }
+	         } catch (error) {
+	           alert('Error: ' + error.message);
+	         }
+	       }
+	       </script>
 	     </div>
 	     
 	     <div>

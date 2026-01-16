@@ -1,10 +1,9 @@
 {
-  "version": "2.6.4.2",
+  "version": "2.6.4.3",
   "releaseDate": "2026-01-16",
-  "releaseUrl": "https://github.com/Kimberly-McBlaze/Bingoware-ng/releases/tag/v2.6.4.2",
+  "releaseUrl": "https://github.com/Kimberly-McBlaze/Bingoware-ng/releases/tag/v2.6.4.3",
   "changes": [
-    "Fixed flashboard notification text color when maxNumber != 75",
-    "Changed default SET ID from B to A",
-    "Moved quick set switch button below winner indicator"
+    "Fixed Quick Set Switch dropdown alignment on Play Bingo page",
+    "Vertically stacked layout: label above, dropdown in middle, current value below"
   ]
 }

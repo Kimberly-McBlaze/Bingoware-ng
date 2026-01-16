@@ -191,6 +191,16 @@ Once enabled, a **Virtual Bingo** menu item appears in the main menu.
 
 ## 🗂️ Changelog
 
+- ### [2.6.4.3] - 2026-01-16
+- **Bug Fixes:**
+  - Fixed Quick Set Switch dropdown alignment on Play Bingo page
+    - Changed layout from horizontal to vertical stacking
+    - "Quick Set Switch:" label now appears above the dropdown
+    - Dropdown select control in the middle with full width (max 250px)
+    - "Current: A" value now appears below the dropdown
+    - All elements are centered and properly aligned within the container
+    - Improved visual hierarchy and better use of available space
+
 - ### [2.6.4.2] - 2026-01-16
 - **Bug Fixes:**
   - Fixed flashboard notification text color to be black instead of white for better readability

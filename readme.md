@@ -191,6 +191,17 @@ Once enabled, a **Virtual Bingo** menu item appears in the main menu.
 
 ## 🗂️ Changelog
 
+- ### [2.6.5] - 2026-01-16
+- **New Features:**
+  - Added batch generation feature to create multiple Bingo card sets in one operation
+    - New "Batch Generate" menu option for creating multiple SET IDs at once
+    - Specify number of sets to create (1-100) and cards per set
+    - Option to provide custom base SET ID or use current SET ID
+    - Multiple sets are automatically numbered (e.g., Base-1, Base-2, Base-3)
+    - All sets use the same Free Squares mode configuration
+    - Displays detailed results table showing each created set
+    - Single-set generation continues to work as before
+
 - ### [2.6.4.3] - 2026-01-16
 - **Bug Fixes:**
   - Fixed Quick Set Switch dropdown alignment on Play Bingo page

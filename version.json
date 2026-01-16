@@ -1,9 +1,9 @@
 {
-  "version": "2.6.4.3",
+  "version": "2.6.5",
   "releaseDate": "2026-01-16",
-  "releaseUrl": "https://github.com/Kimberly-McBlaze/Bingoware-ng/releases/tag/v2.6.4.3",
+  "releaseUrl": "https://github.com/Kimberly-McBlaze/Bingoware-ng/releases/tag/v2.6.5",
   "changes": [
-    "Fixed Quick Set Switch dropdown alignment on Play Bingo page",
-    "Vertically stacked layout: label above, dropdown in middle, current value below"
+    "Added batch generation feature to create multiple card sets in one operation",
+    "New Batch Generate menu option for creating multiple SET IDs with specified cards per set"
   ]
 }

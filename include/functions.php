@@ -73,6 +73,102 @@ function generate_cards($numbercards,$freesquare) {
 	return save_set($set);
 }
 
+/** batch_generate_sets()
+* This function generates multiple card sets with specified number of cards each.
+* Creates multiple SET IDs sequentially and generates cards for each set.
+* Returns an array with results for each set created.
+* 
+* @param int $num_sets Number of sets to create
+* @param int $cards_per_set Number of cards to generate per set
+* @param int $freesquare Free square mode (0, 1, or 2)
+* @param string $base_setid Base SET ID to use (will append numbers for multiple sets)
+* @return array Results array with 'success' boolean and 'sets' array with details
+*/
+function batch_generate_sets($num_sets, $cards_per_set, $freesquare, $base_setid = '') {
+	global $setid, $maxColumnNumber, $MAX_LIMIT;
+	
+	// Validation
+	if ($num_sets < 1 || $num_sets > 100) {
+		return ['success' => false, 'error' => 'Number of sets must be between 1 and 100'];
+	}
+	
+	if ($cards_per_set < 1 || $cards_per_set > $MAX_LIMIT) {
+		return ['success' => false, 'error' => 'Cards per set must be between 1 and ' . $MAX_LIMIT];
+	}
+	
+	if (!in_array($freesquare, [0, 1, 2])) {
+		return ['success' => false, 'error' => 'Invalid free square mode'];
+	}
+	
+	// Use provided base or current setid
+	if (empty($base_setid)) {
+		$base_setid = $setid;
+	}
+	
+	// Validate base setid format
+	if (!preg_match('/^[a-zA-Z0-9_-]+$/', $base_setid)) {
+		return ['success' => false, 'error' => 'Invalid base SET ID format'];
+	}
+	
+	$results = [
+		'success' => true,
+		'sets' => [],
+		'total_sets' => $num_sets,
+		'cards_per_set' => $cards_per_set
+	];
+	
+	// Save original setid to restore later
+	$original_setid = $setid;
+	
+	// Generate each set
+	for ($i = 0; $i < $num_sets; $i++) {
+		// Create unique SET ID
+		if ($num_sets == 1) {
+			$current_setid = $base_setid;
+		} else {
+			$current_setid = $base_setid . '-' . ($i + 1);
+		}
+		
+		// Temporarily set the global setid
+		$setid = $current_setid;
+		
+		// Clear any existing data for this set
+		restart();
+		
+		// Remove old set file if it exists
+		$set_file = "sets/set.".$setid.".dat";
+		if (file_exists($set_file)) {
+			if (!unlink($set_file)) {
+				error_log("Failed to delete $set_file during batch generation");
+			}
+		}
+		
+		// Generate cards for this set
+		$success = generate_cards($cards_per_set, $freesquare);
+		
+		if ($success) {
+			$results['sets'][] = [
+				'setid' => $current_setid,
+				'cards' => $cards_per_set,
+				'success' => true
+			];
+		} else {
+			$results['sets'][] = [
+				'setid' => $current_setid,
+				'cards' => 0,
+				'success' => false,
+				'error' => 'Failed to generate cards'
+			];
+			$results['success'] = false;
+		}
+	}
+	
+	// Restore original setid
+	$setid = $original_setid;
+	
+	return $results;
+}
+
 /** display_card()
 * This function draws an HTML table for one or four cards.
 * By setting the $fourperpage parameter to 1, the tables

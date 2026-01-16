@@ -11,6 +11,8 @@
 	    		if (set_exists() && $_GET["action"]=="generate" && !isset($_POST["submit"])) {
 	    			echo '<div class="alert alert-info"><strong>ℹ️ Set exists</strong><br>You already have a set of '.card_number().' cards (Set ID: '.$setid.'). Would you like to <a href="index.php?action=regenerate" style="color: var(--color-info); font-weight: bold; text-decoration: underline;">create a new set</a>?</div>';
 	    		} else include_once ("generate.php");
+	    	} else if ($_GET["action"]=="batch_generate") {
+	    		include_once ("batch_generate.php");
 	    	} else if ($_GET["action"]=="view") {
 	    		if (set_exists()) 
 	    			include_once ("choose.php");

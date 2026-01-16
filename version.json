@@ -1,9 +1,11 @@
 {
-  "version": "2.6.5",
+  "version": "2.6.5.1",
   "releaseDate": "2026-01-16",
-  "releaseUrl": "https://github.com/Kimberly-McBlaze/Bingoware-ng/releases/tag/v2.6.5",
+  "releaseUrl": "https://github.com/Kimberly-McBlaze/Bingoware-ng/releases/tag/v2.6.5.1",
   "changes": [
-    "Added batch generation feature to create multiple card sets in one operation",
-    "New Batch Generate menu option for creating multiple SET IDs with specified cards per set"
+    "Fixed batch-generated card sets not appearing in UI until manual config change",
+    "Fixed quick set switch dropdown to sort numerically (A-1, A-2, ..., A-10, A-11)",
+    "Added Virtual Bingo multi-set support with set switcher UI",
+    "Virtual Bingo URLs now work across all available sets"
   ]
 }

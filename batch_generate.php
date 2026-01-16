@@ -1,8 +1,7 @@
-   
-   <?php 
-   // Handle batch generation form submission
-   $num_sets = filter_input(INPUT_POST, 'num_sets', FILTER_VALIDATE_INT);
-   $cards_per_set = filter_input(INPUT_POST, 'cards_per_set', FILTER_VALIDATE_INT);
+<?php 
+// Handle batch generation form submission
+$num_sets = filter_input(INPUT_POST, 'num_sets', FILTER_VALIDATE_INT);
+$cards_per_set = filter_input(INPUT_POST, 'cards_per_set', FILTER_VALIDATE_INT);
    $base_setid = filter_input(INPUT_POST, 'base_setid', FILTER_SANITIZE_SPECIAL_CHARS);
    
    if (isset($_POST["submit"]) && $num_sets !== false && $num_sets !== null && 

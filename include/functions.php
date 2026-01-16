@@ -85,7 +85,7 @@ function generate_cards($numbercards,$freesquare) {
 * @return array Results array with 'success' boolean and 'sets' array with details
 */
 function batch_generate_sets($num_sets, $cards_per_set, $freesquare, $base_setid = '') {
-	global $setid, $maxColumnNumber, $MAX_LIMIT;
+	global $setid, $MAX_LIMIT;
 	
 	// Validation
 	if ($num_sets < 1 || $num_sets > 100) {
@@ -123,7 +123,7 @@ function batch_generate_sets($num_sets, $cards_per_set, $freesquare, $base_setid
 	// Generate each set
 	for ($i = 0; $i < $num_sets; $i++) {
 		// Create unique SET ID
-		if ($num_sets == 1) {
+		if ($num_sets === 1) {
 			$current_setid = $base_setid;
 		} else {
 			$current_setid = $base_setid . '-' . ($i + 1);

@@ -191,6 +191,28 @@ Once enabled, a **Virtual Bingo** menu item appears in the main menu.
 
 ## 🗂️ Changelog
 
+- ### [2.6.5.1] - 2026-01-16
+- **Bug Fixes:**
+  - Fixed batch-generated card sets not appearing in UI until manual configuration change
+    - Root cause: Config file wasn't updated after batch generation
+    - After batch generation, the system now automatically updates the configuration to point to the first generated set
+    - Quick set switch dropdown now appears immediately after batch generation without requiring manual intervention
+  - Fixed quick set switch dropdown to sort numerically instead of lexicographically
+    - Changed sorting algorithm from `sort()` to `natsort()` for natural ordering
+    - Dropdown now displays A-1, A-2, ..., A-10, A-11 instead of A-1, A-10, A-11, A-2
+    - Works correctly with any number of sets and any prefix pattern
+- **New Features:**
+  - Added Virtual Bingo multi-set support
+    - Virtual Bingo card stacks now work across all available card sets
+    - Added set switcher dropdown to virtual stack viewer
+    - Players can switch between sets while viewing the same virtual stack URL
+    - Each set maintains its own mark state in localStorage (marks are preserved per set)
+    - Virtual stack storage migrated from per-set to global format for better multi-set support
+    - Backward compatible: automatically migrates old per-set virtual stacks to new global format
+  - Virtual Bingo administrator page now shows all stacks across all sets
+    - Each stack displays which set it belongs to
+    - Current set stacks are highlighted for easy identification
+
 - ### [2.6.5] - 2026-01-16
 - **New Features:**
   - Added batch generation feature to create multiple Bingo card sets in one operation

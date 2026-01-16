@@ -84,6 +84,72 @@ function generate_cards($numbercards,$freesquare) {
 * @param string $base_setid Base SET ID to use (will append numbers for multiple sets)
 * @return array Results array with 'success' boolean and 'sets' array with details
 */
+/** update_config_setid()
+* Updates the setid in config/settings.php atomically
+* @param string $new_setid The new set ID to use
+* @return bool Success status
+*/
+function update_config_setid($new_setid) {
+	// Validate setid format
+	if (!preg_match('/^[a-zA-Z0-9_-]+$/', $new_setid)) {
+		error_log("Invalid setid format: $new_setid");
+		return false;
+	}
+	
+	$config_path = __DIR__ . "/../config/settings.php";
+	if (!file_exists($config_path)) {
+		error_log("Config file not found: $config_path");
+		return false;
+	}
+	
+	$filearray = file($config_path);
+	if ($filearray === false) {
+		error_log("Failed to read config file: $config_path");
+		return false;
+	}
+	
+	$new_content = "";
+	foreach ($filearray as $line) {
+		if (str_starts_with($line, "\$setid='")) {
+			$line = "\$setid='" . addslashes($new_setid) . "';\n";
+		}
+		$new_content .= $line;
+	}
+	
+	// Validate content before writing
+	if (empty($new_content) || !preg_match('/^<\?php/', $new_content) || strlen($new_content) < 100) {
+		error_log("Config content validation failed");
+		return false;
+	}
+	
+	// Write atomically using temp file
+	$temp_file = $config_path . ".tmp";
+	$fp = fopen($temp_file, "w");
+	if (!$fp) {
+		error_log("Failed to open temp file: $temp_file");
+		return false;
+	}
+	
+	if (flock($fp, LOCK_EX)) {
+		fwrite($fp, $new_content);
+		flock($fp, LOCK_UN);
+		fclose($fp);
+		
+		if (rename($temp_file, $config_path)) {
+			return true;
+		} else {
+			error_log("Failed to rename temp file to config");
+			@unlink($temp_file);
+			return false;
+		}
+	} else {
+		fclose($fp);
+		@unlink($temp_file);
+		error_log("Failed to lock temp file");
+		return false;
+	}
+}
+
 function batch_generate_sets($num_sets, $cards_per_set, $freesquare, $base_setid = '') {
 	global $setid, $MAX_LIMIT;
 	
@@ -119,6 +185,7 @@ function batch_generate_sets($num_sets, $cards_per_set, $freesquare, $base_setid
 	
 	// Save original setid to restore later
 	$original_setid = $setid;
+	$first_generated_setid = null;
 	
 	// Generate each set
 	for ($i = 0; $i < $num_sets; $i++) {
@@ -127,6 +194,11 @@ function batch_generate_sets($num_sets, $cards_per_set, $freesquare, $base_setid
 			$current_setid = $base_setid;
 		} else {
 			$current_setid = $base_setid . '-' . ($i + 1);
+		}
+		
+		// Track first generated set
+		if ($first_generated_setid === null) {
+			$first_generated_setid = $current_setid;
 		}
 		
 		// Temporarily set the global setid
@@ -163,8 +235,19 @@ function batch_generate_sets($num_sets, $cards_per_set, $freesquare, $base_setid
 		}
 	}
 	
-	// Restore original setid
-	$setid = $original_setid;
+	// If generation was successful, update config to point to first generated set
+	if ($results['success'] && $first_generated_setid !== null) {
+		if (update_config_setid($first_generated_setid)) {
+			// Update global setid to match config
+			$setid = $first_generated_setid;
+		} else {
+			error_log("Failed to update config with new setid after batch generation");
+			// Not a fatal error - generation succeeded, just config update failed
+		}
+	} else {
+		// Restore original setid if generation failed
+		$setid = $original_setid;
+	}
 	
 	return $results;
 }
@@ -928,8 +1011,11 @@ function get_available_sets() {
         }
     }
     
-    // Sort alphabetically
-    sort($sets);
+    // Sort naturally (handles numeric suffixes correctly: A-1, A-2, ..., A-10, A-11)
+    natsort($sets);
+    
+    // Re-index array after natsort (which preserves keys)
+    $sets = array_values($sets);
     
     return $sets;
 }

@@ -44,4 +44,3 @@ if (preg_match("/\\\$setid\s*=\s*'A'\s*;/", $content)) {
     
     exit(1);
 }
-?>

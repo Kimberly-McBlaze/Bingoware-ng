@@ -78,8 +78,99 @@
 		   		// Virtual Bingo settings
 		   		if (isset($_POST["virtualbingoform"])) $virtualbingoform = $_POST["virtualbingoform"]; else $virtualbingoform ="";
 		   		if (isset($_POST["virtualbingo_max_requestform"])) $virtualbingo_max_requestform = $_POST["virtualbingo_max_requestform"]; else $virtualbingo_max_requestform ="12";
+		   		
+		   		// Delete all cards request
+		   		$delete_all_cards_requested = isset($_POST["delete_all_cards"]) && $_POST["delete_all_cards"] === "on";
 
 		   
+   // Handle Delete All Cards confirmation and execution
+   if ($delete_all_cards_requested) {
+       // Check if confirmation was provided
+       if (!isset($_POST["confirm_delete_all_cards"])) {
+           // Show confirmation prompt
+           echo '<div class="alert alert-warning" style="max-width: 800px; margin: 2rem auto; padding: 2rem; background: #fff3cd; border: 2px solid #ffc107; border-radius: 0.5rem;">';
+           echo '<h3 style="color: #000; margin-top: 0;">⚠️ Confirm Delete All Cards</h3>';
+           echo '<p style="color: #000; font-size: 1.1rem;"><strong>WARNING: This action cannot be undone!</strong></p>';
+           echo '<p style="color: #000;">This will permanently delete:</p>';
+           echo '<ul style="color: #000; margin-left: 1.5rem;">';
+           echo '<li>All card sets (set.*.dat files)</li>';
+           echo '<li>All game data (draws, winners, etc.)</li>';
+           echo '</ul>';
+           
+           $available_sets = function_exists('get_available_sets') ? get_available_sets() : array();
+           if (count($available_sets) > 0) {
+               echo '<p style="color: #000;"><strong>' . count($available_sets) . ' card set(s)</strong> will be deleted.</p>';
+           }
+           
+           echo '<p style="color: #000; margin-bottom: 1.5rem;">Are you absolutely sure you want to proceed?</p>';
+           
+           echo '<form method="post" action="index.php?action=config' . ((isset($_GET['numberinplay']))?('&numberinplay='.$_GET['numberinplay']):'') . '">';
+           
+           // Re-include all form values as hidden fields
+           echo '<input type="hidden" name="setidform" value="'.htmlspecialchars($setidform).'">';
+           echo '<input type="hidden" name="pagetitleform" value="'.htmlspecialchars($pagetitleform).'">';
+           echo '<input type="hidden" name="numbercardsinplayform" value="'.htmlspecialchars($numbercardsinplayform).'">';
+           echo '<input type="hidden" name="maxNumberform" value="'.htmlspecialchars($maxNumberform).'">';
+           echo '<input type="hidden" name="headerfontcolorform" value="'.htmlspecialchars($headerfontcolorform).'">';
+           echo '<input type="hidden" name="headerbgcolorform" value="'.htmlspecialchars($headerbgcolorform).'">';
+           echo '<input type="hidden" name="mainfontcolorform" value="'.htmlspecialchars($mainfontcolorform).'">';
+           echo '<input type="hidden" name="mainbgcolorform" value="'.htmlspecialchars($mainbgcolorform).'">';
+           echo '<input type="hidden" name="selectedfontcolorform" value="'.htmlspecialchars($selectedfontcolorform).'">';
+           echo '<input type="hidden" name="selectedbgcolorform" value="'.htmlspecialchars($selectedbgcolorform).'">';
+           echo '<input type="hidden" name="bordercolorform" value="'.htmlspecialchars($bordercolorform).'">';
+           echo '<input type="hidden" name="virtualbingoform" value="'.htmlspecialchars($virtualbingoform).'">';
+           echo '<input type="hidden" name="virtualbingo_max_requestform" value="'.htmlspecialchars($virtualbingo_max_requestform).'">';
+           echo '<input type="hidden" name="delete_all_cards" value="on">';
+           echo '<input type="hidden" name="confirm_delete_all_cards" value="1">';
+           
+           echo '<div style="display: flex; gap: 1rem; justify-content: center;">';
+           echo '<button type="submit" class="btn btn-error" style="background-color: #dc2626;">🗑️ Yes, Delete All Cards</button>';
+           echo '<a href="index.php?action=config" class="btn btn-secondary">Cancel</a>';
+           echo '</div>';
+           
+           echo '</form>';
+           echo '</div>';
+           
+           // Stop processing
+           exit;
+       } else {
+           // Confirmed - execute deletion
+           if (function_exists('delete_all_sets')) {
+               $result = delete_all_sets();
+               
+               if ($result['success']) {
+                   echo '<div class="alert alert-success" style="max-width: 800px; margin: 2rem auto; padding: 1.5rem;">';
+                   echo '<strong>✓ Success</strong><br>';
+                   echo htmlspecialchars($result['message']);
+                   if (!empty($result['errors'])) {
+                       echo '<br><br><strong>Warnings:</strong><ul>';
+                       foreach ($result['errors'] as $error) {
+                           echo '<li>' . htmlspecialchars($error) . '</li>';
+                       }
+                       echo '</ul>';
+                   }
+                   echo '<br><br><a href="index.php?action=config" class="btn btn-primary">Back to Configuration</a>';
+                   echo '</div>';
+                   exit;
+               } else {
+                   echo '<div class="alert alert-error" style="max-width: 800px; margin: 2rem auto; padding: 1.5rem;">';
+                   echo '<strong>✗ Error</strong><br>';
+                   echo htmlspecialchars($result['message']);
+                   if (!empty($result['errors'])) {
+                       echo '<br><br><strong>Errors:</strong><ul>';
+                       foreach ($result['errors'] as $error) {
+                           echo '<li>' . htmlspecialchars($error) . '</li>';
+                       }
+                       echo '</ul>';
+                   }
+                   echo '<br><br><a href="index.php?action=config" class="btn btn-primary">Back to Configuration</a>';
+                   echo '</div>';
+                   exit;
+               }
+           }
+       }
+   }
+   
    // Check if Virtual Bingo is being disabled and handle confirmation
    $virtualbingo_changing = ($virtualbingo != $virtualbingoform);
    $virtualbingo_being_disabled = ($virtualbingo == 'on' && $virtualbingoform == '');
@@ -598,6 +689,39 @@
 	   	      <label class="form-label">Maximum Cards Per Request:</label>
 	   	      <input type="number" name="virtualbingo_max_requestform" value="<?= isset($virtualbingo_max_request) ? $virtualbingo_max_request : '12'; ?>" min="1" max="100" class="form-input" style="max-width: 150px;">
 	   	      <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.5rem;">Limits abuse by restricting cards per request (1-100, default: 12)</p>
+	   	    </div>
+	   	  </div>
+	   	</div>
+		
+	   	<div class="card mb-3" style="border: 2px solid #dc2626;">
+	   	  <div class="card-header" style="background-color: #fee; border-bottom: 2px solid #dc2626;">
+	   	    <h3 class="card-title" style="color: #dc2626;">
+	   	      🗑️ Dangerous Operations
+	   	    </h3>
+	   	    <p style="font-size: 0.875rem; color: #991b1b; margin-top: 0.5rem;"><strong>⚠️ Warning:</strong> These actions cannot be undone!</p>
+	   	  </div>
+	   	  <div class="card-body">
+	   	    <div style="background-color: #fff3cd; border: 1px solid #ffc107; padding: 1rem; border-radius: 0.5rem; margin-bottom: 1rem;">
+	   	      <h4 style="color: #000; margin-top: 0; font-size: 1.1rem;">Delete All Generated Cards</h4>
+	   	      <p style="color: #000; margin: 0.5rem 0;">This will permanently delete:</p>
+	   	      <ul style="color: #000; margin-left: 1.5rem; margin-bottom: 1rem;">
+	   	        <li>All card sets (set.*.dat files)</li>
+	   	        <li>All game data (draws, winners, last draw, etc.)</li>
+	   	      </ul>
+	   	      <?php
+	   	        $available_sets = function_exists('get_available_sets') ? get_available_sets() : array();
+	   	        if (count($available_sets) > 0) {
+	   	            echo '<p style="color: #000; font-weight: bold; margin-bottom: 1rem;">' . count($available_sets) . ' card set(s) currently exist.</p>';
+	   	        } else {
+	   	            echo '<p style="color: #666; font-style: italic; margin-bottom: 1rem;">No card sets found.</p>';
+	   	        }
+	   	      ?>
+	   	      <div class="checkbox-group">
+	   	        <label class="checkbox-option" style="color: #000;">
+	   	          <input type="checkbox" name="delete_all_cards" <?= (count($available_sets) == 0) ? 'disabled' : ''; ?>>
+	   	          <span>I understand this action cannot be undone - Delete All Cards</span>
+	   	        </label>
+	   	      </div>
 	   	    </div>
 	   	  </div>
 	   	</div>

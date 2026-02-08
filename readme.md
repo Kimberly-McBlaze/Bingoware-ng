@@ -191,6 +191,30 @@ Once enabled, a **Virtual Bingo** menu item appears in the main menu.
 
 ## 🗂️ Changelog
 
+- ### [2.7.1] - 2026-02-08
+- **Bug Fixes:**
+  - Fixed custom winning pattern descriptions being deleted when switching patterns
+    - Root cause: api/patterns.php was using empty string default for missing name/description fields instead of null, causing update_pattern() to overwrite descriptions with empty values when only the enabled state was being changed
+    - Solution: Changed api/patterns.php to use isset() checks and return null when name/description fields are not provided in POST request, allowing update_pattern() to skip updating those fields and preserve existing values
+  - Fixed custom themes not applying to flashboard
+    - Root cause: flashboard.php didn't include theme loading script and flashboard.css used hardcoded gradient colors instead of CSS variables
+    - Solution: Added theme loading script to flashboard.php (fetches active theme via API and applies CSS variables), updated flashboard.css to use CSS variables (--primary, --secondary) with fallback values
+  - Improved dark mode compatibility with custom themes
+    - Added per-mode theme assignment capability (light/dark)
+    - Added 'mode' field to theme data structure with validation
+    - Added mode selector dropdown in Theme Manager UI
+    - Theme cards now display mode badges (LIGHT/DARK) for easy identification
+    - Updated create_theme() and update_theme() API functions to handle mode parameter
+- **New Features:**
+  - Added "Delete All Generated Cards" functionality
+    - New "Dangerous Operations" section in Configure page with warning styling
+    - Two-step confirmation process: checkbox must be checked, then confirmation dialog appears before deletion
+    - Safely removes all card sets (set.*.dat files) and associated game data (draws, winners, lastdraw files)
+    - Displays count of existing card sets before deletion
+    - Provides detailed success/error feedback with list of any failures
+    - Disabled when no card sets exist
+    - Follows same confirmation pattern as Virtual Bingo disable feature
+
 - ### [2.7.0] - 2026-01-16
 - **Bug Fixes:**
   - Fixed flashboard winning pattern display when switching patterns

@@ -1043,4 +1043,56 @@ function get_set_card_count($targetSetid) {
     return $count;
 }
 
+/** delete_all_sets()
+* This function deletes all card sets and associated game data
+* @return array Array with 'success' boolean and 'message' string, and optionally 'deleted_count' and 'errors' array
+*/
+function delete_all_sets() {
+    $deleted_count = 0;
+    $errors = array();
+    
+    // Delete all set.*.dat files
+    $set_files = glob(__DIR__ . "/../sets/set.*.dat");
+    foreach ($set_files as $file) {
+        if (@unlink($file)) {
+            $deleted_count++;
+        } else {
+            $errors[] = "Failed to delete: " . basename($file);
+        }
+    }
+    
+    // Delete all game data files (draws, winners, etc.)
+    $data_patterns = array(
+        'draws.*.dat',
+        'old_winners.*.dat', 
+        'new_winners.*.dat',
+        'lastdraw.*.dat'
+    );
+    
+    foreach ($data_patterns as $pattern) {
+        $data_files = glob(__DIR__ . "/../data/" . $pattern);
+        foreach ($data_files as $file) {
+            if (!@unlink($file)) {
+                $errors[] = "Failed to delete: " . basename($file);
+            }
+        }
+    }
+    
+    if ($deleted_count > 0) {
+        return array(
+            'success' => true,
+            'message' => "Successfully deleted $deleted_count card set(s) and associated game data.",
+            'deleted_count' => $deleted_count,
+            'errors' => $errors
+        );
+    } else {
+        return array(
+            'success' => false,
+            'message' => "No card sets found to delete.",
+            'deleted_count' => 0,
+            'errors' => $errors
+        );
+    }
+}
+
 ?>

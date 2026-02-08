@@ -43,6 +43,7 @@
             <strong>${escapeHtml(theme.name)}</strong>
             ${theme.is_default ? '<span class="badge badge-default" style="margin-left: 0.5rem;">DEFAULT</span>' : ''}
             ${theme.is_active ? '<span class="badge badge-success" style="margin-left: 0.5rem;">ACTIVE</span>' : ''}
+            ${theme.mode ? `<span class="badge ${theme.mode === 'dark' ? 'badge-dark' : 'badge-light'}" style="margin-left: 0.5rem;">${theme.mode.toUpperCase()}</span>` : ''}
           </div>
         </div>
         ${theme.description ? `<p style="color: var(--text-secondary); font-size: 0.875rem; margin: 0.5rem 0;">${escapeHtml(theme.description)}</p>` : ''}
@@ -162,6 +163,7 @@
         document.getElementById('themeId').value = theme.id;
         document.getElementById('themeName').value = theme.name;
         document.getElementById('themeDescription').value = theme.description || '';
+        document.getElementById('themeMode').value = theme.mode || 'light';
         
         setFormColors(theme.colors);
         setupColorPickers();

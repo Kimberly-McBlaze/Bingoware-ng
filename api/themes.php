@@ -80,6 +80,7 @@ function get_default_themes() {
             'description' => 'Clean and bright modern theme',
             'is_default' => true,
             'is_active' => true,
+            'mode' => 'light',
             'colors' => [
                 'primary' => '#667eea',
                 'secondary' => '#764ba2',
@@ -160,7 +161,7 @@ function activate_theme($theme_id) {
 /**
  * Create a new theme
  */
-function create_theme($name, $description, $colors) {
+function create_theme($name, $description, $colors, $mode = 'light') {
     $themes = load_themes();
     
     // Validate unique name
@@ -176,6 +177,11 @@ function create_theme($name, $description, $colors) {
         return ['success' => false, 'error' => $validation['error']];
     }
     
+    // Validate mode
+    if (!in_array($mode, ['light', 'dark'])) {
+        $mode = 'light';
+    }
+    
     // Generate ID
     $new_id = 'theme_' . uniqid();
     
@@ -185,6 +191,7 @@ function create_theme($name, $description, $colors) {
         'description' => trim($description),
         'is_default' => false,
         'is_active' => false,
+        'mode' => $mode,
         'colors' => $colors
     ];
     
@@ -200,7 +207,7 @@ function create_theme($name, $description, $colors) {
 /**
  * Update an existing theme
  */
-function update_theme($theme_id, $name, $description, $colors) {
+function update_theme($theme_id, $name, $description, $colors, $mode = null) {
     $themes = load_themes();
     $found = false;
     
@@ -237,6 +244,11 @@ function update_theme($theme_id, $name, $description, $colors) {
             }
             if ($description !== null) {
                 $themes[$idx]['description'] = trim($description);
+            }
+            
+            // Update mode if provided and valid
+            if ($mode !== null && in_array($mode, ['light', 'dark'])) {
+                $themes[$idx]['mode'] = $mode;
             }
             
             break;
@@ -400,9 +412,14 @@ if ($method === 'GET' && isset($_GET['export'])) {
     exit;
 }
 
-// List all themes
-if ($method === 'GET' && !isset($_GET['id'])) {
-    echo json_encode(['success' => true, 'themes' => load_themes()]);
+// Get active theme
+if ($method === 'GET' && isset($_GET['active'])) {
+    $theme = get_active_theme();
+    if ($theme) {
+        echo json_encode(['success' => true, 'theme' => $theme]);
+    } else {
+        echo json_encode(['success' => false, 'error' => 'No active theme found']);
+    }
     exit;
 }
 
@@ -423,14 +440,9 @@ if ($method === 'GET' && isset($_GET['id'])) {
     exit;
 }
 
-// Get active theme
-if ($method === 'GET' && isset($_GET['active'])) {
-    $theme = get_active_theme();
-    if ($theme) {
-        echo json_encode(['success' => true, 'theme' => $theme]);
-    } else {
-        echo json_encode(['success' => false, 'error' => 'No active theme found']);
-    }
+// List all themes
+if ($method === 'GET' && !isset($_GET['id'])) {
+    echo json_encode(['success' => true, 'themes' => load_themes()]);
     exit;
 }
 
@@ -478,13 +490,14 @@ if ($method === 'POST' && (!isset($_POST['id']) || empty($_POST['id']))) {
     $name = validate_string($_POST['name'] ?? '', 50);
     $description = validate_string($_POST['description'] ?? '', 200);
     $colors = validate_json($_POST['colors'] ?? '{}', []);
+    $mode = validate_string($_POST['mode'] ?? 'light', 10);
     
     if (empty($name)) {
         echo json_encode(['success' => false, 'error' => 'Theme name is required']);
         exit;
     }
     
-    $result = create_theme($name, $description, $colors);
+    $result = create_theme($name, $description, $colors, $mode);
     echo json_encode($result);
     exit;
 }
@@ -500,8 +513,9 @@ if ($method === 'POST' && isset($_POST['id']) && !empty($_POST['id'])) {
     $name = validate_string($_POST['name'] ?? '', 50);
     $description = validate_string($_POST['description'] ?? '', 200);
     $colors = isset($_POST['colors']) ? validate_json($_POST['colors'], null) : null;
+    $mode = isset($_POST['mode']) ? validate_string($_POST['mode'], 10) : null;
     
-    $result = update_theme($id, $name, $description, $colors);
+    $result = update_theme($id, $name, $description, $colors, $mode);
     echo json_encode($result);
     exit;
 }

@@ -203,6 +203,15 @@ if (file_exists($themes_file)) {
       </div>
       
       <div class="form-group">
+        <label class="form-label">Mode *</label>
+        <select id="themeMode" name="mode" class="form-input" required>
+          <option value="light">Light Mode</option>
+          <option value="dark">Dark Mode</option>
+        </select>
+        <small style="color: var(--text-secondary); font-size: 0.875rem;">Select whether this theme is designed for light or dark mode</small>
+      </div>
+      
+      <div class="form-group">
         <label class="form-label">Colors</label>
         <div style="display: grid; gap: 1rem;">
           <div class="color-input-group">

@@ -1,12 +1,12 @@
 {
-  "version": "2.7.0",
-  "releaseDate": "2026-01-16",
-  "releaseUrl": "https://github.com/Kimberly-McBlaze/Bingoware-ng/releases/tag/v2.7.0",
+  "version": "2.7.1",
+  "releaseDate": "2026-02-08",
+  "releaseUrl": "https://github.com/Kimberly-McBlaze/Bingoware-ng/releases/tag/v2.7.1",
   "changes": [
-    "Fixed flashboard winning pattern display when switching patterns",
-    "Added Quick Winning Pattern Switch dropdown on Play Bingo page",
-    "Added comprehensive theme system with custom theme support",
-    "Theme system supports import/export of custom themes",
-    "Included 4 default themes: Light Modern, Dark Modern, Classic Blue, Purple Passion"
+    "Fixed custom winning pattern descriptions being deleted when switching patterns",
+    "Fixed custom themes not applying to flashboard - now uses CSS variables",
+    "Added per-mode theme assignment (light/dark) with mode selector in Theme Manager",
+    "Added 'Delete All Generated Cards' feature with two-step confirmation in Configure page",
+    "Improved dark mode compatibility with custom themes"
   ]
 }

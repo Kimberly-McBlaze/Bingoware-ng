@@ -109,8 +109,14 @@
            // Re-include all form values as hidden fields
            echo '<input type="hidden" name="setidform" value="'.htmlspecialchars($setidform).'">';
            echo '<input type="hidden" name="pagetitleform" value="'.htmlspecialchars($pagetitleform).'">';
-           echo '<input type="hidden" name="numbercardsinplayform" value="'.htmlspecialchars($numbercardsinplayform).'">';
-           echo '<input type="hidden" name="maxNumberform" value="'.htmlspecialchars($maxNumberform).'">';
+           echo '<input type="hidden" name="viewheaderform" value="'.htmlspecialchars($viewheaderform).'">';
+           echo '<input type="hidden" name="viewfooterform" value="'.htmlspecialchars($viewfooterform).'">';
+           echo '<input type="hidden" name="printheaderform" value="'.htmlspecialchars($printheaderform).'">';
+           echo '<input type="hidden" name="printfooterform" value="'.htmlspecialchars($printfooterform).'">';
+           echo '<input type="hidden" name="drawmodeform" value="'.htmlspecialchars($drawmodeform).'">';
+           echo '<input type="hidden" name="namefileform" value="'.htmlspecialchars($namefileform).'">';
+           echo '<input type="hidden" name="printrulesform" value="'.htmlspecialchars($printrulesform).'">';
+           echo '<input type="hidden" name="fourperpageform" value="'.htmlspecialchars($fourperpageform).'">';
            echo '<input type="hidden" name="headerfontcolorform" value="'.htmlspecialchars($headerfontcolorform).'">';
            echo '<input type="hidden" name="headerbgcolorform" value="'.htmlspecialchars($headerbgcolorform).'">';
            echo '<input type="hidden" name="mainfontcolorform" value="'.htmlspecialchars($mainfontcolorform).'">';

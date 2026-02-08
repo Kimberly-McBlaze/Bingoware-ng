@@ -212,6 +212,27 @@ if (file_exists($themes_file)) {
       </div>
       
       <div class="form-group">
+        <label class="form-label" style="display: flex; align-items: center; gap: 0.5rem;">
+          <input type="checkbox" id="themeAutoTransform" name="auto_transform" checked style="width: auto; margin: 0;">
+          <span>Auto-transform colors when switching modes</span>
+        </label>
+        <small style="color: var(--text-secondary); font-size: 0.875rem; margin-left: 1.5rem;">
+          When enabled, colors will automatically darken/brighten when switching between light and dark modes
+        </small>
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">Color Transformation Intensity</label>
+        <div style="display: flex; align-items: center; gap: 1rem;">
+          <input type="range" id="themeTransformIntensity" name="transform_intensity" min="0" max="100" value="30" class="form-input" style="flex: 1;">
+          <span id="intensityValue" style="min-width: 50px; font-weight: 600;">30%</span>
+        </div>
+        <small style="color: var(--text-secondary); font-size: 0.875rem;">
+          Controls how much colors change when switching modes (0 = no change, 100 = maximum change)
+        </small>
+      </div>
+      
+      <div class="form-group">
         <label class="form-label">Colors</label>
         <div style="display: grid; gap: 1rem;">
           <div class="color-input-group">
@@ -284,6 +305,20 @@ if (file_exists($themes_file)) {
     </form>
   </div>
 </div>
+
+<script>
+// Update intensity value display
+document.addEventListener('DOMContentLoaded', function() {
+  const slider = document.getElementById('themeTransformIntensity');
+  const valueDisplay = document.getElementById('intensityValue');
+  
+  if (slider && valueDisplay) {
+    slider.addEventListener('input', function() {
+      valueDisplay.textContent = this.value + '%';
+    });
+  }
+});
+</script>
 
 <script src="include/themes-ui.js"></script>
 

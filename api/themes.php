@@ -81,6 +81,8 @@ function get_default_themes() {
             'is_default' => true,
             'is_active' => true,
             'mode' => 'light',
+            'auto_transform' => true,
+            'transform_intensity' => 30,
             'colors' => [
                 'primary' => '#667eea',
                 'secondary' => '#764ba2',
@@ -98,6 +100,7 @@ function get_default_themes() {
         ]
     ];
 }
+
 
 /**
  * Get a single theme by ID
@@ -161,7 +164,7 @@ function activate_theme($theme_id) {
 /**
  * Create a new theme
  */
-function create_theme($name, $description, $colors, $mode = 'light') {
+function create_theme($name, $description, $colors, $mode = 'light', $auto_transform = true, $transform_intensity = 30) {
     $themes = load_themes();
     
     // Validate unique name
@@ -182,6 +185,9 @@ function create_theme($name, $description, $colors, $mode = 'light') {
         $mode = 'light';
     }
     
+    // Validate transform intensity
+    $transform_intensity = max(0, min(100, intval($transform_intensity)));
+    
     // Generate ID
     $new_id = 'theme_' . uniqid();
     
@@ -192,6 +198,8 @@ function create_theme($name, $description, $colors, $mode = 'light') {
         'is_default' => false,
         'is_active' => false,
         'mode' => $mode,
+        'auto_transform' => (bool)$auto_transform,
+        'transform_intensity' => $transform_intensity,
         'colors' => $colors
     ];
     
@@ -204,10 +212,11 @@ function create_theme($name, $description, $colors, $mode = 'light') {
     }
 }
 
+
 /**
  * Update an existing theme
  */
-function update_theme($theme_id, $name, $description, $colors, $mode = null) {
+function update_theme($theme_id, $name, $description, $colors, $mode = null, $auto_transform = null, $transform_intensity = null) {
     $themes = load_themes();
     $found = false;
     
@@ -251,6 +260,16 @@ function update_theme($theme_id, $name, $description, $colors, $mode = null) {
                 $themes[$idx]['mode'] = $mode;
             }
             
+            // Update auto_transform if provided
+            if ($auto_transform !== null) {
+                $themes[$idx]['auto_transform'] = (bool)$auto_transform;
+            }
+            
+            // Update transform_intensity if provided
+            if ($transform_intensity !== null) {
+                $themes[$idx]['transform_intensity'] = max(0, min(100, intval($transform_intensity)));
+            }
+            
             break;
         }
     }
@@ -265,6 +284,7 @@ function update_theme($theme_id, $name, $description, $colors, $mode = null) {
         return ['success' => false, 'error' => 'Failed to save theme'];
     }
 }
+
 
 /**
  * Delete a theme
@@ -491,13 +511,15 @@ if ($method === 'POST' && (!isset($_POST['id']) || empty($_POST['id']))) {
     $description = validate_string($_POST['description'] ?? '', 200);
     $colors = validate_json($_POST['colors'] ?? '{}', []);
     $mode = validate_string($_POST['mode'] ?? 'light', 10);
+    $auto_transform = isset($_POST['auto_transform']) ? filter_var($_POST['auto_transform'], FILTER_VALIDATE_BOOLEAN) : true;
+    $transform_intensity = isset($_POST['transform_intensity']) ? intval($_POST['transform_intensity']) : 30;
     
     if (empty($name)) {
         echo json_encode(['success' => false, 'error' => 'Theme name is required']);
         exit;
     }
     
-    $result = create_theme($name, $description, $colors, $mode);
+    $result = create_theme($name, $description, $colors, $mode, $auto_transform, $transform_intensity);
     echo json_encode($result);
     exit;
 }
@@ -514,11 +536,14 @@ if ($method === 'POST' && isset($_POST['id']) && !empty($_POST['id'])) {
     $description = validate_string($_POST['description'] ?? '', 200);
     $colors = isset($_POST['colors']) ? validate_json($_POST['colors'], null) : null;
     $mode = isset($_POST['mode']) ? validate_string($_POST['mode'], 10) : null;
+    $auto_transform = isset($_POST['auto_transform']) ? filter_var($_POST['auto_transform'], FILTER_VALIDATE_BOOLEAN) : null;
+    $transform_intensity = isset($_POST['transform_intensity']) ? intval($_POST['transform_intensity']) : null;
     
-    $result = update_theme($id, $name, $description, $colors, $mode);
+    $result = update_theme($id, $name, $description, $colors, $mode, $auto_transform, $transform_intensity);
     echo json_encode($result);
     exit;
 }
+
 
 // Invalid request
 echo json_encode(['success' => false, 'error' => 'Invalid request']);

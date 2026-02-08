@@ -412,9 +412,14 @@ if ($method === 'GET' && isset($_GET['export'])) {
     exit;
 }
 
-// List all themes
-if ($method === 'GET' && !isset($_GET['id'])) {
-    echo json_encode(['success' => true, 'themes' => load_themes()]);
+// Get active theme
+if ($method === 'GET' && isset($_GET['active'])) {
+    $theme = get_active_theme();
+    if ($theme) {
+        echo json_encode(['success' => true, 'theme' => $theme]);
+    } else {
+        echo json_encode(['success' => false, 'error' => 'No active theme found']);
+    }
     exit;
 }
 
@@ -435,14 +440,9 @@ if ($method === 'GET' && isset($_GET['id'])) {
     exit;
 }
 
-// Get active theme
-if ($method === 'GET' && isset($_GET['active'])) {
-    $theme = get_active_theme();
-    if ($theme) {
-        echo json_encode(['success' => true, 'theme' => $theme]);
-    } else {
-        echo json_encode(['success' => false, 'error' => 'No active theme found']);
-    }
+// List all themes
+if ($method === 'GET' && !isset($_GET['id'])) {
+    echo json_encode(['success' => true, 'themes' => load_themes()]);
     exit;
 }
 

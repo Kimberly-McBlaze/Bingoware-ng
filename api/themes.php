@@ -74,10 +74,11 @@ function save_themes($themes) {
  */
 function get_default_themes() {
     return [
+        // 1. Default Theme - Classic Bingoware look
         [
-            'id' => 'theme_default_light',
-            'name' => 'Light Modern',
-            'description' => 'Clean and bright modern theme',
+            'id' => 'theme_default',
+            'name' => 'Default',
+            'description' => 'Classic Bingoware theme with purple gradient',
             'is_default' => true,
             'is_active' => true,
             'mode' => 'light',
@@ -96,6 +97,131 @@ function get_default_themes() {
                 'text-secondary' => '#6b7280',
                 'text-muted' => '#9ca3af',
                 'border-color' => '#d1d5db'
+            ]
+        ],
+        // 2. Ocean Blue Theme
+        [
+            'id' => 'theme_ocean',
+            'name' => 'Ocean Blue',
+            'description' => 'Calm and professional blue theme',
+            'is_default' => true,
+            'is_active' => false,
+            'mode' => 'light',
+            'auto_transform' => true,
+            'transform_intensity' => 30,
+            'colors' => [
+                'primary' => '#0ea5e9',
+                'secondary' => '#0284c7',
+                'success' => '#10b981',
+                'warning' => '#f59e0b',
+                'error' => '#ef4444',
+                'bg-primary' => '#ffffff',
+                'bg-secondary' => '#f0f9ff',
+                'bg-tertiary' => '#e0f2fe',
+                'text-primary' => '#0c4a6e',
+                'text-secondary' => '#075985',
+                'text-muted' => '#64748b',
+                'border-color' => '#bae6fd'
+            ]
+        ],
+        // 3. Forest Green Theme
+        [
+            'id' => 'theme_forest',
+            'name' => 'Forest Green',
+            'description' => 'Natural green theme with earthy tones',
+            'is_default' => true,
+            'is_active' => false,
+            'mode' => 'light',
+            'auto_transform' => true,
+            'transform_intensity' => 30,
+            'colors' => [
+                'primary' => '#059669',
+                'secondary' => '#047857',
+                'success' => '#10b981',
+                'warning' => '#f59e0b',
+                'error' => '#dc2626',
+                'bg-primary' => '#ffffff',
+                'bg-secondary' => '#f0fdf4',
+                'bg-tertiary' => '#dcfce7',
+                'text-primary' => '#064e3b',
+                'text-secondary' => '#065f46',
+                'text-muted' => '#6b7280',
+                'border-color' => '#bbf7d0'
+            ]
+        ],
+        // 4. Sunset Orange Theme
+        [
+            'id' => 'theme_sunset',
+            'name' => 'Sunset Orange',
+            'description' => 'Warm and energetic orange theme',
+            'is_default' => true,
+            'is_active' => false,
+            'mode' => 'light',
+            'auto_transform' => true,
+            'transform_intensity' => 30,
+            'colors' => [
+                'primary' => '#f97316',
+                'secondary' => '#ea580c',
+                'success' => '#10b981',
+                'warning' => '#facc15',
+                'error' => '#dc2626',
+                'bg-primary' => '#ffffff',
+                'bg-secondary' => '#fff7ed',
+                'bg-tertiary' => '#ffedd5',
+                'text-primary' => '#7c2d12',
+                'text-secondary' => '#9a3412',
+                'text-muted' => '#78716c',
+                'border-color' => '#fed7aa'
+            ]
+        ],
+        // 5. Midnight Dark Theme
+        [
+            'id' => 'theme_midnight',
+            'name' => 'Midnight',
+            'description' => 'Rich dark theme with good contrast',
+            'is_default' => true,
+            'is_active' => false,
+            'mode' => 'dark',
+            'auto_transform' => true,
+            'transform_intensity' => 25,
+            'colors' => [
+                'primary' => '#6366f1',
+                'secondary' => '#8b5cf6',
+                'success' => '#10b981',
+                'warning' => '#f59e0b',
+                'error' => '#ef4444',
+                'bg-primary' => '#0f172a',
+                'bg-secondary' => '#1e293b',
+                'bg-tertiary' => '#334155',
+                'text-primary' => '#f1f5f9',
+                'text-secondary' => '#cbd5e1',
+                'text-muted' => '#94a3b8',
+                'border-color' => '#475569'
+            ]
+        ],
+        // 6. Cherry Blossom Theme
+        [
+            'id' => 'theme_cherry',
+            'name' => 'Cherry Blossom',
+            'description' => 'Soft pink theme with elegant contrast',
+            'is_default' => true,
+            'is_active' => false,
+            'mode' => 'light',
+            'auto_transform' => true,
+            'transform_intensity' => 30,
+            'colors' => [
+                'primary' => '#ec4899',
+                'secondary' => '#db2777',
+                'success' => '#10b981',
+                'warning' => '#f59e0b',
+                'error' => '#dc2626',
+                'bg-primary' => '#ffffff',
+                'bg-secondary' => '#fdf2f8',
+                'bg-tertiary' => '#fce7f3',
+                'text-primary' => '#831843',
+                'text-secondary' => '#9f1239',
+                'text-muted' => '#6b7280',
+                'border-color' => '#fbcfe8'
             ]
         ]
     ];

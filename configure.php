@@ -128,6 +128,7 @@
            echo '<input type="hidden" name="virtualbingo_max_requestform" value="'.htmlspecialchars($virtualbingo_max_requestform).'">';
            echo '<input type="hidden" name="delete_all_cards" value="on">';
            echo '<input type="hidden" name="confirm_delete_all_cards" value="1">';
+           echo '<input type="hidden" name="submit" value="Delete">';
            
            echo '<div style="display: flex; gap: 1rem; justify-content: center;">';
            echo '<button type="submit" class="btn btn-error" style="background-color: #dc2626;">🗑️ Yes, Delete All Cards</button>';

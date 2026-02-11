@@ -18,6 +18,10 @@ This project updates the original codebase for **PHP 8.2+** while preserving its
 - 🌐 **NEW:** Virtual Bingo Mode for remote play
 - 🔗 Generate shareable card links for players
 - 📱 Interactive cards with click-to-mark functionality
+- 🎨 **NEW:** Advanced theme system with automatic color transformation
+- 🌙 Dark/Light mode with automatic color adaptation
+- 🎭 Create custom themes with full color customization
+- ✨ Auto-transform colors when switching modes
 - 🌐 Works in all modern browsers
 
 ---

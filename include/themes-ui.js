@@ -92,8 +92,13 @@
       const data = await response.json();
       
       if (data.success) {
-        // Apply theme immediately
-        applyTheme(data.theme);
+        // Reload theme through ThemeManager for proper color transformation
+        if (window.ThemeManager) {
+          await window.ThemeManager.setTheme(themeId);
+        } else {
+          // Fallback to direct application
+          applyTheme(data.theme);
+        }
         alert('Theme activated successfully!');
         loadThemes();
       } else {
@@ -164,6 +169,9 @@
         document.getElementById('themeName').value = theme.name;
         document.getElementById('themeDescription').value = theme.description || '';
         document.getElementById('themeMode').value = theme.mode || 'light';
+        document.getElementById('themeAutoTransform').checked = theme.auto_transform !== false;
+        document.getElementById('themeTransformIntensity').value = theme.transform_intensity || 30;
+        document.getElementById('intensityValue').textContent = (theme.transform_intensity || 30) + '%';
         
         setFormColors(theme.colors);
         setupColorPickers();
@@ -252,6 +260,9 @@
     
     formData.set('colors', JSON.stringify(colors));
     
+    // Handle checkbox explicitly since FormData doesn't include unchecked checkboxes
+    formData.set('auto_transform', document.getElementById('themeAutoTransform').checked ? '1' : '0');
+    
     try {
       const response = await fetch('api/themes.php', {
         method: 'POST',
@@ -264,12 +275,20 @@
         alert('Theme saved successfully!');
         closeModal();
         loadThemes();
+        
+        // If this is the active theme, reload it to apply changes
+        if (window.ThemeManager && window.ThemeManager.activeTheme && 
+            window.ThemeManager.activeTheme.id === document.getElementById('themeId').value) {
+          window.ThemeManager.loadAndApplyTheme();
+        }
       } else {
         alert('Error: ' + data.error);
       }
     } catch (error) {
       alert('Error: ' + error.message);
     }
+  };
+
   };
 
   /**

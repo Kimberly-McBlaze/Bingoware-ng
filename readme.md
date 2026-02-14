@@ -195,6 +195,29 @@ Once enabled, a **Virtual Bingo** menu item appears in the main menu.
 
 ## 🗂️ Changelog
 
+- ### [2.7.2] - 2026-02-11
+- **Bug Fixes:**
+  - Fixed "Delete All Generated Cards" functionality that was not deleting any cards
+    - Root cause: Confirmation form didn't include the 'submit' field, causing the deletion code block to be skipped
+    - Solution: Added hidden 'submit' field to confirmation form so deletion executes correctly after confirmation
+  - Fixed dark mode toggle for better contrast and readability
+    - Improved dark mode CSS variables in modern-styles.css for better text visibility
+    - Enhanced contrast ratios to meet accessibility standards
+  - Fixed "Create Custom Theme" button that was doing nothing
+    - Root cause: Syntax error (extra semicolon) on line 292 of themes-ui.js prevented JavaScript from executing
+    - Solution: Removed the extra semicolon, allowing openCreateModal() and other functions to be properly defined
+- **New Features:**
+  - Restored "Default" theme as the primary built-in theme
+  - Added 5 additional built-in themes for a total of 6:
+    - Default: Classic Bingoware with purple gradient
+    - Ocean Blue: Calm and professional blue theme
+    - Forest Green: Natural green with earthy tones
+    - Sunset Orange: Warm and energetic orange theme
+    - Midnight: Rich dark theme with excellent contrast
+    - Cherry Blossom: Soft pink with elegant styling
+  - All themes support auto-transformation between light and dark modes
+  - All themes meet accessibility contrast requirements
+
 - ### [2.7.1] - 2026-02-08
 - **Bug Fixes:**
   - Fixed custom winning pattern descriptions being deleted when switching patterns

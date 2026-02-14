@@ -25,16 +25,16 @@ const ThemeManager = {
     const lightTheme = localStorage.getItem(this.LIGHT_THEME_KEY);
     const darkTheme = localStorage.getItem(this.DARK_THEME_KEY);
     
-    // Set default dark theme to Midnight if not set
-    if (!darkTheme) {
-      localStorage.setItem(this.DARK_THEME_KEY, 'theme_midnight');
-    }
-    
     // Migrate old theme ID to both modes if neither is set
     if (oldThemeId && !lightTheme && !darkTheme) {
       localStorage.setItem(this.LIGHT_THEME_KEY, oldThemeId);
       localStorage.setItem(this.DARK_THEME_KEY, oldThemeId);
       localStorage.removeItem(this.THEME_ID_KEY);
+    }
+    
+    // Set default dark theme to Midnight if not set
+    if (!darkTheme) {
+      localStorage.setItem(this.DARK_THEME_KEY, 'theme_midnight');
     }
   },
   

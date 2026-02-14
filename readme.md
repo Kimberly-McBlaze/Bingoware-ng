@@ -190,7 +190,7 @@ Once enabled, a **Virtual Bingo** menu item appears in the main menu.
 
 ---
 ## 🗂️ Known Issues
-- None at this time!
+- Themes are broken. Dark mode not properly going dark and themes seem to reset to default when switching between dark and light modes.
 
 
 ## 🗂️ Changelog
@@ -674,6 +674,7 @@ have multiple sets of Bingo cards that do not overwrite one another
 ## 📄 License
 
 Open-source. See license file or original project for details.
+
 
 
 

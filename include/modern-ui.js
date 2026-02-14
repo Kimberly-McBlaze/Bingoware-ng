@@ -142,6 +142,9 @@ const ThemeManager = {
     const currentMode = document.documentElement.getAttribute('data-theme');
     const newMode = currentMode === 'dark' ? 'light' : 'dark';
     
+    // Set the new mode before loading the theme
+    localStorage.setItem(this.THEME_MODE_KEY, newMode);
+    
     // Load the default theme for the new mode
     this.loadAndApplyTheme();
   },

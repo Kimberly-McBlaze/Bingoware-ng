@@ -3,19 +3,43 @@
  * Handles theme switching, animations, and enhanced UX
  */
 
-// Enhanced Theme Management with Color Transformation
+// Enhanced Theme Management with Per-Mode Default Themes
 const ThemeManager = {
   THEME_MODE_KEY: 'bingoware-theme-mode', // 'light' or 'dark'
-  THEME_ID_KEY: 'bingoware-theme-id', // Active theme ID
+  THEME_ID_KEY: 'bingoware-theme-id', // Active theme ID (deprecated, kept for migration)
+  LIGHT_THEME_KEY: 'bingoware-light-theme', // Default theme for light mode
+  DARK_THEME_KEY: 'bingoware-dark-theme', // Default theme for dark mode
   activeTheme: null, // Stores the current theme object
   
   init() {
+    this.migrateOldSettings();
     this.loadAndApplyTheme();
     this.attachToggleListener();
   },
   
   /**
-   * Load active theme from API and apply with mode transformation
+   * Migrate old single-theme setting to per-mode defaults
+   */
+  migrateOldSettings() {
+    const oldThemeId = localStorage.getItem(this.THEME_ID_KEY);
+    const lightTheme = localStorage.getItem(this.LIGHT_THEME_KEY);
+    const darkTheme = localStorage.getItem(this.DARK_THEME_KEY);
+    
+    // Set default dark theme to Midnight if not set
+    if (!darkTheme) {
+      localStorage.setItem(this.DARK_THEME_KEY, 'theme_midnight');
+    }
+    
+    // Migrate old theme ID to both modes if neither is set
+    if (oldThemeId && !lightTheme && !darkTheme) {
+      localStorage.setItem(this.LIGHT_THEME_KEY, oldThemeId);
+      localStorage.setItem(this.DARK_THEME_KEY, oldThemeId);
+      localStorage.removeItem(this.THEME_ID_KEY);
+    }
+  },
+  
+  /**
+   * Load theme based on current mode and per-mode defaults
    */
   async loadAndApplyTheme() {
     try {
@@ -24,17 +48,24 @@ const ThemeManager = {
       const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
       const currentMode = savedMode || (prefersDark ? 'dark' : 'light');
       
-      // Load active theme from API
-      const response = await fetch('api/themes.php?active=1');
-      const data = await response.json();
+      // Get default theme for current mode
+      const themeKey = currentMode === 'dark' ? this.DARK_THEME_KEY : this.LIGHT_THEME_KEY;
+      const defaultThemeId = localStorage.getItem(themeKey);
       
-      if (data.success && data.theme) {
-        this.activeTheme = data.theme;
-        this.applyThemeWithMode(data.theme, currentMode);
-      } else {
-        // Fallback to mode-only if no theme found
-        this.setModeOnly(currentMode);
+      if (defaultThemeId) {
+        // Load the per-mode default theme
+        const response = await fetch(`api/themes.php?id=${encodeURIComponent(defaultThemeId)}`);
+        const data = await response.json();
+        
+        if (data.success && data.theme) {
+          this.activeTheme = data.theme;
+          this.applyTheme(data.theme, currentMode);
+          return;
+        }
       }
+      
+      // Fallback to mode-only if no theme found
+      this.setModeOnly(currentMode);
     } catch (error) {
       console.error('Error loading theme:', error);
       // Fallback to mode-only
@@ -44,41 +75,25 @@ const ThemeManager = {
   },
   
   /**
-   * Apply theme with automatic color transformation based on mode
+   * Apply theme without color transformation
    * @param {object} theme - Theme object with colors
-   * @param {string} targetMode - Target mode ('light' or 'dark')
+   * @param {string} mode - Target mode ('light' or 'dark')
    */
-  applyThemeWithMode(theme, targetMode) {
+  applyTheme(theme, mode) {
     const root = document.documentElement;
     
     // Set data-theme attribute for CSS
-    root.setAttribute('data-theme', targetMode);
-    localStorage.setItem(this.THEME_MODE_KEY, targetMode);
+    root.setAttribute('data-theme', mode);
+    localStorage.setItem(this.THEME_MODE_KEY, mode);
     
     // Update toggle switch
     const toggle = document.getElementById('theme-toggle');
     if (toggle) {
-      toggle.checked = targetMode === 'dark';
-    }
-    
-    // Determine theme's original mode
-    const themeMode = theme.mode || 'light';
-    
-    // Get colors (transformed if needed)
-    let colors = theme.colors;
-    
-    // Auto-transform colors if ColorTransform is available and modes differ
-    if (window.ColorTransform && themeMode !== targetMode) {
-      // Check if theme has auto_transform disabled
-      const autoTransform = theme.auto_transform !== false;
-      
-      if (autoTransform) {
-        const intensity = theme.transform_intensity || 30;
-        colors = ColorTransform.autoTransform(colors, targetMode, themeMode, intensity);
-      }
+      toggle.checked = mode === 'dark';
     }
     
     // Apply colors as CSS custom properties
+    const colors = theme.colors;
     for (const [key, value] of Object.entries(colors)) {
       root.style.setProperty('--color-' + key, value);
       // Also set without prefix for compatibility
@@ -87,9 +102,10 @@ const ThemeManager = {
       }
     }
     
-    // Store current theme ID
+    // Store current theme ID in per-mode default
     if (theme.id) {
-      localStorage.setItem(this.THEME_ID_KEY, theme.id);
+      const themeKey = mode === 'dark' ? this.DARK_THEME_KEY : this.LIGHT_THEME_KEY;
+      localStorage.setItem(themeKey, theme.id);
     }
   },
   
@@ -120,19 +136,14 @@ const ThemeManager = {
   },
   
   /**
-   * Toggle between light and dark mode
+   * Toggle between light and dark mode, switching to per-mode defaults
    */
   toggleMode() {
     const currentMode = document.documentElement.getAttribute('data-theme');
     const newMode = currentMode === 'dark' ? 'light' : 'dark';
     
-    if (this.activeTheme) {
-      // Re-apply theme with new mode
-      this.applyThemeWithMode(this.activeTheme, newMode);
-    } else {
-      // Just toggle mode
-      this.setModeOnly(newMode);
-    }
+    // Load the default theme for the new mode
+    this.loadAndApplyTheme();
   },
   
   /**
@@ -154,7 +165,7 @@ const ThemeManager = {
   },
   
   /**
-   * Set a specific theme by ID
+   * Set a specific theme by ID and save as default for current mode
    * @param {string} themeId - Theme ID
    */
   async setTheme(themeId) {
@@ -165,7 +176,7 @@ const ThemeManager = {
       if (data.success && data.theme) {
         const currentMode = this.getCurrentMode();
         this.activeTheme = data.theme;
-        this.applyThemeWithMode(data.theme, currentMode);
+        this.applyTheme(data.theme, currentMode);
         return true;
       }
       return false;

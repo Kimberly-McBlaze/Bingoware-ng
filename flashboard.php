@@ -19,26 +19,71 @@ include "config/settings.php";
 // Pass maxNumber to JavaScript
 window.BINGO_MAX_NUMBER = <?= $maxNumber; ?>;
 
-// Load and apply active theme
-(async function() {
-  try {
-    const response = await fetch('api/themes.php?active=1');
-    const data = await response.json();
-    
-    if (data.success && data.theme) {
-      const root = document.documentElement;
-      for (const [key, value] of Object.entries(data.theme.colors)) {
-        root.style.setProperty('--color-' + key, value);
-        // Also set without prefix for compatibility
-        if (!key.startsWith('color-')) {
-          root.style.setProperty('--' + key, value);
+// Theme Manager for Flashboard
+const FlashboardThemeManager = {
+  THEME_MODE_KEY: 'bingoware-theme-mode',
+  LIGHT_THEME_KEY: 'bingoware-light-theme',
+  DARK_THEME_KEY: 'bingoware-dark-theme',
+  
+  async init() {
+    await this.loadAndApplyTheme();
+    this.watchForModeChanges();
+  },
+  
+  async loadAndApplyTheme() {
+    try {
+      // Get saved mode preference
+      const savedMode = localStorage.getItem(this.THEME_MODE_KEY);
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      const currentMode = savedMode || (prefersDark ? 'dark' : 'light');
+      
+      // Set mode on document
+      document.documentElement.setAttribute('data-theme', currentMode);
+      
+      // Get default theme for current mode
+      const themeKey = currentMode === 'dark' ? this.DARK_THEME_KEY : this.LIGHT_THEME_KEY;
+      const defaultThemeId = localStorage.getItem(themeKey);
+      
+      if (defaultThemeId) {
+        // Load the per-mode default theme
+        const response = await fetch(`api/themes.php?id=${encodeURIComponent(defaultThemeId)}`);
+        const data = await response.json();
+        
+        if (data.success && data.theme) {
+          this.applyTheme(data.theme);
+          return;
         }
       }
+    } catch (error) {
+      console.error('Error loading theme:', error);
     }
-  } catch (error) {
-    console.error('Error loading theme:', error);
+  },
+  
+  applyTheme(theme) {
+    const root = document.documentElement;
+    for (const [key, value] of Object.entries(theme.colors)) {
+      root.style.setProperty('--color-' + key, value);
+      // Also set without prefix for compatibility
+      if (!key.startsWith('color-')) {
+        root.style.setProperty('--' + key, value);
+      }
+    }
+  },
+  
+  watchForModeChanges() {
+    // Poll for mode changes every 500ms
+    setInterval(() => {
+      const savedMode = localStorage.getItem(this.THEME_MODE_KEY);
+      const currentMode = document.documentElement.getAttribute('data-theme');
+      if (savedMode && savedMode !== currentMode) {
+        this.loadAndApplyTheme();
+      }
+    }, 500);
   }
-})();
+};
+
+// Initialize theme manager
+FlashboardThemeManager.init();
 </script>
 <script src="include/flashboard.js" defer></script>
 </head>

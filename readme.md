@@ -195,6 +195,30 @@ Once enabled, a **Virtual Bingo** menu item appears in the main menu.
 
 ## 🗂️ Changelog
 
+- ### [2.7.3] - 2026-02-14
+- **Bug Fixes:**
+  - Fixed "Midnight" theme not applying properly outside of the themes page
+    - Root cause: Theme system relied on "active theme" API which wasn't consistently loading themes across pages
+    - Solution: Implemented per-mode default theme system that loads the appropriate theme based on current mode
+  - Fixed header not updating colors when switching themes
+    - Root cause: Header CSS used hardcoded gradient colors instead of CSS variables
+    - Solution: Updated header styles to use `--color-primary` and `--color-secondary` CSS variables with fallbacks
+  - Fixed flashboard not following light/dark mode switching
+    - Root cause: Flashboard loaded theme once on page load but didn't watch for mode changes
+    - Solution: Added FlashboardThemeManager with mode change detection that reloads theme when mode switches
+- **Feature Changes:**
+  - Removed automatic color adjustment when switching between dark and light modes
+    - Removed ColorTransform auto-transform logic from ThemeManager
+    - Themes now display exactly as designed without transformation
+  - Added per-mode default theme selection
+    - Users can now set separate default themes for light mode and dark mode
+    - Dark mode switch toggles between user-selected light and dark theme defaults
+    - Settings persist in localStorage (`bingoware-light-theme` and `bingoware-dark-theme` keys)
+    - Midnight theme is set as default dark theme on fresh install
+    - Theme selection UI now shows "☀️ LIGHT DEFAULT" and "🌙 DARK DEFAULT" badges
+    - "Activate" button label changes to "Set as Light Default" or "Set as Dark Default" based on current mode
+  - Migrated old single-theme preference to per-mode defaults on first load
+
 - ### [2.7.2] - 2026-02-11
 - **Bug Fixes:**
   - Fixed "Delete All Generated Cards" functionality that was not deleting any cards

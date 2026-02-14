@@ -34,15 +34,25 @@
     const container = document.getElementById('themeList');
     container.innerHTML = '';
     
+    // Get current defaults
+    const lightDefault = localStorage.getItem('bingoware-light-theme');
+    const darkDefault = localStorage.getItem('bingoware-dark-theme');
+    const currentMode = document.documentElement.getAttribute('data-theme') || 'light';
+    
     themes.forEach(theme => {
+      const isLightDefault = theme.id === lightDefault;
+      const isDarkDefault = theme.id === darkDefault;
+      const isCurrentDefault = (currentMode === 'light' && isLightDefault) || (currentMode === 'dark' && isDarkDefault);
+      
       const card = document.createElement('div');
-      card.className = 'theme-card' + (theme.is_active ? ' active' : '');
+      card.className = 'theme-card' + (isCurrentDefault ? ' active' : '');
       card.innerHTML = `
         <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 0.5rem;">
           <div>
             <strong>${escapeHtml(theme.name)}</strong>
-            ${theme.is_default ? '<span class="badge badge-default" style="margin-left: 0.5rem;">DEFAULT</span>' : ''}
-            ${theme.is_active ? '<span class="badge badge-success" style="margin-left: 0.5rem;">ACTIVE</span>' : ''}
+            ${theme.is_default ? '<span class="badge badge-default" style="margin-left: 0.5rem;">BUILT-IN</span>' : ''}
+            ${isLightDefault ? '<span class="badge badge-light" style="margin-left: 0.5rem;">☀️ LIGHT DEFAULT</span>' : ''}
+            ${isDarkDefault ? '<span class="badge badge-dark" style="margin-left: 0.5rem;">🌙 DARK DEFAULT</span>' : ''}
             ${theme.mode ? `<span class="badge ${theme.mode === 'dark' ? 'badge-dark' : 'badge-light'}" style="margin-left: 0.5rem;">${theme.mode.toUpperCase()}</span>` : ''}
           </div>
         </div>
@@ -58,7 +68,7 @@
           <div class="color-swatch" style="background-color: ${theme.colors['border-color']};" title="Border"></div>
         </div>
         <div class="theme-actions">
-          ${!theme.is_active ? `<button class="btn btn-sm btn-primary" onclick="activateTheme('${theme.id}')">✓ Activate</button>` : ''}
+          ${!isCurrentDefault ? `<button class="btn btn-sm btn-primary" onclick="activateTheme('${theme.id}')">✓ Set as ${currentMode === 'dark' ? 'Dark' : 'Light'} Default</button>` : ''}
           ${!theme.is_default ? `<button class="btn btn-sm btn-secondary" onclick="openEditModal('${theme.id}')">✏️ Edit</button>` : ''}
           ${!theme.is_default ? `<button class="btn btn-sm btn-error" onclick="deleteTheme('${theme.id}', '${escapeHtml(theme.name)}')">🗑️ Delete</button>` : ''}
         </div>
@@ -77,22 +87,15 @@
   }
 
   /**
-   * Activate a theme
+   * Activate a theme (set as default for current mode)
    */
   window.activateTheme = async function(themeId) {
     try {
-      const formData = new FormData();
-      formData.set('activate', themeId);
-      
-      const response = await fetch('api/themes.php', {
-        method: 'POST',
-        body: formData
-      });
-      
+      const response = await fetch(`api/themes.php?id=${themeId}`);
       const data = await response.json();
       
-      if (data.success) {
-        // Reload theme through ThemeManager for proper color transformation
+      if (data.success && data.theme) {
+        // Use ThemeManager to set theme (which saves as default for current mode)
         if (window.ThemeManager) {
           await window.ThemeManager.setTheme(themeId);
         } else {
@@ -360,27 +363,10 @@
   };
 
   /**
-   * Load active theme on page load
-   */
-  async function loadActiveTheme() {
-    try {
-      const response = await fetch('api/themes.php?active=1');
-      const data = await response.json();
-      
-      if (data.success && data.theme) {
-        applyTheme(data.theme);
-      }
-    } catch (error) {
-      console.error('Error loading active theme:', error);
-    }
-  }
-
-  /**
    * Initialize
    */
   function init() {
     loadThemes();
-    loadActiveTheme();
   }
 
   // Initialize when DOM is ready

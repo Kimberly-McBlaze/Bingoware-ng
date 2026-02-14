@@ -190,7 +190,7 @@ Once enabled, a **Virtual Bingo** menu item appears in the main menu.
 
 ---
 ## 🗂️ Known Issues
-- See https://github.com/Kimberly-McBlaze/Bingoware-ng/issues/58
+- None at this time!
 
 
 ## 🗂️ Changelog
@@ -674,6 +674,7 @@ have multiple sets of Bingo cards that do not overwrite one another
 ## 📄 License
 
 Open-source. See license file or original project for details.
+
 
 
 

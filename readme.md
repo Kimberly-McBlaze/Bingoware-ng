@@ -192,6 +192,10 @@ Once enabled, a **Virtual Bingo** menu item appears in the main menu.
 
 ## 🗂️ Changelog
 
+- ### [2.7.3.2] - 2026-05-24
+- **Changes:**
+  - Fixed delete all cards not deleting virtual bingo cards.
+
 - ### [2.7.3.1] - 2026-05-24
 - **Changes:**
   - Fixed Play Bingo Quick Winning Pattern Switch dropdown desync

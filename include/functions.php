@@ -1066,7 +1066,8 @@ function delete_all_sets() {
         'draws.*.dat',
         'old_winners.*.dat', 
         'new_winners.*.dat',
-        'lastdraw.*.dat'
+        'lastdraw.*.dat',
+        'virtualstacks.dat'
     );
     
     foreach ($data_patterns as $pattern) {

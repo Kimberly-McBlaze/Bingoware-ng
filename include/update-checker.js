@@ -9,7 +9,7 @@
     const UPDATE_CHECK_KEY = 'bingoware_update_check';
     const UPDATE_DISMISSED_KEY = 'bingoware_update_dismissed';
     const CHECK_INTERVAL = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
-    const CURRENT_VERSION = 'v2.7.3.1';
+    const CURRENT_VERSION = 'v2.7.3.2';
     const VERSION_URL = 'version.json';
     const REPO_URL = 'https://github.com/Kimberly-McBlaze/Bingoware-ng';
     

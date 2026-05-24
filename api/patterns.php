@@ -88,8 +88,8 @@ if ($method === 'POST' && isset($_POST['id']) && !empty($_POST['id'])) {
         exit;
     }
     
-    $name = validate_string($_POST['name'] ?? '', 50);
-    $description = validate_string($_POST['description'] ?? '', 200);
+    $name = isset($_POST['name']) ? validate_string($_POST['name'], 50) : null;
+    $description = isset($_POST['description']) ? validate_string($_POST['description'], 200) : null;
     $grid = isset($_POST['grid']) ? validate_json($_POST['grid'], null) : null;
     $enabled = isset($_POST['enabled']) ? validate_bool($_POST['enabled']) : null;
     

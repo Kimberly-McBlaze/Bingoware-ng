@@ -13,6 +13,10 @@ $query_params = $numberinplay ? '&' . build_query_string(['numberinplay' => $num
       <span class="nav-icon">🎲</span>
       <span>Generate Cards</span>
     </a>
+    <a href="index.php?action=batch_generate<?= $query_params ?>" class="nav-button">
+      <span class="nav-icon">🎰</span>
+      <span>Batch Generate</span>
+    </a>
     <a href="index.php?action=view<?= $query_params ?>" class="nav-button">
       <span class="nav-icon">👁️</span>
       <span>View Cards</span>

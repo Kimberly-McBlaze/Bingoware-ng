@@ -7,12 +7,15 @@ if ($virtualbingo !== 'on') {
     exit;
 }
 
+// Migrate old per-set stacks to new global format (backward compatibility)
+include_once("include/virtual_cards.php");
+migrate_virtual_stacks_to_global();
+
 $error = '';
 $success = false;
 $stack_data = null;
 
 // Load previously generated stacks
-include_once("include/virtual_cards.php");
 $all_existing_stacks = get_all_virtual_stacks_for_display();
 
 // Handle form submission
@@ -208,15 +211,16 @@ function copyUrlFallback(input) {
   </div>
   <div class="card-body">
     <p style="margin-bottom: 1rem; color: var(--text-muted);">
-      All previously generated virtual bingo card stacks for Set ID: <strong><?= htmlspecialchars($setid) ?></strong>
+      All previously generated virtual bingo card stacks across all sets. Current set: <strong><?= htmlspecialchars($setid) ?></strong>
     </p>
     
     <div style="display: flex; flex-direction: column; gap: 1rem;">
       <?php foreach ($all_existing_stacks as $idx => $stack): ?>
-      <div style="border: 1px solid var(--border-color); border-radius: 8px; padding: 1rem; background: var(--card-bg);" id="stack-<?= htmlspecialchars($stack['stack_id']) ?>">
+      <div style="border: 1px solid var(--border-color); <?= $stack['is_current_set'] ? 'border-left: 4px solid var(--color-primary);' : '' ?> border-radius: 8px; padding: 1rem; background: var(--card-bg);" id="stack-<?= htmlspecialchars($stack['stack_id']) ?>">
         <div style="margin-bottom: 0.5rem;">
           <strong style="display: block; margin-bottom: 0.5rem;">
-            Stack <?= ($idx + 1) ?> - <?= $stack['count'] ?> card(s)
+            Stack <?= ($idx + 1) ?> - <?= $stack['count'] ?> card(s) - Set: <span style="color: var(--color-primary);"><?= htmlspecialchars($stack['setid']) ?></span>
+            <?= $stack['is_current_set'] ? '<span style="color: var(--color-success); font-size: 0.875rem;"> (Current Set)</span>' : '' ?>
           </strong>
           <div style="font-family: monospace; font-size: 0.875rem; color: var(--text-muted); margin-bottom: 0.5rem;">
             Cards: <?= htmlspecialchars(implode(', ', array_slice($stack['card_ids'], 0, 5))) ?><?= count($stack['card_ids']) > 5 ? '...' : '' ?>

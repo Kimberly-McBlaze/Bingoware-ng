@@ -9,6 +9,7 @@
 <script src="include/scripts.js"></script>
 <script src="include/colorpicker.js"></script>
 <script src="include/modern-ui.js"></script>
+<script src="include/update-checker.js"></script>
 </head>
 <body>
 <header class="modern-header">
@@ -28,5 +29,4 @@
     </div>
   </div>
 </header>
-
 

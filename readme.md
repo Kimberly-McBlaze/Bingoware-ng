@@ -18,6 +18,7 @@ This project updates the original codebase for **PHP 8.2+** while preserving its
 - 🌐 **NEW:** Virtual Bingo Mode for remote play
 - 🔗 Generate shareable card links for players
 - 📱 Interactive cards with click-to-mark functionality
+- 🌙 Dark/Light mode toggle
 - 🌐 Works in all modern browsers
 
 ---
@@ -186,10 +187,181 @@ Once enabled, a **Virtual Bingo** menu item appears in the main menu.
 
 ---
 ## 🗂️ Known Issues
-- None at this time!
+- No known issues currently.
 
 
 ## 🗂️ Changelog
+
+- ### [2.7.3.1] - 2026-05-24
+- **Changes:**
+  - Fixed Play Bingo Quick Winning Pattern Switch dropdown desync
+    - Root cause: Enabled pattern IDs kept sparse keys after filtering, so the selected pattern ID lookup could miss non-`normal` selections and visually fall back to `normal`
+    - Solution: Normalized enabled pattern IDs before selecting the active option so dropdown state stays in sync and switching back to `normal` works correctly
+  - Removed the theme management feature and related theme API/UI components
+  - Restored the application to built-in light/dark mode behavior with the original dark mode color scheme
+  - Removed Themes navigation and flashboard theme API dependency
+  - Bumped application version metadata to `2.7.3.1`
+
+- ### [2.7.2] - 2026-02-11
+- **Bug Fixes:**
+  - Fixed "Delete All Generated Cards" functionality that was not deleting any cards
+    - Root cause: Confirmation form didn't include the 'submit' field, causing the deletion code block to be skipped
+    - Solution: Added hidden 'submit' field to confirmation form so deletion executes correctly after confirmation
+  - Fixed dark mode toggle for better contrast and readability
+    - Improved dark mode CSS variables in modern-styles.css for better text visibility
+    - Enhanced contrast ratios to meet accessibility standards
+  - Fixed "Create Custom Theme" button that was doing nothing
+    - Root cause: Syntax error (extra semicolon) on line 292 of themes-ui.js prevented JavaScript from executing
+    - Solution: Removed the extra semicolon, allowing openCreateModal() and other functions to be properly defined
+- **New Features:**
+  - Restored "Default" theme as the primary built-in theme
+  - Added 5 additional built-in themes for a total of 6:
+    - Default: Classic Bingoware with purple gradient
+    - Ocean Blue: Calm and professional blue theme
+    - Forest Green: Natural green with earthy tones
+    - Sunset Orange: Warm and energetic orange theme
+    - Midnight: Rich dark theme with excellent contrast
+    - Cherry Blossom: Soft pink with elegant styling
+  - All themes support auto-transformation between light and dark modes
+  - All themes meet accessibility contrast requirements
+
+- ### [2.7.1] - 2026-02-08
+- **Bug Fixes:**
+  - Fixed custom winning pattern descriptions being deleted when switching patterns
+    - Root cause: api/patterns.php was using empty string default for missing name/description fields instead of null, causing update_pattern() to overwrite descriptions with empty values when only the enabled state was being changed
+    - Solution: Changed api/patterns.php to use isset() checks and return null when name/description fields are not provided in POST request, allowing update_pattern() to skip updating those fields and preserve existing values
+  - Fixed custom themes not applying to flashboard
+    - Root cause: flashboard.php didn't include theme loading script and flashboard.css used hardcoded gradient colors instead of CSS variables
+    - Solution: Added theme loading script to flashboard.php (fetches active theme via API and applies CSS variables), updated flashboard.css to use CSS variables (--primary, --secondary) with fallback values
+  - Improved dark mode compatibility with custom themes
+    - Added per-mode theme assignment capability (light/dark)
+    - Added 'mode' field to theme data structure with validation
+    - Added mode selector dropdown in Theme Manager UI
+    - Theme cards now display mode badges (LIGHT/DARK) for easy identification
+    - Updated create_theme() and update_theme() API functions to handle mode parameter
+- **New Features:**
+  - Added "Delete All Generated Cards" functionality
+    - New "Dangerous Operations" section in Configure page with warning styling
+    - Two-step confirmation process: checkbox must be checked, then confirmation dialog appears before deletion
+    - Safely removes all card sets (set.*.dat files) and associated game data (draws, winners, lastdraw files)
+    - Displays count of existing card sets before deletion
+    - Provides detailed success/error feedback with list of any failures
+    - Disabled when no card sets exist
+    - Follows same confirmation pattern as Virtual Bingo disable feature
+
+- ### [2.7.0] - 2026-01-16
+- **Bug Fixes:**
+  - Fixed flashboard winning pattern display when switching patterns
+    - Root cause: `array_map` preserved non-sequential array keys, causing JSON to encode as object instead of array
+    - Solution: Wrapped `array_map` with `array_values()` to reindex the array
+    - Flashboard now correctly receives and displays pattern updates when patterns are switched
+    - Pattern changes in Play Bingo UI now properly trigger pattern updates to the flashboard window
+- **New Features:**
+  - Added Quick Winning Pattern Switch dropdown on Play Bingo page
+    - Located below Quick Set Switch for consistent UI layout
+    - Allows switching to any available winning pattern with one click during gameplay
+    - Automatically disables all other patterns and enables the selected one
+    - Selection persists via existing patterns storage API
+    - Flashboard automatically updates to show the newly enabled pattern after switch
+  - Added comprehensive theme system with custom theme support
+    - New Theme Manager page accessible from main menu
+    - Create, edit, and delete custom themes with full color customization
+    - Import/export themes as JSON files for sharing and backup
+    - Included 4 default themes: Light Modern, Dark Modern, Classic Blue, Purple Passion
+    - Themes apply globally across all pages using CSS variables
+    - Active theme persists across sessions
+    - Theme storage in `data/themes.json` with atomic writes for data safety
+    - API endpoint at `api/themes.php` for CRUD operations and import/export
+    - Color picker UI with hex code input for precise color selection
+    - Real-time theme preview on Theme Manager page
+
+- ### [2.6.5.1] - 2026-01-16
+- **Bug Fixes:**
+  - Fixed batch-generated card sets not appearing in UI until manual configuration change
+    - Root cause: Config file wasn't updated after batch generation
+    - After batch generation, the system now automatically updates the configuration to point to the first generated set
+    - Quick set switch dropdown now appears immediately after batch generation without requiring manual intervention
+  - Fixed quick set switch dropdown to sort numerically instead of lexicographically
+    - Changed sorting algorithm from `sort()` to `natsort()` for natural ordering
+    - Dropdown now displays A-1, A-2, ..., A-10, A-11 instead of A-1, A-10, A-11, A-2
+    - Works correctly with any number of sets and any prefix pattern
+- **New Features:**
+  - Added Virtual Bingo multi-set support
+    - Virtual Bingo card stacks now work across all available card sets
+    - Added set switcher dropdown to virtual stack viewer
+    - Players can switch between sets while viewing the same virtual stack URL
+    - Each set maintains its own mark state in localStorage (marks are preserved per set)
+    - Virtual stack storage migrated from per-set to global format for better multi-set support
+    - Backward compatible: automatically migrates old per-set virtual stacks to new global format
+  - Virtual Bingo administrator page now shows all stacks across all sets
+    - Each stack displays which set it belongs to
+    - Current set stacks are highlighted for easy identification
+
+- ### [2.6.5] - 2026-01-16
+- **New Features:**
+  - Added batch generation feature to create multiple Bingo card sets in one operation
+    - New "Batch Generate" menu option for creating multiple SET IDs at once
+    - Specify number of sets to create (1-100) and cards per set
+    - Option to provide custom base SET ID or use current SET ID
+    - Multiple sets are automatically numbered (e.g., Base-1, Base-2, Base-3)
+    - All sets use the same Free Squares mode configuration
+    - Displays detailed results table showing each created set
+    - Single-set generation continues to work as before
+
+- ### [2.6.4.3] - 2026-01-16
+- **Bug Fixes:**
+  - Fixed Quick Set Switch dropdown alignment on Play Bingo page
+    - Changed layout from horizontal to vertical stacking
+    - "Quick Set Switch:" label now appears above the dropdown
+    - Dropdown select control in the middle with full width (max 250px)
+    - "Current: A" value now appears below the dropdown
+    - All elements are centered and properly aligned within the container
+    - Improved visual hierarchy and better use of available space
+
+- ### [2.6.4.2] - 2026-01-16
+- **Bug Fixes:**
+  - Fixed flashboard notification text color to be black instead of white for better readability
+    - When `$maxNumber` is not 75, the flashboard shows a yellow background notification
+    - Text color was white and barely readable; now changed to black for proper contrast
+    - Change is scoped only to the notification element, other text remains unchanged
+  - Changed default SET ID from `B` to `A` across the application
+    - New installations and fresh configurations now use Set A by default
+    - Ensures consistent default set ID throughout the application
+- **UI Improvements:**
+  - Moved quick set switch button below the winner indicator area
+    - Quick set switch now appears after "No winners yet" / winner count display
+    - Improved visual hierarchy and layout organization on Play Bingo page
+    - Better positioning for landscape mode and mobile/responsive layouts
+
+- ### [2.6.4.1] - 2026-01-15
+- **Bug Fixes:**
+  - Changed default bingo set from `C` to `A`
+    - New installations and fresh configurations now use Set A by default
+  - Fixed erroneous "Card Generation Failed" error message when switching to empty sets
+    - Previously showed error message even when cards were successfully generated
+    - Now correctly shows success message when generation succeeds
+    - Error message only appears when generation actually fails
+  - Fixed flashboard breaking when `$maxNumber` is not 75
+    - When `$maxNumber` in `constants.php` is set to any value other than 75, the flashboard's 5×15 grid is now disabled
+    - A notification banner explains the grid is disabled and how to restore it (set `$maxNumber = 75`)
+    - The rest of the flashboard (Current Number display, Winning Pattern display) continues to work normally
+    - Full flashboard functionality (including grid) automatically restored when `$maxNumber` is set back to 75
+
+- ### [2.6.4] - 2026-01-15
+- **New Features:**
+  - Added update checker notification system
+    - Automatically checks for new versions (once per 24 hours)
+    - Non-intrusive notification with option to view release or dismiss
+    - Uses localStorage to track dismissed updates
+    - Handles network errors gracefully without bothering users
+  - Auto-generate cards prompt when switching to empty set
+    - Detects when switching from a set with cards to a set without cards
+    - Prompts user to automatically generate same number of cards
+    - Provides option to decline and continue without generating
+- **Bug Fixes:**
+  - Fixed winning patterns default state - only "Normal" pattern is now enabled by default
+    - Previously both "Normal" and "Four Corners" were enabled, causing confusion
+    - All other patterns now correctly default to disabled state
 
 - ### [2.6.3.3] - 2026-01-15
 - **Play Bingo UI & Flashboard Improvements:**
@@ -509,6 +681,11 @@ have multiple sets of Bingo cards that do not overwrite one another
 ## 📄 License
 
 Open-source. See license file or original project for details.
+
+
+
+
+
 
 
 

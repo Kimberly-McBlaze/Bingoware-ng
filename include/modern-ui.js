@@ -3,46 +3,70 @@
  * Handles theme switching, animations, and enhanced UX
  */
 
-// Theme Management
+// Theme management (light/dark mode)
 const ThemeManager = {
-  THEME_KEY: 'bingoware-theme',
+  THEME_MODE_KEY: 'bingoware-theme-mode',
   
   init() {
-    this.loadTheme();
+    this.applySavedMode();
     this.attachToggleListener();
   },
   
-  loadTheme() {
-    const savedTheme = localStorage.getItem(this.THEME_KEY);
+  /**
+   * Apply saved mode preference or system default
+   */
+  applySavedMode() {
+    const savedMode = localStorage.getItem(this.THEME_MODE_KEY);
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    const theme = savedTheme || (prefersDark ? 'dark' : 'light');
-    this.setTheme(theme);
+    const currentMode = savedMode || (prefersDark ? 'dark' : 'light');
+    this.setModeOnly(currentMode);
   },
   
-  setTheme(theme) {
-    document.documentElement.setAttribute('data-theme', theme);
-    localStorage.setItem(this.THEME_KEY, theme);
+  /**
+   * Set mode without theme colors (use CSS defaults)
+   * @param {string} mode - 'light' or 'dark'
+   */
+  setModeOnly(mode) {
+    document.documentElement.setAttribute('data-theme', mode);
+    localStorage.setItem(this.THEME_MODE_KEY, mode);
     
-    // Update toggle switch if it exists
+    // Update toggle switch
     const toggle = document.getElementById('theme-toggle');
     if (toggle) {
-      toggle.checked = theme === 'dark';
+      toggle.checked = mode === 'dark';
     }
+    
   },
   
-  toggleTheme() {
-    const currentTheme = document.documentElement.getAttribute('data-theme');
-    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-    this.setTheme(newTheme);
+  /**
+   * Toggle between light and dark mode
+   */
+  toggleMode() {
+    const currentMode = document.documentElement.getAttribute('data-theme');
+    const newMode = currentMode === 'dark' ? 'light' : 'dark';
+    
+    this.setModeOnly(newMode);
   },
   
+  /**
+   * Attach event listener to theme toggle
+   */
   attachToggleListener() {
     const toggle = document.getElementById('theme-toggle');
     if (toggle) {
-      toggle.addEventListener('change', () => this.toggleTheme());
+      toggle.addEventListener('change', () => this.toggleMode());
     }
+  },
+  
+  /**
+   * Get current mode
+   * @returns {string} 'light' or 'dark'
+   */
+  getCurrentMode() {
+    return document.documentElement.getAttribute('data-theme') || 'light';
   }
 };
+
 
 // Enhanced Form Validation
 const FormValidator = {
@@ -515,4 +539,3 @@ function validate_number(maxColumnNum) {
 
 // Make validate_number available globally
 window.BingowareUI.Legacy.validate_number = validate_number;
-

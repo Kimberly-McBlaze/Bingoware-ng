@@ -28,7 +28,20 @@
    */
   function init() {
     console.log('Flashboard initializing...');
-    buildBoard();
+    
+    // Check if maxNumber is 75 before building the board
+    const maxNumber = window.BINGO_MAX_NUMBER || 75;
+    if (maxNumber === 75) {
+      buildBoard();
+    } else {
+      console.log('Flashboard grid disabled: maxNumber is', maxNumber, '(must be 75)');
+      // Hide the board container since it won't be used
+      const boardContainer = document.getElementById('bingo-board');
+      if (boardContainer) {
+        boardContainer.style.display = 'none';
+      }
+    }
+    
     setupMessageListener();
     updateDisplay();
     
@@ -272,6 +285,12 @@
    * Update the board cells based on drawn numbers
    */
   function updateBoard() {
+    // Skip if board is not rendered (maxNumber != 75)
+    const boardContainer = document.getElementById('bingo-board');
+    if (!boardContainer || boardContainer.style.display === 'none') {
+      return;
+    }
+
     // Get the latest number once at the start to ensure consistency
     const latestNumber = getLatestNumber();
 

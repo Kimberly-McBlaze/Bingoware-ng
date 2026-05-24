@@ -1,0 +1,10 @@
+{
+  "version": "2.7.3.1",
+  "releaseDate": "2026-05-24",
+  "releaseUrl": "https://github.com/Kimberly-McBlaze/Bingoware-ng/releases/tag/v2.7.3.1",
+  "changes": [
+    "Removed theme management functionality and theme API endpoints",
+    "Restored built-in light/dark mode behavior using static application color variables",
+    "Removed Themes navigation and flashboard dependency on theme API"
+  ]
+}

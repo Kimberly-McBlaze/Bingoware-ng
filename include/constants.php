@@ -2,8 +2,8 @@
 /* Constants: 
 * you can change these values at will
 */
-$date_lastmod = "15 January 2026";
-$version = " v2.6.3.3";
+$date_lastmod = "24 May 2026";
+$version = " v2.7.3.1";
 $bingoletters = array("B", "I", "N", "G", "O");
 $patternkeywords = array("Normal","Four Corners","Cross-Shaped","T-Shaped","X-Shaped","+ Shaped","Z-Shaped", "N-Shaped", "Box Shaped", "Square Shaped","Blackout (Full Card)");
 
@@ -37,5 +37,4 @@ set_time_limit(0);
 
 
 ?>
-
 

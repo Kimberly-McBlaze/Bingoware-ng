@@ -192,12 +192,15 @@ Once enabled, a **Virtual Bingo** menu item appears in the main menu.
 
 ## 🗂️ Changelog
 
-- ### [2.7.3] - 2026-05-24
+- ### [2.7.3.1] - 2026-05-24
 - **Changes:**
+  - Fixed Play Bingo Quick Winning Pattern Switch dropdown desync
+    - Root cause: Enabled pattern IDs kept sparse keys after filtering, so the selected pattern ID lookup could miss non-`normal` selections and visually fall back to `normal`
+    - Solution: Normalized enabled pattern IDs before selecting the active option so dropdown state stays in sync and switching back to `normal` works correctly
   - Removed the theme management feature and related theme API/UI components
   - Restored the application to built-in light/dark mode behavior with the original dark mode color scheme
   - Removed Themes navigation and flashboard theme API dependency
-  - Bumped application version metadata to `2.7.3`
+  - Bumped application version metadata to `2.7.3.1`
 
 - ### [2.7.2] - 2026-02-11
 - **Bug Fixes:**

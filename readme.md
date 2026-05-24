@@ -187,7 +187,7 @@ Once enabled, a **Virtual Bingo** menu item appears in the main menu.
 
 ---
 ## 🗂️ Known Issues
-- No known issues currently.
+- Update checker is not working.
 
 
 ## 🗂️ Changelog

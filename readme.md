@@ -18,10 +18,7 @@ This project updates the original codebase for **PHP 8.2+** while preserving its
 - 🌐 **NEW:** Virtual Bingo Mode for remote play
 - 🔗 Generate shareable card links for players
 - 📱 Interactive cards with click-to-mark functionality
-- 🎨 **NEW:** Advanced theme system with automatic color transformation
-- 🌙 Dark/Light mode with automatic color adaptation
-- 🎭 Create custom themes with full color customization
-- ✨ Auto-transform colors when switching modes
+- 🌙 Dark/Light mode toggle
 - 🌐 Works in all modern browsers
 
 ---
@@ -190,10 +187,17 @@ Once enabled, a **Virtual Bingo** menu item appears in the main menu.
 
 ---
 ## 🗂️ Known Issues
-- Themes are broken, we're working on it.
+- No known issues currently.
 
 
 ## 🗂️ Changelog
+
+- ### [2.7.3] - 2026-05-24
+- **Changes:**
+  - Removed the theme management feature and related theme API/UI components
+  - Restored the application to built-in light/dark mode behavior with the original dark mode color scheme
+  - Removed Themes navigation and flashboard theme API dependency
+  - Bumped application version metadata to `2.7.3`
 
 - ### [2.7.2] - 2026-02-11
 - **Bug Fixes:**
@@ -674,7 +678,6 @@ have multiple sets of Bingo cards that do not overwrite one another
 ## 📄 License
 
 Open-source. See license file or original project for details.
-
 
 
 

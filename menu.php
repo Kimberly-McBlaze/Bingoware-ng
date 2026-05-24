@@ -35,10 +35,6 @@ $query_params = $numberinplay ? '&' . build_query_string(['numberinplay' => $num
       <span class="nav-icon">🎯</span>
       <span>Winning Patterns</span>
     </a>
-    <a href="themes.php" class="nav-button">
-      <span class="nav-icon">🎨</span>
-      <span>Themes</span>
-    </a>
     <a href="index.php?action=config<?= $query_params ?>" class="nav-button">
       <span class="nav-icon">⚙️</span>
       <span>Configure</span>

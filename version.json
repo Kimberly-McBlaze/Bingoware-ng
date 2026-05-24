@@ -1,13 +1,10 @@
 {
-  "version": "2.7.2",
-  "releaseDate": "2026-02-11",
-  "releaseUrl": "https://github.com/Kimberly-McBlaze/Bingoware-ng/releases/tag/v2.7.2",
+  "version": "2.7.3",
+  "releaseDate": "2026-05-24",
+  "releaseUrl": "https://github.com/Kimberly-McBlaze/Bingoware-ng/releases/tag/v2.7.3",
   "changes": [
-    "Fixed 'Delete All Generated Cards' functionality - now properly deletes cards",
-    "Fixed dark mode toggle for better contrast and readability",
-    "Fixed 'Create Custom Theme' button - now opens the theme creation modal",
-    "Restored 'Default' theme and added 5 new built-in themes (Ocean Blue, Forest Green, Sunset Orange, Midnight, Cherry Blossom)",
-    "Improved theme color transformation for dark mode compatibility",
-    "Enhanced UI consistency across light and dark modes"
+    "Removed theme management functionality and theme API endpoints",
+    "Restored built-in light/dark mode behavior using static application color variables",
+    "Removed Themes navigation and flashboard dependency on theme API"
   ]
 }

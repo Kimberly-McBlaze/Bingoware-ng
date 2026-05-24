@@ -156,7 +156,7 @@
 	           <select id="pattern-switcher" class="form-input" style="width: 100%; max-width: 250px;" onchange="switchPattern(this.value)">
 	             <?php 
 	             $all_patterns = load_patterns();
-	             $enabled_pattern_ids = array_map(function($p) { return $p['id']; }, $enabled_patterns);
+	             $enabled_pattern_ids = array_values(array_map(function($p) { return $p['id']; }, $enabled_patterns));
 	             $current_pattern_id = count($enabled_pattern_ids) === 1 ? $enabled_pattern_ids[0] : '';
 	             
 	             foreach ($all_patterns as $pattern): ?>

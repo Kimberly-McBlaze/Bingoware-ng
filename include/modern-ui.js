@@ -3,94 +3,23 @@
  * Handles theme switching, animations, and enhanced UX
  */
 
-// Enhanced Theme Management with Color Transformation
+// Theme management (light/dark mode)
 const ThemeManager = {
-  THEME_MODE_KEY: 'bingoware-theme-mode', // 'light' or 'dark'
-  THEME_ID_KEY: 'bingoware-theme-id', // Active theme ID
-  activeTheme: null, // Stores the current theme object
+  THEME_MODE_KEY: 'bingoware-theme-mode',
   
   init() {
-    this.loadAndApplyTheme();
+    this.applySavedMode();
     this.attachToggleListener();
   },
   
   /**
-   * Load active theme from API and apply with mode transformation
+   * Apply saved mode preference or system default
    */
-  async loadAndApplyTheme() {
-    try {
-      // Get saved mode preference
-      const savedMode = localStorage.getItem(this.THEME_MODE_KEY);
-      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      const currentMode = savedMode || (prefersDark ? 'dark' : 'light');
-      
-      // Load active theme from API
-      const response = await fetch('api/themes.php?active=1');
-      const data = await response.json();
-      
-      if (data.success && data.theme) {
-        this.activeTheme = data.theme;
-        this.applyThemeWithMode(data.theme, currentMode);
-      } else {
-        // Fallback to mode-only if no theme found
-        this.setModeOnly(currentMode);
-      }
-    } catch (error) {
-      console.error('Error loading theme:', error);
-      // Fallback to mode-only
-      const savedMode = localStorage.getItem(this.THEME_MODE_KEY) || 'light';
-      this.setModeOnly(savedMode);
-    }
-  },
-  
-  /**
-   * Apply theme with automatic color transformation based on mode
-   * @param {object} theme - Theme object with colors
-   * @param {string} targetMode - Target mode ('light' or 'dark')
-   */
-  applyThemeWithMode(theme, targetMode) {
-    const root = document.documentElement;
-    
-    // Set data-theme attribute for CSS
-    root.setAttribute('data-theme', targetMode);
-    localStorage.setItem(this.THEME_MODE_KEY, targetMode);
-    
-    // Update toggle switch
-    const toggle = document.getElementById('theme-toggle');
-    if (toggle) {
-      toggle.checked = targetMode === 'dark';
-    }
-    
-    // Determine theme's original mode
-    const themeMode = theme.mode || 'light';
-    
-    // Get colors (transformed if needed)
-    let colors = theme.colors;
-    
-    // Auto-transform colors if ColorTransform is available and modes differ
-    if (window.ColorTransform && themeMode !== targetMode) {
-      // Check if theme has auto_transform disabled
-      const autoTransform = theme.auto_transform !== false;
-      
-      if (autoTransform) {
-        const intensity = theme.transform_intensity || 30;
-        colors = ColorTransform.autoTransform(colors, targetMode, themeMode, intensity);
-      }
-    }
-    
-    // Apply colors as CSS custom properties
-    for (const [key, value] of Object.entries(colors)) {
-      root.style.setProperty('--color-' + key, value);
-      // Also set without prefix for compatibility
-      if (!key.startsWith('color-')) {
-        root.style.setProperty('--' + key, value);
-      }
-    }
-    
-    // Store current theme ID
-    if (theme.id) {
-      localStorage.setItem(this.THEME_ID_KEY, theme.id);
-    }
+  applySavedMode() {
+    const savedMode = localStorage.getItem(this.THEME_MODE_KEY);
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const currentMode = savedMode || (prefersDark ? 'dark' : 'light');
+    this.setModeOnly(currentMode);
   },
   
   /**
@@ -107,16 +36,6 @@ const ThemeManager = {
       toggle.checked = mode === 'dark';
     }
     
-    // Remove custom color properties to use CSS defaults
-    const root = document.documentElement;
-    const colorKeys = ['primary', 'secondary', 'success', 'warning', 'error',
-                       'bg-primary', 'bg-secondary', 'bg-tertiary',
-                       'text-primary', 'text-secondary', 'text-muted', 'border-color'];
-    
-    colorKeys.forEach(key => {
-      root.style.removeProperty('--color-' + key);
-      root.style.removeProperty('--' + key);
-    });
   },
   
   /**
@@ -126,13 +45,7 @@ const ThemeManager = {
     const currentMode = document.documentElement.getAttribute('data-theme');
     const newMode = currentMode === 'dark' ? 'light' : 'dark';
     
-    if (this.activeTheme) {
-      // Re-apply theme with new mode
-      this.applyThemeWithMode(this.activeTheme, newMode);
-    } else {
-      // Just toggle mode
-      this.setModeOnly(newMode);
-    }
+    this.setModeOnly(newMode);
   },
   
   /**
@@ -151,28 +64,6 @@ const ThemeManager = {
    */
   getCurrentMode() {
     return document.documentElement.getAttribute('data-theme') || 'light';
-  },
-  
-  /**
-   * Set a specific theme by ID
-   * @param {string} themeId - Theme ID
-   */
-  async setTheme(themeId) {
-    try {
-      const response = await fetch(`api/themes.php?id=${encodeURIComponent(themeId)}`);
-      const data = await response.json();
-      
-      if (data.success && data.theme) {
-        const currentMode = this.getCurrentMode();
-        this.activeTheme = data.theme;
-        this.applyThemeWithMode(data.theme, currentMode);
-        return true;
-      }
-      return false;
-    } catch (error) {
-      console.error('Error setting theme:', error);
-      return false;
-    }
   }
 };
 
@@ -648,4 +539,3 @@ function validate_number(maxColumnNum) {
 
 // Make validate_number available globally
 window.BingowareUI.Legacy.validate_number = validate_number;
-
